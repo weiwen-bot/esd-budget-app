@@ -38,4 +38,7 @@ For Simplicity we all download Github desktop
 2. Push to origin and fetch origin
 3. Click current branch and the button below "Choose a branch to merge into 'current branch' " 
 4. Select dev branch (This will merge all latest commits done to dev to your own branch)
+5. fix any merge conflicts if any if unsure can ask in the group for help
+6. Push origin and fetch origin
+7. 
 3. Move to dev branch 

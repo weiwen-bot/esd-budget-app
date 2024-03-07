@@ -37,4 +37,6 @@ For Simplicity we all download Github desktop
 ## When you want to push all working changes to dev once you are done with your features
 1. Commit all changes in current branch first
 2. Push to origin and fetch origin
+3. Click current branch and the button below "Choose a branch to merge into 'current branch' " 
+4. Select dev branch (This will merge all latest commits done to dev to your own branch)
 3. Move to dev branch 

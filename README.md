@@ -20,13 +20,13 @@ For Simplicity we all download Github desktop
 
 ## Writing a commit message
 1. Writing a message shouldnt be long but should contain enough information
-# Types for Header
+## Types for Header
 - feat - When adding new feature, function
 - fix - Making a change to fix something
 - docs - Making a change on documentation Readme
 - style - style change css
 - config - Making changes to dockerfile or yaml 
-# Message example
+## Message example
 - feat(service api): create user
 - Description: This commit adds a new feature that creates a new user
 
@@ -42,11 +42,17 @@ For Simplicity we all download Github desktop
 5. fix any merge conflicts if any if unsure can ask in the group for help
 6. Push origin and fetch origin
 7. Now you can send pull request to the dev
-8. Preview pool request
+8. Preview pull request
 9. Select dev instead of main
 10. you will be redirect to the github page.
-11. Press create pool request
+11. Press create pull request
 12. Inform the group someone will review the Pull request and merge it
 13. Person completing the merge request will delete branch on the github online page
 14. Also delete the branch on your github desktop (After the Pull request)
 15. To start new features create new branch from dev branch and repeat.
+
+# General rule of thumb
+1. Before merge committing any code to dev remember to fetch origin for latest updates
+2. Write short and clear commits so its easier to track what has been done.
+3. If unsure of workflow please communicate in the group
+4. Perform commits frequently 

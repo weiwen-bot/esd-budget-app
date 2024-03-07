@@ -34,4 +34,5 @@ For Simplicity we all download Github desktop
 - fix(service api): address issue for when user are created without name
 - Description: This commit fix the bug where the function can take empty message. The fix will now check for empty message and return error
 
-## When you want to 
+## When you want to push all working changes to dev once you are done with your features
+1. Commit all changes in current branch first

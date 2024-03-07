@@ -42,3 +42,10 @@ For Simplicity we all download Github desktop
 6. Push origin and fetch origin
 7. Now you can send pull request to the dev
 8. Preview pool request
+9. Select dev instead of main
+10. you will be redirect to the github page.
+11. Press create pool request
+12. Inform the group someone will review the Pull request and merge it
+13. Person completing the merge request will delete branch on the github online page
+14. Also delete the branch on your github desktop (After the Pull request)
+15. To start new features create new branch from dev branch and repeat.

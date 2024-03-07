@@ -8,7 +8,6 @@ For Simplicity we all download Github desktop
 5. you should observe that you have all the files inside your local machine
 6. Then click the current branch in the github desktop
 7. You will then create a new branch based on the dev branch (New branch will be the name of the stuff you are working on)
-8. you do not have t publish your branch
 
 
 We will have one main branch would be the one that is always working

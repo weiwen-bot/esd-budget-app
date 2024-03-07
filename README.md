@@ -36,3 +36,5 @@ For Simplicity we all download Github desktop
 
 ## When you want to push all working changes to dev once you are done with your features
 1. Commit all changes in current branch first
+2. Push to origin and fetch origin
+3. Move to dev branch 

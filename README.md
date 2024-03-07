@@ -17,6 +17,7 @@ For Simplicity we all download Github desktop
 ## Making a commit to save your work
 1. Once you finish a function or want to save
 2. go to github desktop and click commit 
+3. Push origin
 
 ## Writing a commit message
 1. Writing a message shouldnt be long but should contain enough information

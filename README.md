@@ -20,12 +20,14 @@ For Simplicity we all download Github desktop
 
 ## Writing a commit message
 1. Writing a message shouldnt be long but should contain enough information
+
 ## Types for Header
 - feat - When adding new feature, function
 - fix - Making a change to fix something
 - docs - Making a change on documentation Readme
 - style - style change css
 - config - Making changes to dockerfile or yaml 
+
 ## Message example
 - feat(service api): create user
 - Description: This commit adds a new feature that creates a new user
@@ -56,3 +58,6 @@ For Simplicity we all download Github desktop
 2. Write short and clear commits so its easier to track what has been done.
 3. If unsure of workflow please communicate in the group
 4. Perform commits frequently 
+
+# signature
+Chengkhee

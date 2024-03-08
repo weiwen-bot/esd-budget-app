@@ -45,20 +45,6 @@ For Simplicity we all download Github desktop
 
 1. Commit all changes in your own branch first
 2. Push to origin and fetch origin
-2. Go to Dev branch and fetch origin first than and push origin. Go back to your own branch
-3. Click your own branch and the button below "Choose a branch to merge into 'your own branch' " 
-4. Select dev branch (This will merge all latest commits done to dev to your own branch)
-5. fix any merge conflicts if any if unsure can ask in the group for help
-6. Push origin and fetch origin
-7. Now you can send pull request to the dev
-8. Preview pull request
-9. Select dev instead of main
-10. you will be redirect to the github page.
-11. Press create pull request
-12. Inform the group someone will review the Pull request and merge it
-13. Person completing the merge request will delete branch on the github online page
-14. Also delete the branch on your github desktop (After the Pull request)
-15. To start new features create new branch from dev branch and repeat.
 3. Go to Dev branch and fetch origin first than and push origin. Go back to your own branch
 4. Click your own branch and the button below "Choose a branch to merge into 'your own branch' "
 5. Select dev branch (This will merge all latest commits done to dev to your own branch)

@@ -64,7 +64,7 @@ def get_all():
         }
     ), 404
 
-
+ 
 @app.route("/user/<int:UserID>")
 def find_by_isbn13(UserID):
     user = db.session.scalars(
@@ -130,6 +130,52 @@ def create_user(UserID):
             "data": user.json()
         }
     ), 201
+
+@app.route("/user/<int:UserID>", methods=['PUT'])
+def update_user(UserID):
+    # user = User.query.get(UserID)
+    user = db.session.scalars(
+    	db.select(User).filter_by(UserID=UserID).
+    	limit(1)
+        ).first()
+
+    if not user:
+        return jsonify(
+            {
+                "code": 404,
+                "message": "User not found."
+            }
+        ), 404
+
+    data = request.get_json()
+    # update da user info
+    if 'UserName' in data:
+        user.UserName = data['UserName']
+    if 'PhoneNumber' in data:
+        user.PhoneNumber = data['PhoneNumber']
+    if 'Credits' in data:
+        user.Credits = data['Credits']
+    if 'Account_no' in data:
+        user.Account_no = data['Account_no']
+
+    try:
+        db.session.commit()
+    except:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while updating the user."
+            }
+        ), 500
+
+    return jsonify(
+        {
+            "code": 200,
+            "data": user.json()
+        }
+    ), 200
+
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=5000, debug=True)

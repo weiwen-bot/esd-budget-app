@@ -63,11 +63,13 @@ def create_Transaction():
     try:
         user_id = request.json.get('userID', None)
         pool_id = request.json.get('poolID', None)
+        amount = request.json.get( 'amount')
+        status = request.json.get('status')
 
         if not user_id or not pool_id:
                 return jsonify({'code': 400, 'message': 'Missing required fields: userID and poolID'}), 400
 
-        transaction = Transaction(str(uuid4()), 0, 'NEW', datetime.utcnow(), user_id, pool_id)
+        transaction = Transaction(str(uuid4()), amount, status , datetime.utcnow(), user_id, pool_id)
         
         db.session.add(transaction)
         db.session.commit()

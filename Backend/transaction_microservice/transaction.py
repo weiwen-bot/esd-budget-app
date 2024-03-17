@@ -4,7 +4,7 @@ from os import environ
 from flask_cors import CORS
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/transaction'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 
@@ -38,12 +38,12 @@ def get_All_Transactions():
     transactionlist = db.session.scalars(db.select(Transaction)).all()
 
 
-    if len(transactionlist):
+    if len(transactionlist) > 0:
         return jsonify(
             {
                 "code": 200,
                 "data": {
-                    "transactions": [transactionlist.json() for transaction in transactionlist]
+                    "transactions": [transaction.json() for transaction in transactionlist]
                 }
             }
         )
@@ -55,6 +55,8 @@ def get_All_Transactions():
     ), 404
    
 
+from uuid import uuid4
+from datetime import datetime
 
 @app.route("/transactions", methods=['POST'])
 def create_Transaction():
@@ -65,9 +67,9 @@ def create_Transaction():
         if not user_id or not pool_id:
                 return jsonify({'code': 400, 'message': 'Missing required fields: userID and poolID'}), 400
 
-        transaction = Transaction(user_id=user_id, pool_id=pool_id, status='NEW')
+        transaction = Transaction(str(uuid4()), 0, 'NEW', datetime.utcnow(), user_id, pool_id)
         
-        db.session.add(Transaction)
+        db.session.add(transaction)
         db.session.commit()
         return jsonify({'code': 201, 'data': transaction.json()}), 201
 
@@ -80,7 +82,6 @@ def create_Transaction():
                 "message": "An error occurred while creating the Transaction. " + str(e)
             }
         ), 500
-
 
 @app.route("/Transaction/<string:Transaction_id>")
 def find_by_Transaction_id(Transaction_id):
@@ -118,3 +119,7 @@ def delete_transaction(transaction_id):
     except Exception as e:
         app.logger.exception(f"Error deleting transaction: {e}")
         return jsonify({'code': 500, 'message': 'An error occurred while deleting the transaction.'}), 500
+    
+    
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)

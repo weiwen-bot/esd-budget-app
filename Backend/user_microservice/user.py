@@ -66,7 +66,7 @@ def get_all():
 
  
 @app.route("/user/<int:UserID>")
-def find_by_isbn13(UserID):
+def find_user(UserID):
     user = db.session.scalars(
     	db.select(User).filter_by(UserID=UserID).
     	limit(1)
@@ -175,6 +175,27 @@ def update_user(UserID):
         }
     ), 200
 
+@app.route("/user/register", methods=['POST'])
+def register_user():
+    data = request.get_json()
+    # Assuming UserID is auto-incremented, can set it as None
+    return create_user(None, **data)
+
+@app.route("/user/login", methods=['POST'])
+def login_user():
+    data = request.get_json()
+    user = db.session.query(User).filter_by(UserName=data['UserName'], Password=data['Password']).first()
+    if not user:
+        return jsonify({
+            "code": 401,
+            "message": "Invalid credentials."
+        }), 401
+
+    return jsonify({
+        "code": 200,
+        "data": user.json(),
+        "message": "Login successful."
+    }), 200
 
 
 if __name__ == '__main__':

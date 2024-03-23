@@ -6,19 +6,34 @@ USE `pool`;
 
 -- Create the Pool table
 CREATE TABLE IF NOT EXISTS `pool` (
-  `PoolID` VARCHAR(36) PRIMARY KEY,
-  `DateCreation` DATE NOT NULL,
+  `PoolID` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `DateCreation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `Expiry_Date` DATE NOT NULL,
   `Current_amount` FLOAT NOT NULL,
   `Budget` FLOAT NOT NULL,
   `Pool_Type` VARCHAR(36) NOT NULL,
-  `UserID` VARCHAR(36) NOT NULL,
+  `UserID` int(11) NOT NULL,
   `Status` VARCHAR(36) NOT NULL
-);
+)ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 -- Insert sample data into Pool table
-INSERT INTO `pool` (`PoolID`, `DateCreation`, `Expiry_Date`, `Current_amount`, `Budget`, `Pool_Type`, `UserID`, `Status`)
+INSERT INTO `pool` (`Expiry_Date`, `Current_amount`, `Budget`, `Pool_Type`, `UserID`, `Status`)
 VALUES 
-('1', '2024-03-13', '2024-03-20', 500.00, 1000.00, 'Group', 'user1', 'Active'),
-('2', '2024-03-14', '2024-03-21', 700.00, 1500.00, 'Team', 'user2', 'Active'),
-('3', '2024-03-15', '2024-03-22', 300.00, 800.00, 'Family', 'user3', 'Inactive');
+('2024-03-20', 500.00, 1000.00, 'Group', 1, 'Active'),
+('2024-03-21', 700.00, 1500.00, 'Team', 2, 'Active'),
+('2024-03-22', 300.00, 800.00, 'Family', 2, 'Inactive');
+
+
+CREATE TABLE IF NOT EXISTS `poolmapping` (
+  `PoolID` int(11) NOT NULL,
+  `UserID` int(11) NOT NULL,
+  PRIMARY KEY (`PoolID`, `UserID`),
+)
+
+-- Insert sample data into PoolMapping table
+INSERT INTO `poolmapping` (`PoolID`, `UserID`)
+VALUES 
+(1, 1),
+(1, 2),
+(2, 2),
+(3, 2);

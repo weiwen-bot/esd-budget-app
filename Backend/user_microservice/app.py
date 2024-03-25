@@ -24,8 +24,7 @@ class User(db.Model):
     # Can store both numeric and alphabetical characters
     Account_no = db.Column(db.String(20), nullable=False)
 
-    def __init__(self, UserID, UserName, PhoneNumber, Credits,Account_no):
-        self.UserID = UserID
+    def __init__(self, UserName, PhoneNumber, Credits,Account_no):
         self.UserName = UserName
         self.PhoneNumber = PhoneNumber
         self.Credits = Credits
@@ -42,7 +41,7 @@ class User(db.Model):
         }
 
 
-
+#get all users
 @app.route("/user")
 def get_all():
     userlist = db.session.scalars(db.select(User)).all()
@@ -64,7 +63,7 @@ def get_all():
         }
     ), 404
 
- 
+#get user by UserID
 @app.route("/user/<int:UserID>")
 def find_by_isbn13(UserID):
     user = db.session.scalars(
@@ -87,11 +86,13 @@ def find_by_isbn13(UserID):
         }
     ), 404
 
-
-@app.route("/user/<int:UserID>", methods=['POST'])
-def create_user(UserID):
+#add user
+@app.route("/user", methods=['POST'])
+def create_user():
+    data = request.get_json()
+    user = User(**data)
     if (db.session.scalars(
-        db.select(User).filter_by(UserID=UserID).
+        db.select(User).filter_by(UserName=user.UserName).
     	limit(1)
         ).first()
 ):
@@ -99,27 +100,23 @@ def create_user(UserID):
             {
                 "code": 400,
                 "data": {
-                    "UserID": UserID
+                    "UserName": user.UserName
                 },
                 "message": "User already exists."
             }
         ), 400
-
-    data = request.get_json()
-    user = User(UserID, **data)
-
-
     try:
         db.session.add(user)
         db.session.commit()
-    except:
+    except Exception as e:
         return jsonify(
             {
                 "code": 500,
                 "data": {
-                    "UserID": UserID
+                    "UserID": user.UserName
                 },
-                "message": "An error occurred creating the user."
+                "message": "An error occurred creating the user.",
+                "error": str(e)
             }
         ), 500
 
@@ -131,6 +128,8 @@ def create_user(UserID):
         }
     ), 201
 
+
+#update user
 @app.route("/user/<int:UserID>", methods=['PUT'])
 def update_user(UserID):
     # user = User.query.get(UserID)
@@ -175,10 +174,42 @@ def update_user(UserID):
         }
     ), 200
 
+@app.route("/user/<int:UserID>", methods=['DELETE'])
+def delete_user(UserID):
+    user = db.session.scalars(
+    	db.select(User).filter_by(UserID=UserID).
+    	limit(1)
+        ).first()
 
+    if not user:
+        return jsonify(
+            {
+                "code": 404,
+                "message": "User not found."
+            }
+        ), 404
+
+    try:
+        db.session.delete(user)
+        db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while deleting the user.",
+                "error": str(e)
+            }
+        ), 500
+
+    return jsonify(
+        {
+            "code": 200,
+            "Message": "successfully deleted user."
+        }
+    ), 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=5000, debug=True)
+    app.run(host='0.0.0.0',port=5006, debug=True)
 
 
     

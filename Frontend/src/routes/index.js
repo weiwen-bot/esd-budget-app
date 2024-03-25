@@ -1,6 +1,9 @@
 
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from "../pages/Home.vue";
+import OrderCanceled from '../components/OrderCanceled.vue'
+import OrderSuccess from '../components/OrderSuccess.vue'
+
 
 const routes =[
     {
@@ -8,6 +11,16 @@ const routes =[
         name:"home",
         component: Home,
     },
+    {
+        path: '/success',
+        name: 'OrderSuccess',
+        component: OrderSuccess,
+      },
+      {
+        path: '/canceled',
+        name: 'OrderCanceled',
+        component: OrderCanceled,
+      },
 
 ]
 

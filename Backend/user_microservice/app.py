@@ -65,7 +65,7 @@ def get_all():
 
 #get user by UserID
 @app.route("/user/<int:UserID>")
-def find_by_isbn13(UserID):
+def find_user(UserID):
     user = db.session.scalars(
     	db.select(User).filter_by(UserID=UserID).
     	limit(1)

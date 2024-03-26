@@ -1,133 +1,132 @@
-<template>
-    <nav class="navbar">
-      <div class="brand">
-        <router-link to="/">
-          <img src="/src/assets/pool_service_logo.png" class="h-14 mr-4 rounded-3xl" alt="PoolService Logo" />
-        </router-link>
-      </div>
-      <button data-collapse-toggle="navbar-multi-level" type="button"
-              class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-200 rounded-lg lg:hidden hover:bg-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-500"
-              aria-controls="navbar-multi-level" aria-expanded="false">
-        <span class="sr-only">Open main menu</span>
-        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M1 1h15M1 7h15M1 13h15" />
-        </svg>
-      </button>
-      <div class="hidden w-full lg:block lg:w-auto" id="navbar-multi-level">
-        <ul class="menu">
-          <li>
-            <div>
-              <label for="nav-search" class="mb-2 text-xs font-medium text-gray-900 sr-only dark:text-white">Search</label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                  </svg>
-                </div>
-                <input type="search" id="nav-search" v-model="to_search" v-on:keyup="check()" placeholder='Search Experiences!' class="block w-full p-2 pl-8 pr-12 mx10 text-xs text-gray-900 border border-slate-900 rounded-lg bg-grey-200" required>
-                <button @click="search()" class="text-white absolute right-1 bottom-1 bg-neutral-400 hover:bg-neutral-500 focus:ring-4 focus:outline-none focus:ring-[#50A060] font-xsmall rounded-md text-xs px-1 py-1">Search</button>
-              </div>
-            </div>
-          </li>
-          <li>
-            <router-link to="/" class="block py-2 pl-3 pr-4 text-white rounded hover:bg-neutral-500 md:hover:bg-transparent md:hover:text-[#50A060] md:p-0" aria-current="page">Home</router-link>
-          </li>
-          <li>
-            <router-link to="/cart" class="block py-2 pl-3 pr-4 text-white rounded hover:bg-neutral-500 md:hover:bg-transparent md:border-0 md:hover:text-[#50A060] md:p-0">Listings</router-link>
-          </li>
-          <li>
-            <router-link to="/itinerary" class="block py-2 pl-3 text-white rounded hover:bg-neutral-500 md:hover:bg-transparent md:border-0 md:hover:text-[#50A060] md:p-0">Itinerary</router-link>
-          </li>
-          <li>
-            <router-link to="/favourites" class="block py-2 pl-3 text-white rounded hover:bg-neutral-500 md:hover:bg-transparent md:border-0 md:hover:text-[#50A060] md:p-0">Favourites</router-link>
-          </li>
-          <li>
-            <button id="dropdownNavbarLink" data-dropdown-toggle="dropdownNavbar" class="flex items-center justify-between w-full py-2 pl-3 pr-4 text-white border border-gray-100 hover:bg-[#50A060] md:hover:bg-transparent md:border-0 md:hover:text-[#50A060] md:p-0 md:w-auto">
-              <img src="/src/assets/User Profile Icon.png" />
-              <svg class="w-2.5 h-2.5 ml-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
-              </svg>
-            </button>
-            <!-- Dropdown menu -->
-            <div id="dropdownNavbar" class="z-10 hidden font-normal bg-white divide-y">
-            <ul class="py-2 text-sm text-gray-700 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
-              <li>
-                <SignOutButton to="/login" :isUserSignedIn="isUserSignedIn" @signOut="handleSignOut" class="block px-4 py-2 text-sm text-gray-700 hover:bg-emerald-700 dark:hover:bg-gray-600 dark:text-gray-400 hover:text-white">
-                  {{ isUserSignedIn ? 'Sign Out' : 'Sign In' }}
-                </SignOutButton>
-              </li>
-            </ul>
+<template> 
+  <div class="container mx-auto p-4"> 
+    <h1 class="text-2xl font-bold mb-4">Pool List</h1> 
+    <div v-for="(pool, index) in pools" :key="index" class="border border-black rounded-md mb-4"> 
+      <div class="bg-white shadow-md rounded-md p-4"> 
+        <h2 class="text-lg font-semibold mb-2">{{ pool }}</h2>
+        <div class="flex justify-between mb-4">
+          <button @click="viewPool(poolName)" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+            View Pool
+          </button>
+        </div>
+        <div class="mb-4">
+          <p><strong>Pool Name:</strong> {{ pool.name }}</p>
+          <p><strong>Category:</strong> {{ pool.category }}</p>
+          <p><strong>Description:</strong> {{ pool.description }}</p>
+        </div>
+        <div class="mb-4">
+          <p><strong>Current Amount:</strong> ${{ pool.currentAmount }}</p>
+          <p><strong>Total Amount:</strong> ${{ pool.totalAmount }}</p>
+          <p><strong>Progress:</strong></p>
+          <div class="progress-bar-container">
+            <div class="progress-bar" :style="{ width: progressPercentage }"></div>
           </div>
-        </li>
-      </ul>
-    </div>
-  </nav>
+        </div>
+        <h2 class="mb-2">Transaction History</h2>
+        <ul>
+          <li v-for="transaction in transactions" :key="transaction.id">
+            {{ transaction.date }} - {{ transaction.amount }} - {{ transaction.description }}
+          </li>
+        </ul>
+      </div>
+    </div> 
+  </div> 
 </template>
 
-<script>
-import router from "../routes";
-import SignOutButton from "../components/SignOutButton.vue";
-import { ref } from "vue";
 
+
+ 
+
+  <!-- <div> 
+      <h1>HOME</h1> 
+      <button 
+                  type="button" 
+                  class="btn btn-primary btn-sm" 
+                  @click="handlePurchaseBook(book)"> 
+                  Purchase 
+                </button> 
+  </div> 
+  <h1>Add Components</h1>  -->
+
+
+
+<script> 
+import axios from 'axios';
 export default {
-  name: 'Navbar',
+  name: 'PoolPage',
   data() {
     return {
-      to_search: '',
-      isUserSignedIn: false
-    };
+      stripe: null,
+      pools: ['Pool 1', 'Pool 2', 'Pool 3'],
+      transactions: []
+    }
   },
-  created() {
-    // Check the user's sign-in status based on your authentication logic
-    // For example, if you're using Firebase Authentication:
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // User is signed in
-        this.isUserSignedIn = true;
-      } else {
-        // User is not signed in
-        this.isUserSignedIn = false;
-      }
-    });
+  computed: {
   },
   methods: {
-    check() {
-      console.log(this.to_search)
+    viewPool(poolName) { 
+      this.$router.push({ name: 'IndividualPoolPage', params: { poolName } });
+      console.log(`Viewing pool: ${poolName}`); 
     },
-    search() {
-      console.log("searching for: " + this.to_search)
-      const value = this.to_search
-      searchQuery.updatesearch(value)
-      const url = '/search/' + this.to_search
-      this.$router.push(url)
+    async fetchPoolDetails() {
+      try {
+        const response = await fetch('http://localhost:5005/Pool/1'); // Replace '1' with the actual pool ID
+        const data = await response.json();
+        if (response.ok) {
+          this.pools = data.data;
+        } else {
+          console.error('Failed to fetch pool details:', data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching pool details:', error);
+      }
     },
-    handleSignOut() {
-      // Perform sign-out logic here
-      signOut(auth)
-        .then(() => {
-          // Sign-out successful.
-          alert('Logged Out successfully!');
-          this.isUserSignedIn = false;
-          currentID.updateCurrentID('');
-          console.log('Logged Out UserID: ' + currentID.currentID)
-          currentUser.updateCurrentUser('', 'Anonymous');
-          console.log('Logged Out User ID: ' + currentUser.UserID)
-          console.log('Logged Out Username: ' + currentUser.UserName)
-          // Redirect user back to Log-In page
-          router.push('/login');
+    async fetchTransactionHistory() {
+      try {
+        const response = await fetch('http://localhost:5005/TransactionHistory/1'); // Replace '1' with the actual pool ID
+        const data = await response.json();
+        if (response.ok) {
+          this.transactions = data.data.transactions;
+        } else {
+          console.error('Failed to fetch transaction history:', data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching transaction history:', error);
+      }
+    },
+    getStripePublishableKey() {
+      fetch('http://localhost:4242/config')
+        .then((result) => result.json())
+        .then((data) => {
+          // Initialize Stripe.js
+          this.stripe = Stripe(data.publicKey);
+        });
+    },
+    handlePurchaseBook() {
+      // Get Checkout Session ID
+      fetch('http://127.0.0.1:4242/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ book_id: '2' }),
+      })
+        .then((result) => result.json())
+        .then((data) => {
+          console.log(data);
+          // Redirect to Stripe Checkout
+          return this.stripe.redirectToCheckout({ sessionId: data.sessionId });
         })
-        .catch((error) => {
-          // An error happened.
-          console.log(error);
-          const errorMessage = error.message;
-          alert(errorMessage);
+        .then((res) => {
+          console.log(res);
         });
     },
   },
-  components: {
-    SignOutButton
-  }
-};
+  components: {},
+  created() {
+    this.getStripePublishableKey();
+    this.fetchPoolDetails();
+    this.fetchTransactionHistory();
+  },
+}
 </script>
-<style></style>

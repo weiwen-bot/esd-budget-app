@@ -26,12 +26,13 @@ class User(db.Model):
     Email = db.Column(db.String(50), nullable=False)
     Password = db.Column(db.String(50), nullable=False)
 
-
     def __init__(self, UserName, PhoneNumber, Credits,Account_no,Email,Password):
+
         self.UserName = UserName
         self.PhoneNumber = PhoneNumber
         self.Credits = Credits
         self.Account_no = Account_no
+
         self.Email = Email
         self.Password = Password
 
@@ -46,6 +47,7 @@ class User(db.Model):
             "Account_no": self.Account_no,
             "Email": self.Email,
             "Password": self.Password
+
         }
 
 class PoolMapping(db.Model):
@@ -112,7 +114,7 @@ def get_all():
 
 #get user by UserID
 @app.route("/user/<int:UserID>")
-def find_by_isbn13(UserID):
+def find_user(UserID):
     user = db.session.scalars(
     	db.select(User).filter_by(UserID=UserID).
     	limit(1)

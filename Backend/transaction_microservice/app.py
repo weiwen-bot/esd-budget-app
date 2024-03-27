@@ -1,11 +1,12 @@
+
 import amqp_connection
 import json
+
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from os import environ
 from flask_cors import CORS
 from datetime import datetime
-
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/transaction'
@@ -168,7 +169,7 @@ def publish_transaction_message(transaction):
 
     channel.close()
     connection.close()
-    
+
     
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5007, debug=True)

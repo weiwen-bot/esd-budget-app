@@ -216,5 +216,5 @@ def publish_transaction_message(transaction):
 
     
 if __name__ == '__main__':
-  amqp_connection.create_connection()
+#   amqp_connection.create_connection()
   app.run(host='0.0.0.0', port=5003, debug=True)

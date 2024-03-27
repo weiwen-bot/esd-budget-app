@@ -82,21 +82,40 @@ services:
     ports:
       - "5004:5004"
 
+  ##################################
+  # noti: The noti microservice
+  ##################################
+  notification:
+    build:
+      context: ./notification_microservice
+      dockerfile: Dockerfile
+    image: weiwen2022/notification:esd_proj
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/notification
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5005:5005"
 
-  # ####################################
-  # # RabbitMQ: The messaging broker   
-  # ####################################
-  # rabbitmq:
-  #   image: rabbitmq:3-management
-  #   hostname: esd-rabbit
-  #   restart: always
-  #   ports:
-  #     - "5672:5672"
-  #     - "15672:15672"
-  #   volumes:
-  #     - ./rabbitmq.config:/etc/rabbitmq/rabbitmq.config
-  #     - ./rabbitmq_definitions.json:/etc/rabbitmq/rabbitmq_definitions.json
-  #     - rabbitmq_data:/var/lib/rabbitmq
+
+  ####################################
+  # RabbitMQ: The messaging broker   
+  ####################################
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: esd-rabbit
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./rabbitmq.config:/etc/rabbitmq/rabbitmq.config
+      - ./rabbitmq_definitions.json:/etc/rabbitmq/rabbitmq_definitions.json
+      - rabbitmq_data:/var/lib/rabbitmq
       
 
   ###############################################

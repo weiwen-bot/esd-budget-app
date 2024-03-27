@@ -5,3 +5,4 @@ RUN python -m pip install --no-cache-dir -r amqp.reqs.txt -r http.reqs.txt
 COPY ./notification.py ./amqp_connection.py ./invokes.py ./amqp_setup.py ./
 CMD [ "python", "./notification.py" ]
 
+

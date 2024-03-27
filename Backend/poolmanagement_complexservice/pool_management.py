@@ -22,6 +22,7 @@ def pool_management():
     # Pool ID and user ID is avaliable from request as UI page body contents from Post Request already defines this two things 
     if request.is_json:
         try:
+            #use dummy data for transaction data
             transaction_data = request.get_json()
             print("\nReceived a transaction in JSON:", transaction_data)
             #first call payment service 

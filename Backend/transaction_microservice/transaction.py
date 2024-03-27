@@ -1,7 +1,11 @@
+import amqp_connection
+import json
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from os import environ
 from flask_cors import CORS
+
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/transaction'
@@ -59,31 +63,50 @@ from uuid import uuid4
 from datetime import datetime
 
 @app.route("/transactions", methods=['POST'])
-def create_Transaction():
+def create_transaction():
     try:
         user_id = request.json.get('userID', None)
         pool_id = request.json.get('poolID', None)
-        amount = request.json.get( 'amount')
+        amount = request.json.get('amount')
         status = request.json.get('status')
 
         if not user_id or not pool_id:
                 return jsonify({'code': 400, 'message': 'Missing required fields: userID and poolID'}), 400
 
         transaction = Transaction(str(uuid4()), amount, status , datetime.utcnow(), user_id, pool_id)
-        
+
         db.session.add(transaction)
         db.session.commit()
-        return jsonify({'code': 201, 'data': transaction.json()}), 201
 
+        # Publish a message to the exchange
+        publish_transaction_message(transaction)
+
+        return jsonify({'code': 201, 'data': transaction.json()}), 201
 
     except Exception as e:
         app.logger.exception(f"Error creating transaction: {e}")
-        return jsonify(
-            {
-                "code": 500,
-                "message": "An error occurred while creating the Transaction. " + str(e)
-            }
-        ), 500
+        return jsonify({'code': 500, 'message': 'An error occurred while creating the Transaction. ' + str(e)}), 500
+
+@app.route("/transactions/<string:transaction_id>", methods=['DELETE'])
+def delete_transaction(transaction_id):
+
+    try:
+        transaction = Transaction.query.filter_by(transactionID=transaction_id).first()
+
+        if not transaction:
+            return jsonify({'code': 404, 'message': 'Transaction not found.'}), 404
+
+        db.session.delete(transaction)
+        db.session.commit()
+
+        # Publish a message to the exchange
+        publish_transaction_message(transaction)
+
+        return jsonify({'code': 200, 'message': 'Transaction deleted successfully.'}), 200
+
+    except Exception as e:
+        app.logger.exception(f"Error deleting transaction: {e}")
+        return jsonify({'code': 500, 'message': 'An error occurred while deleting the transaction.'}), 500
 
 @app.route("/Transaction/<string:Transaction_id>")
 def find_by_Transaction_id(Transaction_id):
@@ -105,23 +128,28 @@ def find_by_Transaction_id(Transaction_id):
         }
     ), 404
 
-@app.route("/transactions/<string:transaction_id>", methods=['DELETE'])
-def delete_transaction(transaction_id):
+def publish_transaction_message(transaction):
+    connection = amqp_connection.create_connection()
+    channel = connection.channel()
 
-    try:
-        transaction = Transaction.query.filter_by(transactionID=transaction_id).first()
+    exchange_name = 'Notification'
+    routing_key = 'transaction.created' if transaction.status == 'created' else 'transaction.deleted'
 
-        if not transaction:
-            return jsonify({'code': 404, 'message': 'Transaction not found.'}), 404
+    message = {
+        'transaction_id': transaction.transactionID,
+        'amount': transaction.amount,
+        'status': transaction.status,
+        'transaction_date': transaction.transactionDate.strftime('%Y-%m-%d %H:%M:%S'),
+        'user_id': transaction.userID,
+        'pool_id': transaction.poolID
+    }
+    msg = json.dumps(message)
+    channel.basic_publish(exchange=exchange_name, routing_key=routing_key, body=msg)
 
-        db.session.delete(transaction)
-        db.session.commit()
-        return jsonify({'code': 200, 'message': 'Transaction deleted successfully.'}), 200
-
-    except Exception as e:
-        app.logger.exception(f"Error deleting transaction: {e}")
-        return jsonify({'code': 500, 'message': 'An error occurred while deleting the transaction.'}), 500
+    channel.close()
+    connection.close()
     
     
 if __name__ == '__main__':
+    amqp_connection.create_connection()
     app.run(host='0.0.0.0', port=5000, debug=True)

@@ -46,15 +46,8 @@ CREATE TABLE IF NOT EXISTS `User` (
 CREATE TABLE IF NOT EXISTS `poolmapping` (
   `PoolID` int(11) NOT NULL,
   `UserID` int(11) NOT NULL,
-  PRIMARY KEY (`PoolID`, `UserID`),
-)
+  PRIMARY KEY (`PoolID`, `UserID`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Insert sample data into PoolMapping table
-INSERT INTO `poolmapping` (`PoolID`, `UserID`)
-VALUES 
-(1, 1),
-(1, 2),
-(2, 2),
-(3, 2);
 
 COMMIT;

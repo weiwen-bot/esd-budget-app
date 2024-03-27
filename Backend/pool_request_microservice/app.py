@@ -75,6 +75,19 @@ def create_poolrequest():
             return jsonify({"code": 400, "message": "Pool request already exists."}), 400
     except Exception as e:
             return jsonify({"code": 500, "data": data, "message": "An error occurred updating the pool_request.", "error":str(e)}), 500
+    
+
+@app.route("/pool_request/multiple",methods=['POST'])
+def create_mul_poolrequest():
+    try:
+        data = request.get_json()
+        for invite in data:
+            pool_requests = pool_request(invite['userid'],invite['poolid'],'pending')
+            db.session.add(pool_requests)
+        db.session.commit()
+        return jsonify({"code": 201, "data": data})
+    except Exception as e:
+        return jsonify({"code": 500, "data": data, "message": "An error occurred updating the pool_request.", "error":str(e)}), 500
 
 #accept or decline friend request
 @app.route("/pool_request",methods=['PUT'])

@@ -74,7 +74,7 @@ def create_Transaction():
         db.session.add(transaction)
         
         db.session.commit()
-        return jsonify({'code': 201, 'data': data}), 201
+        return jsonify({'code': 201, 'data': transaction.json()}), 201
 
 
     except Exception as e:

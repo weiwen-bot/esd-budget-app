@@ -19,6 +19,8 @@ class Pool(db.Model):
 
     PoolID = db.Column(db.Integer, primary_key=True,autoincrement=True)
     DateCreation = db.Column(db.Date,nullable=False, default=datetime.now)
+    pool_name = db.Column(db.String(50), nullable=False)
+    pool_desc = db.Column(db.String(50), nullable=False)
     Expiry_Date = db.Column(db.Date, nullable=False)
     Current_amount = db.Column(db.Float, nullable=False)
     Budget = db.Column(db.Float, nullable=False)
@@ -26,18 +28,22 @@ class Pool(db.Model):
     UserID = db.Column(db.Integer, nullable=False)
     Status = db.Column(db.String(36), nullable=False)
 
-    def __init__(self,Expiry_Date, Current_amount, Budget, Pool_Type, UserID, Status):
+    def __init__(self,pool_name,pool_desc,Expiry_Date, Current_amount, Budget, Pool_Type, UserID, Status):
         self.Expiry_Date = Expiry_Date
         self.Current_amount = Current_amount
         self.Budget = Budget
         self.Pool_Type = Pool_Type
         self.UserID = UserID
         self.Status = Status
+        self.pool_name = pool_name
+        self.pool_desc = pool_desc
 
     def json(self):
         return {
             "PoolID": self.PoolID,
             "DateCreation": self.DateCreation,
+            'pool_name': self.pool_name,
+            'pool_desc': self.pool_desc,
             "Expiry_Date": self.Expiry_Date,
             "Current_amount": self.Current_amount,
             "Budget": self.Budget,
@@ -61,7 +67,7 @@ def create_pool():
         return jsonify({"code": 201, "data": new_pool.json()}), 201
     except Exception as e:
         print(e)
-        return jsonify({"code": 500, "data": data, "message": "An error occurred creating the pool."}), 500
+        return jsonify({"code": 500, "data": data, "message": str(e)}), 500
 
 # API endpoint to update an existing pool
 @app.route("/Pool/<int:PoolID>", methods=['PUT'])

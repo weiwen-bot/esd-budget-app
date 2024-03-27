@@ -66,13 +66,14 @@ export default {
     },
     async makePayment() {
       try {
-        const response = await fetch('http://localhost:5005/MakePayment', {
+        const response = await fetch('http://localhost:5100/pool_management', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             poolID: 1, // Replace '1' with the actual pool ID
+            userID: 1, // User ID = 1 
             amount: 100 // Replace '100' with the actual payment amount
           })
         });

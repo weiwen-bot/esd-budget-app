@@ -24,16 +24,3 @@ VALUES
 ('2024-03-22', 300.00, 800.00, 'Family', 2, 'Inactive');
 
 
-CREATE TABLE IF NOT EXISTS `poolmapping` (
-  `PoolID` int(11) NOT NULL,
-  `UserID` int(11) NOT NULL,
-  PRIMARY KEY (`PoolID`, `UserID`),
-)
-
--- Insert sample data into PoolMapping table
-INSERT INTO `poolmapping` (`PoolID`, `UserID`)
-VALUES 
-(1, 1),
-(1, 2),
-(2, 2),
-(3, 2);

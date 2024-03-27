@@ -5,7 +5,7 @@ from flask_cors import CORS
 from datetime import datetime
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/transaction'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 
@@ -144,6 +144,50 @@ def delete_transaction(transaction_id):
         app.logger.exception(f"Error deleting transaction: {e}")
         return jsonify({'code': 500, 'message': 'An error occurred while deleting the transaction.'}), 500
     
+
+#get transaction by pool
+@app.route("/transactions/pool/<int:poolID>")
+def get_Transactions_By_Pool(poolID):
+    transactionlist = db.session.scalars(db.select(Transaction).filter_by(poolID=poolID)).all()
+
+    if len(transactionlist) > 0:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "transactions": [transaction.json() for transaction in transactionlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "No Transactions Found."
+        }
+    ), 404
+
+#get transaction by user
+@app.route("/transactions/user/<int:userID>")
+def get_Transactions_By_User(userID):
+    transactionlist = db.session.scalars(db.select(Transaction).filter_by(userID=userID)).all()
+
+    if len(transactionlist) > 0:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "transactions": [transaction.json() for transaction in transactionlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "No Transactions Found."
+        }
+    ), 404
+
+
     
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5007, debug=True)
+    app.run(host='0.0.0.0', port=5003, debug=True)

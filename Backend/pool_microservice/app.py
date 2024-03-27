@@ -7,7 +7,7 @@ from datetime import datetime
 app = Flask(__name__)
 
 # Configure SQLAlchemy to use the provided database URL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/pool'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy
@@ -47,21 +47,7 @@ class Pool(db.Model):
         }
 
 
-class PoolMapping(db.Model):
-    __tablename__ = 'poolmapping'
 
-    PoolID = db.Column(db.Integer, primary_key=True)
-    UserID = db.Column(db.Integer, primary_key=True)
-
-    def __init__(self, PoolID, UserID):
-        self.PoolID = PoolID
-        self.UserID = UserID
-
-    def json(self):
-        return {
-            "PoolID": self.PoolID,
-            "UserID": self.UserID
-        }
 
 # API endpoint to create a new pool
 @app.route("/Pool", methods=['POST'])
@@ -128,4 +114,4 @@ def delete_pool(PoolID):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5005, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)

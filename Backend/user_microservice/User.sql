@@ -31,6 +31,8 @@ CREATE TABLE IF NOT EXISTS `User` (
   `PhoneNumber` varchar(20) NOT NULL,
   `Credits` decimal(10,5) NOT NULL,
   `Account_no` varchar(20) NOT NULL,
+  `Email` varchar(50) NOT NULL,
+  `Password` varchar(50) NOT NULL,
   PRIMARY KEY (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -40,5 +42,12 @@ CREATE TABLE IF NOT EXISTS `User` (
 
 -- No data is inserted initially for the 'User' table.
 -- You can insert data as needed using INSERT INTO statements.
+
+CREATE TABLE IF NOT EXISTS `poolmapping` (
+  `PoolID` int(11) NOT NULL,
+  `UserID` int(11) NOT NULL,
+  PRIMARY KEY (`PoolID`, `UserID`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 COMMIT;

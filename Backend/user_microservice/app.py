@@ -4,8 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/user'
+from os import environ
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
@@ -23,13 +23,19 @@ class User(db.Model):
     Credits = db.Column(db.DECIMAL(10, 5), nullable=False)
     # Can store both numeric and alphabetical characters
     Account_no = db.Column(db.String(20), nullable=False)
+    Email = db.Column(db.String(50), nullable=False)
+    Password = db.Column(db.String(50), nullable=False)
 
-    def __init__(self, UserName, PhoneNumber, Credits, Account_no, Password):
+    def __init__(self, UserName, PhoneNumber, Credits,Account_no,Email,Password):
+
         self.UserName = UserName
         self.PhoneNumber = PhoneNumber
         self.Credits = Credits
         self.Account_no = Account_no
+
+        self.Email = Email
         self.Password = Password
+
 
 
     def json(self):
@@ -39,9 +45,50 @@ class User(db.Model):
             "PhoneNumber": self.PhoneNumber,
             "Credits": float(self.Credits),  
             "Account_no": self.Account_no,
-            "Password": self.Password,
+            "Email": self.Email,
+            "Password": self.Password
+
         }
 
+class PoolMapping(db.Model):
+    __tablename__ = 'poolmapping'
+
+    PoolID = db.Column(db.Integer, primary_key=True)
+    UserID = db.Column(db.Integer, primary_key=True)
+
+    def __init__(self, PoolID, UserID):
+        self.PoolID = PoolID
+        self.UserID = UserID
+
+    def json(self):
+        return {
+            "PoolID": self.PoolID,
+            "UserID": self.UserID
+        }
+
+
+#Login function
+@app.route("/login", methods=['POST'])
+def login():
+    data = request.get_json()
+    user = db.session.scalars(
+        db.select(User).filter_by(UserName=data['UserName'], Password=data['Password']).
+        limit(1)
+    ).first()
+
+    if user:
+        return jsonify(
+            {
+                "code": 200,
+                "data": user.json()
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "User not found."
+        }
+    ), 404
 
 #get all users
 @app.route("/user")
@@ -211,7 +258,7 @@ def delete_user(UserID):
     ), 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=5006, debug=True)
+    app.run(host='0.0.0.0',port=5004, debug=True)
 
 
     

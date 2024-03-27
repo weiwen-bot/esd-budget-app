@@ -5,7 +5,11 @@ import OrderCanceled from '../components/OrderCanceled.vue'
 import OrderSuccess from '../components/OrderSuccess.vue'
 import Login from "../pages/Login.vue"
 import IndividualPoolPage from "../pages/IndividualPoolPage.vue"
+import PoolFormCreation from "../pages/PoolFormCreation.vue"
+import Register from "../pages/Register.vue"
+import PoolInvite from "../pages/PoolInvite.vue"
 import OwnerPoolPage from "../pages/OwnerPoolPage.vue"
+
 
 
 const routes =[
@@ -14,6 +18,22 @@ const routes =[
         name:"PoolPage",
         component: PoolPage,
     },
+    {
+      path: "/register",
+      name: "Register",
+      component: Register,
+    },
+    {
+      path: "/poolinvite",
+      name: "PoolInvite",
+      component: PoolInvite,
+    },
+    {
+      path: "/poolcreation",
+      name: "PoolFormCreation",
+      component: PoolFormCreation,
+    },
+    
     {
       path: "/login",
       name: "Login",

@@ -103,7 +103,7 @@ def process_payment(transaction_data):
     # 2. Send the order info {cart items} 
     # Invoke the order microservice 
     print('\n-----Invoking order microservice-----') 
-    payment = invoke_http(payment_url, method='POST', json=transaction_data) 
+    payment = invoke_http(payment_service_URL, method='POST', json=transaction_data) 
     payment_status = payment['status'] 
     if payment_status == 'success': 
         return { 
@@ -120,84 +120,6 @@ def process_payment(transaction_data):
             }, 
             "message": "Payment creation failure sent for error handling." 
         }
-
-
-
-
-
-""" def processPlaceOrder(order):
-    # 2. Send the order info {cart items}
-    # Invoke the order microservice
-    print('\n-----Invoking order microservice-----')
-    order_result = invoke_http(order_URL, method='POST', json=order)
-    print('order_result:', order_result)
-
-
-    # 4. Record new order
-    # record the activity log anyway
-    print('\n\n-----Invoking activity_log microservice-----')
-    invoke_http(activity_log_URL, method="POST", json=order_result)
-    print("\nOrder sent to activity log.\n")
-    # - reply from the invocation is not used;
-    # continue even if this invocation fails
-
-    # Check the order result; if a failure, send it to the error microservice.
-    code = order_result["code"]
-    if code not in range(200, 300):
-
-        # Inform the error microservice
-        print('\n\n-----Invoking error microservice as order fails-----')
-        invoke_http(error_URL, method="POST", json=order_result)
-        # - reply from the invocation is not used; 
-        # continue even if this invocation fails
-        print("Order status ({:d}) sent to the error microservice:".format(
-            code), order_result)
-
-        # 7. Return error
-        return {
-            "code": 500,
-            "data": {"order_result": order_result},
-            "message": "Order creation failure sent for error handling."
-        }
-
-
-    # 5. Send new order to shipping
-    # Invoke the shipping record microservice
-    print('\n\n-----Invoking shipping_record microservice-----')
-    shipping_result = invoke_http(
-        shipping_record_URL, method="POST", json=order_result['data'])
-    print("shipping_result:", shipping_result, '\n')
-
-    # Check the shipping result; 
-    # if a failure, send it to the error microservice.
-    code = shipping_result["code"]
-    if code not in range(200, 300):
-
-        # Inform the error microservice
-        print('\n\n-----Invoking error microservice as shipping fails-----')
-        invoke_http(error_URL, method="POST", json=shipping_result)
-        print("Shipping status ({:d}) sent to the error microservice:".format(
-            code), shipping_result)
-
-        # 7. Return error
-        return {
-            "code": 400,
-            "data": {
-                "order_result": order_result,
-                "shipping_result": shipping_result
-            },
-            "message": "Simulated shipping record error sent for error handling."
-        }
-
-    # 7. Return created order, shipping record
-    return {
-        "code": 201,
-        "data": {
-            "order_result": order_result,
-            "shipping_result": shipping_result
-        }
-    } """
-
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for placing an order...")
     app.run(host="0.0.0.0", port=5100, debug=True)

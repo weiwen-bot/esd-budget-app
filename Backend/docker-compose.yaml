@@ -12,7 +12,7 @@ services:
     build:
       context: ./payment_microservice
       dockerfile: Dockerfile
-    image: weiwen2022/payment:esd_proj
+    image: fsorange/payment:esd_proj
     restart: always
     environment:
       PYTHONUNBUFFERED: 1
@@ -29,7 +29,7 @@ services:
     build:
       context: ./pool_microservice
       dockerfile: Dockerfile
-    image: weiwen2022/pool:esd_proj
+    image: fsorange/pool:esd_proj
     restart: always
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/pool
@@ -44,7 +44,7 @@ services:
     build:
       context: ./pool_request_microservice
       dockerfile: Dockerfile
-    image: weiwen2022/pool_request:esd_proj
+    image: fsorange/pool_request:esd_proj
     restart: always
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/pool_request
@@ -59,7 +59,7 @@ services:
     build:
       context: ./transaction_microservice
       dockerfile: Dockerfile
-    image: weiwen2022/transaction:esd_proj
+    image: fsorange/transaction:esd_proj
     restart: always
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/transaction
@@ -74,7 +74,7 @@ services:
     build:
       context: ./user_microservice
       dockerfile: Dockerfile
-    image: weiwen2022/user:esd_proj
+    image: fsorange/user:esd_proj
     restart: always
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/user
@@ -106,7 +106,7 @@ services:
     build:
       context: ./poolmanagement_complexservice
       dockerfile: Dockerfile
-    image: weiwen2022/pool_management:esd
+    image: fsorange/pool_management:esd
     restart: always
     depends_on:
       - user

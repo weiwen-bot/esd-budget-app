@@ -5,6 +5,7 @@ import OrderCanceled from '../components/OrderCanceled.vue'
 import OrderSuccess from '../components/OrderSuccess.vue'
 import Login from "../pages/Login.vue"
 import IndividualPoolPage from "../pages/IndividualPoolPage.vue"
+import OwnerPoolPage from "../pages/OwnerPoolPage.vue"
 
 
 const routes =[
@@ -22,6 +23,11 @@ const routes =[
       path: "/ipp",
       name: "IndividualPoolPage",
       component: IndividualPoolPage,
+    },
+    {
+      path: "/opp",
+      name: "OwnerPoolPage",
+      component: OwnerPoolPage,
     },
     {
         path: '/success',

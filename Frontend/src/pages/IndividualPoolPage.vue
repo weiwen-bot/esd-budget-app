@@ -1,31 +1,28 @@
 <template>
+  <div>
+    <h1>Pool Details</h1>
     <div>
-      <h1>Pool Details</h1>
-      <div v-if="pool">
-        <p><strong>Pool Name:</strong> {{ pool.name }}</p>
-        <p><strong>Category:</strong> {{ pool.category }}</p>
-        <p><strong>Description:</strong> {{ pool.description }}</p>
-        <div>
-          <p><strong>Current Amount:</strong> ${{ pool.currentAmount }}</p>
-          <p><strong>Total Amount:</strong> ${{ pool.totalAmount }}</p>
-          <p><strong>Progress:</strong></p>
-          <div class="progress-bar-container">
-            <div class="progress-bar" :style="{ width: progressPercentage }"></div>
-          </div>
+      <p><strong>Pool Name:</strong> {{ pool && pool.name }}</p>
+      <p><strong>Category:</strong> {{ pool && pool.category }}</p>
+      <p><strong>Description:</strong> {{ pool && pool.description }}</p>
+      <div>
+        <p><strong>Current Amount:</strong> ${{ pool && pool.currentAmount }}</p>
+        <p><strong>Total Amount:</strong> ${{ pool && pool.totalAmount }}</p>
+        <p><strong>Progress:</strong></p>
+        <div class="progress-bar-container">
+          <div class="progress-bar" :style="{ width: progressPercentage }"></div>
         </div>
-        <h2>Transaction History</h2>
-        <ul>
-          <li v-for="transaction in transactions" :key="transaction.id">
-            {{ transaction.date }} - {{ transaction.amount }} - {{ transaction.description }}
-          </li>
-        </ul>
-        <button @click="makePayment">Make Payment</button>
       </div>
-      <div v-else>
-        <p>Loading...</p>
-      </div>
+      <h2>Transaction History</h2>
+      <ul>
+        <li v-for="transaction in transactions" :key="transaction.id">
+          {{ transaction.date }} - {{ transaction.amount }} - {{ transaction.description }}
+        </li>
+      </ul>
+      <button @click="makePayment">Make Payment</button>
     </div>
-  </template>
+  </div>
+</template>
   
   <script>
 export default {

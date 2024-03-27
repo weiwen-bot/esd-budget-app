@@ -24,11 +24,12 @@ class User(db.Model):
     # Can store both numeric and alphabetical characters
     Account_no = db.Column(db.String(20), nullable=False)
 
-    def __init__(self, UserName, PhoneNumber, Credits,Account_no):
+    def __init__(self, UserName, PhoneNumber, Credits, Account_no, Password):
         self.UserName = UserName
         self.PhoneNumber = PhoneNumber
         self.Credits = Credits
         self.Account_no = Account_no
+        self.Password = Password
 
 
     def json(self):
@@ -37,7 +38,8 @@ class User(db.Model):
             "UserName": self.UserName,
             "PhoneNumber": self.PhoneNumber,
             "Credits": float(self.Credits),  
-            "Account_no": self.Account_no
+            "Account_no": self.Account_no,
+            "Password": self.Password,
         }
 
 

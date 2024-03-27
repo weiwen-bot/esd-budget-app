@@ -39,14 +39,7 @@
     "policies": [],
     "queues": [
         {
-            "name": "Activity_Log",
-            "vhost": "/",
-            "durable": true,
-            "auto_delete": false,
-            "arguments": {}
-        },
-        {
-            "name": "Error",
+            "name": "Notification",
             "vhost": "/",
             "durable": true,
             "auto_delete": false,
@@ -55,7 +48,7 @@
     ],
     "exchanges": [
         {
-            "name": "order_topic",
+            "name": "Notification",
             "vhost": "/",
             "type": "topic",
             "durable": true,
@@ -78,7 +71,7 @@
             "vhost": "/",
             "destination": "Error",
             "destination_type": "queue",
-            "routing_key": "*.error",
+            "routing_key": "#",
             "arguments": {}
         }
     ]

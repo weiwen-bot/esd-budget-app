@@ -1,3 +1,7 @@
+
+import amqp_connection
+import json
+
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from os import environ
@@ -144,6 +148,28 @@ def delete_transaction(transaction_id):
         app.logger.exception(f"Error deleting transaction: {e}")
         return jsonify({'code': 500, 'message': 'An error occurred while deleting the transaction.'}), 500
     
+
+def publish_transaction_message(transaction):
+    connection = amqp_connection.create_connection()
+    channel = connection.channel()
+
+    exchange_name = 'Notification'
+    routing_key = 'transaction.created' if transaction.status == 'created' else 'transaction.deleted'
+
+    message = {
+        'transaction_id': transaction.transactionID,
+        'amount': transaction.amount,
+        'status': transaction.status,
+        'transaction_date': transaction.transactionDate.strftime('%Y-%m-%d %H:%M:%S'),
+        'user_id': transaction.userID,
+        'pool_id': transaction.poolID
+    }
+    msg = json.dumps(message)
+    channel.basic_publish(exchange=exchange_name, routing_key=routing_key, body=msg)
+
+    channel.close()
+    connection.close()
+
     
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5007, debug=True)

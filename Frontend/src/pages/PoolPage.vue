@@ -33,6 +33,17 @@
       </div> 
     </div>
   </div> 
+  
+  <div> 
+      <h1>HOME</h1> 
+      <button 
+                  type="button" 
+                  class="btn btn-primary btn-sm" 
+                  @click="handlePurchaseBook(book)"> 
+                  Purchase 
+                </button> 
+  </div> 
+  <h1>Add Components</h1> 
 </template>
 
 
@@ -48,16 +59,6 @@ Status = db.Column(db.String(36), nullable=False) -->
 
  
 
-  <!-- <div> 
-      <h1>HOME</h1> 
-      <button 
-                  type="button" 
-                  class="btn btn-primary btn-sm" 
-                  @click="handlePurchaseBook(book)"> 
-                  Purchase 
-                </button> 
-  </div> 
-  <h1>Add Components</h1>  -->
 
 
 

@@ -3,6 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 from os import environ
 from sqlalchemy.sql import func
 from datetime import datetime
+from flask_cors import CORS 
+import amqp_connection
+import pika
+import json
 
 app = Flask(__name__)
 
@@ -10,15 +14,19 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+poolmap_queue = environ.get('poolmap_queue') or 'pool_mapping'
+
 # Initialize SQLAlchemy
 db = SQLAlchemy(app)
+
+CORS(app)
 
 # Define the Pool model
 class Pool(db.Model):
     __tablename__ = 'pool'
 
     PoolID = db.Column(db.Integer, primary_key=True,autoincrement=True)
-    DateCreation = db.Column(db.Date,nullable=False, default=datetime.now)
+    DateCreation = db.Column(db.DateTime,nullable=False, default=datetime.now)
     pool_name = db.Column(db.String(50), nullable=False)
     pool_desc = db.Column(db.String(50), nullable=False)
     Expiry_Date = db.Column(db.Date, nullable=False)
@@ -52,6 +60,21 @@ class Pool(db.Model):
             "Status": self.Status
         }
 
+class PoolMapping(db.Model):
+    __tablename__ = 'poolmapping'
+
+    PoolID = db.Column(db.Integer, primary_key=True)
+    UserID = db.Column(db.Integer, primary_key=True)
+
+    def __init__(self, PoolID, UserID):
+        self.PoolID = PoolID
+        self.UserID = UserID
+
+    def json(self):
+        return {
+            "PoolID": self.PoolID,
+            "UserID": self.UserID
+        }
 
 
 
@@ -115,7 +138,7 @@ def delete_pool(PoolID):
             return jsonify({"code": 500, "message": "An error occurred deleting the pool.", "error": str(e)}), 500
     return jsonify({"code": 404, "message": "Pool not found."}), 404
 
-# API endpoint to get all pools by UserID
+
 
 
 

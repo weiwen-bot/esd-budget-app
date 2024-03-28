@@ -1,5 +1,6 @@
 <template>
     <div>
+        <p class="text-blue-600">The quick brown fox...</p>
         <h1>HOME</h1>
         <button
                     type="button"
@@ -38,8 +39,11 @@ export default {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Expose-Headers':'*'
         },
-        body: JSON.stringify({ book_id: '2' }),
+        // mode: "no-cors",
+        body: JSON.stringify({ "book_id": '2','heelo':22}),
       })
         .then((result) => result.json())
         .then((data) => {

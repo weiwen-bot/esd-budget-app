@@ -25,6 +25,5 @@ CREATE TABLE IF NOT EXISTS `poolmapping` (
   `PoolID` int(11) NOT NULL,
   `UserID` int(11) NOT NULL,
   PRIMARY KEY (`PoolID`, `UserID`)
-);
-
+)
 

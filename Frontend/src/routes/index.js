@@ -9,7 +9,7 @@ import PoolFormCreation from "../pages/PoolFormCreation.vue"
 import Register from "../pages/Register.vue"
 import PoolInvite from "../pages/PoolInvite.vue"
 import OwnerPoolPage from "../pages/OwnerPoolPage.vue"
-import Home from "../pages/Home.vue"
+import HomePage from "../pages/Home.vue"
 
 
 
@@ -23,6 +23,11 @@ const routes =[
         path:"/",
         name:"PoolPage",
         component: PoolPage,
+    },
+    {
+      path:"/home",
+      name:"HomePage",
+      component: HomePage,
     },
     {
       path: "/register",

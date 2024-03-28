@@ -18,11 +18,11 @@ import stripe
 
 
 from flask import Flask, jsonify, request
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
 
-
+# CORS(app)
 stripe_keys = {
     "secret_key": os.environ["STRIPE_SECRET_KEY"],
     "webhook_secret": os.environ["WEB_HOOK_SECRET"],
@@ -67,7 +67,8 @@ def create_checkout_session():
     domain_url = "http://127.0.0.1:5174"
     stripe.api_key = stripe_keys["secret_key"]
 
-    
+    data = json.loads(request.data)
+    print(data)
 
     try:
         # Create new Checkout Session for the order

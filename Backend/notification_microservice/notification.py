@@ -31,7 +31,7 @@ class Notification(db.Model):
     def __init__(self, notification_type, sender_id, receiver_id, message, status):
         self.notificationID = str(uuid.uuid4())
         self.notificationType = notification_type
-        self.senderID = sender_id
+        self.senderID = sender_id   
         self.receiverID = receiver_id
         self.message = message
         self.status = status

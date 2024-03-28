@@ -2,15 +2,15 @@
   <div>
     <h1>Pool Details</h1>
     <div>
-      <p><strong>Pool Name:</strong> {{ pool && pool.name }}</p>
-      <p><strong>Category:</strong> {{ pool && pool.category }}</p>
-      <p><strong>Description:</strong> {{ pool && pool.description }}</p>
+      <p><strong>Pool Name:</strong> {{ pool.pool_name }}</p>
+      <p><strong>Category:</strong> {{ pool.Pool_Type }}</p>
+      <p><strong>Description:</strong> {{ pool.pool_desc }}</p>
       <div>
-        <p><strong>Current Amount:</strong> ${{ pool && pool.currentAmount }}</p>
-        <p><strong>Total Amount:</strong> ${{ pool && pool.totalAmount }}</p>
+        <p><strong>Current Amount:</strong> ${{ pool.Current_amount }}</p>
+        <p><strong>Total Amount:</strong> ${{ pool.Budget }}</p>
         <p><strong>Progress:</strong></p>
         <div class="progress-bar-container">
-          <div class="progress-bar" :style="{ width: progressPercentage }"></div>
+          <div class="progress-bar" :style="{ width: progressPercentage() }"></div>
         </div>
       </div>
       <h2>Transaction History</h2>
@@ -38,9 +38,15 @@ export default {
     this.fetchTransactionHistory();
   },
   methods: {
+    progressPercentage() {
+      if (this.pool) {
+        return `${(this.pool.pool_Current_amount / this.pool.Budget) * 100}%`;
+      }
+      return '0%';
+    },
     async fetchPoolDetails() {
       try {
-        const response = await fetch('http://localhost:5005/Pool/1'); // Replace '1' with the actual pool ID
+        const response = await fetch('http://localhost:8000/pool/2'); // Replace '2' with the actual pool ID
         const data = await response.json();
         if (response.ok) {
           this.pool = data.data;
@@ -72,7 +78,7 @@ export default {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            poolID: 1, // Replace '1' with the actual pool ID
+            poolID: 2, // Replace '2' with the actual pool ID
             userID: 1, // User ID = 1 
             amount: 100 // Replace '100' with the actual payment amount
           })

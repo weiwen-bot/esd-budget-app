@@ -1,4 +1,3 @@
-
 import { createRouter, createWebHistory } from 'vue-router'
 import PoolPage from "../pages/PoolPage.vue";
 import OrderCanceled from '../components/OrderCanceled.vue'

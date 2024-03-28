@@ -1,4 +1,4 @@
--- Create database for Pool
+-- Create database for Pool Request
 CREATE SCHEMA IF NOT EXISTS `pool_request`;
 
 -- Use the Pool database

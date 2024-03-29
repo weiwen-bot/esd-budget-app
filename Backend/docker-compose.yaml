@@ -12,7 +12,7 @@ services:
     build:
       context: ./payment_microservice
       dockerfile: Dockerfile
-    image: weiwen2022/payment:esd_proj
+    image: limchengkhee/payment:esd_proj
     restart: always
     environment:
       PYTHONUNBUFFERED: 1
@@ -29,7 +29,7 @@ services:
     build:
       context: ./pool_microservice
       dockerfile: Dockerfile
-    image: weiwen2022/pool:esd_proj
+    image: limchengkhee/pool:esd_proj
     restart: always
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/pool
@@ -44,7 +44,7 @@ services:
     build:
       context: ./pool_request_microservice
       dockerfile: Dockerfile
-    image: weiwen2022/pool_request:esd_proj
+    image: limchengkhee/pool_request:esd_proj
     restart: always
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/pool_request
@@ -59,7 +59,7 @@ services:
     build:
       context: ./transaction_microservice
       dockerfile: Dockerfile
-    image: weiwen2022/transaction:esd_proj
+    image: limchengkhee/transaction:esd_proj
     restart: always
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/transaction
@@ -74,7 +74,7 @@ services:
     build:
       context: ./user_microservice
       dockerfile: Dockerfile
-    image: weiwen2022/user:esd_proj
+    image: limchengkhee/user:esd_proj
     restart: always
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/user
@@ -89,7 +89,7 @@ services:
     build:
       context: ./notification_microservice
       dockerfile: Dockerfile
-    image: weiwen2022/notification:esd_proj
+    image: limchengkhee/notification:esd_proj
     restart: always
     depends_on:
       - rabbitmq
@@ -125,7 +125,7 @@ services:
     build:
       context: ./poolmanagement_complexservice
       dockerfile: Dockerfile
-    image: weiwen2022/pool_management:esd
+    image: limchengkhee/pool_management:esd
     restart: always
     depends_on:
       - user

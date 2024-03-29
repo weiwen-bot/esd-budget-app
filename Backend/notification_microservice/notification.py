@@ -59,7 +59,7 @@ def receiveNotification():
 
             # Bind the queue to the exchange
             exchange_name = 'Notification'
-            channel.queue_bind(exchange=exchange_name, queue=e_queue_name, routing_key='#')
+            channel.queue_bind(exchange=exchange_name, queue=e_queue_name, routing_key='notification')
 
             def callback(channel, method, properties, body):
                 print(json.loads(body), "hello")

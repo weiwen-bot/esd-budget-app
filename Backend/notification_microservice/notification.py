@@ -132,18 +132,34 @@ def get_notifications():
 #         db.session.rollback()
 #         print(f"Error posting notification:")
 #         return jsonify({'success': False, 'message': 'Error posting notification', 'error':  str(e)}), 500
-    
-@app.route('/notifications/<int:notification_id>', methods=['DELETE'])
-def delete_notification(notification_id):
-    notification = Notification.query.filter_by(notification_id=notification_id).first()
+
+#simple add notification
+# @app.route("/notifications", methods=['POST'])
+# def create_notification():
+#     data = request.get_json()
+#     new_notification = Notification(**data)
+
+#     try:
+#         db.session.add(new_notification)
+#         db.session.commit()
+#         return jsonify({"code": 201, "data": new_notification.json()}), 201
+#     except Exception as e:
+#         print(e)
+#         return jsonify({"code": 500, "data": data, "message": str(e)}), 500
+
+#delete notification
+@app.route("/notifications/<int:notificationID>", methods=['DELETE'])
+def delete_notification(notificationID):
+    notification = Notification.query.filter_by(notificationID=notificationID).first()
     if notification:
-        db.session.delete(notification)
-        db.session.commit()
-        print(f"Notification with ID {notification_id} has been deleted.")
-        return jsonify({'success': True, 'message': 'Notification has been deleted.'}), 200
-    else:
-        print(f"Notification with ID {notification_id} not found.")
-        return jsonify({'success': False, 'message': 'Notification not found.'}), 404
+        try:
+            db.session.delete(notification)
+            db.session.commit()
+            return jsonify({"code": 200, "message": "Notification deleted successfully."})
+        except Exception as e:
+            return jsonify({"code": 500, "message": "An error occurred deleting the notification.", "error": str(e)}), 500
+    return jsonify({"code": 404, "message": "Notification not found."}), 404
+
 
 if __name__ == "__main__":
     # with app.app_context():

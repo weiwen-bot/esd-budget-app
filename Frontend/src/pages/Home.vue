@@ -8,6 +8,11 @@
                     @click="handlePurchaseBook(book)">
                     Purchase
                   </button>
+          <!-- Info should contain userid, success_url -->
+          <button
+          @click="goredirect(info)">
+
+          </button>
     </div>
     <h1>Add Components</h1>
 </template>

@@ -18,7 +18,7 @@ import stripe
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
-
+from invokes import invoke_http
 app = Flask(__name__)
 
 # CORS(app)
@@ -90,8 +90,10 @@ def create_checkout_session():
             payment_method_types=["card"],
             mode="payment",
             line_items=[{"price": price_id, "quantity": 1}],
+
         )
-        return jsonify({"sessionId": checkout_session["id"]})
+        print(checkout_session)
+        return jsonify({"sessionId": checkout_session["id"],"url":checkout_session["url"]})
     except Exception as e:
         return jsonify(error=str(e)), 403
 
@@ -117,10 +119,25 @@ def webhook():
       payment_intent = event['data']['object']
     # ... handle other event types
       print("PaymentIntent was successful!")
+    elif event['type'] == 'checkout.session.completed':
+        print("Payment Success!")
+        session = event['data']['object']
+        print("session",session)
+        print(event)
+        forward_webhook(event)
+        return jsonify({"code":200,"session":session})
     else:
       print('Unhandled event type {}'.format(event['type']))
 
-    return jsonify(success=True)
+    
+
+    return jsonify(success=True), 200
+
+def forward_webhook(payload):
+    print(payload,"PAYLOAD!!!!!!!!!!!!!!!!")
+    response = invoke_http("http://payment_manage:5101/webhook", method='POST', json=payload)
+
+    return 200
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0', port=4242, debug=True)

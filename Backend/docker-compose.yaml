@@ -134,6 +134,27 @@ services:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/notification
       PYTHONUNBUFFERED: 1
 
+  ###############################################
+  # payment complex Order: The payment complex microservice
+  ###############################################
+  payment_manage:
+    build:
+      context: ./payment_complexservice
+      dockerfile: Dockerfile
+    image: weiwen2022/payment_manage:esd
+    restart: always
+    depends_on:
+      - payment
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
+      WEB_HOOK_SECRET: ${WEB_HOOK_SECRET}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+    ports:
+      - "5101:5101"
+
 
   ####################################
   # RabbitMQ: The messaging broker   

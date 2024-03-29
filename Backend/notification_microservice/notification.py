@@ -133,19 +133,24 @@ def get_notifications():
 #         print(f"Error posting notification:")
 #         return jsonify({'success': False, 'message': 'Error posting notification', 'error':  str(e)}), 500
 
-#simple add notification
-# @app.route("/notifications", methods=['POST'])
-# def create_notification():
-#     data = request.get_json()
-#     new_notification = Notification(**data)
+#add notification
+@app.route("/notifications", methods=['POST'])
+def create_notification():
+    data = request.get_json()
+    notification_type = data.get('notificationType')
+    receiver_id = data.get('receiverID')
+    message = data.get('message')
+    status = data.get('status')
 
-#     try:
-#         db.session.add(new_notification)
-#         db.session.commit()
-#         return jsonify({"code": 201, "data": new_notification.json()}), 201
-#     except Exception as e:
-#         print(e)
-#         return jsonify({"code": 500, "data": data, "message": str(e)}), 500
+    new_notification = Notification(notification_type, receiver_id, message, status)
+
+    try:
+        db.session.add(new_notification)
+        db.session.commit()
+        return jsonify({"code": 201, "data": new_notification.json()}), 201
+    except Exception as e:
+        print(e)
+        return jsonify({"code": 500, "data": data, "message": str(e)}), 500
 
 #delete notification
 @app.route("/notifications/<int:notificationID>", methods=['DELETE'])

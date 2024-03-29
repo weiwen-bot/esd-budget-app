@@ -1,49 +1,35 @@
-<template> 
-  <div class="container mx-auto p-4"> 
-    <h1 class="text-2xl font-bold mb-4">Pool List</h1> 
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"> 
-      <div v-for="(pool, index) in pools" :key="index" class="border border-gray-400 rounded-md mb-4"> 
-        <div class="bg-white shadow-md rounded-md p-4"> 
-          <h2 class="text-lg font-semibold mb-2">{{ pool }}</h2>
-          <div class="flex justify-between mb-4">
+<template>
+  <div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">Pool List</h1>
+    <p v-if="pools.length === 0" class="mb-2">You are not in any pools right now. Check your invite page or create one today!</p>
+    <p v-else class="mb-2">You are in <strong>{{ pools.length }}</strong> pools</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div v-for="(pool, index) in pools" :key="index" class="border border-gray-400 rounded-md mb-4">
+        <div class="bg-white shadow-md rounded-md p-4">
+          <div class="border-b-2 border-gray-400 mb-4 pb-2">
+            <h2 class="text-lg font-semibold">{{ pool.name }}</h2>
+          </div>
+          <div class="mb-4">
+            <p class="mb-4"><strong>Description:</strong><br> {{ pool.description }}</p>
+            <p class="mb-4"><strong>Category:</strong><br>{{ pool.category }}</p>
+            <p class="mb-4"><strong>Expiry Date:</strong><br>{{ pool.expiryDate }}</p> 
+          </div>
+          <div class="mb-4">
+            <p><strong>Progress:</strong></p>
+            <p>${{ pool.currentAmount }} / ${{ pool.totalAmount }}</p>
+            <div class="progress-bar-container">
+              <div class="progress-bar" :style="{ width: `${pool.currentAmount/pool.totalAmount * 100}%` }"></div>
+            </div>
+          </div>
+          <div class="flex justify-center mb-4">
             <button @click="viewPool(poolName)" class="view-pool-btn">
               View Pool
             </button>
           </div>
-          <div class="mb-4">
-            <p><strong>Pool Name:</strong> {{ pool.name }}</p>
-            <p><strong>Category:</strong> {{ pool.category }}</p>
-            <p><strong>Description:</strong> {{ pool.description }}</p>
-          </div>
-          <div class="mb-4">
-            <p><strong>Current Amount:</strong> ${{ pool.currentAmount }}</p>
-            <p><strong>Total Amount:</strong> ${{ pool.totalAmount }}</p>
-            <p><strong>Progress:</strong></p>
-            <div class="progress-bar-container">
-              <div class="progress-bar" :style="{ width: progressPercentage }"></div>
-            </div>
-          </div>
-          <h2 class="mb-2">Transaction History</h2>
-          <ul>
-            <li v-for="transaction in transactions" :key="transaction.id">
-              {{ transaction.date }} - {{ transaction.amount }} - {{ transaction.description }}
-            </li>
-          </ul>
         </div>
-      </div> 
+      </div>
     </div>
-  </div> 
-  
-  <div> 
-      <h1>HOME</h1> 
-      <button 
-                  type="button" 
-                  class="btn btn-primary btn-sm" 
-                  @click="handlePurchaseBook(book)"> 
-                  Purchase 
-                </button> 
-  </div> 
-  <h1>Add Components</h1> 
+  </div>
 </template>
 
 
@@ -57,9 +43,6 @@ UserID = db.Column(db.Integer, nullable=False)
 Status = db.Column(db.String(36), nullable=False) -->
 
 
- 
-
-
 
 
 <script> 
@@ -69,8 +52,38 @@ export default {
   data() {
     return {
       stripe: null,
-      pools: ['Pool 1', 'Pool 2', 'Pool 3'],
-      transactions: []
+      pools: [
+  {
+    id: 1,
+    name: 'Japan Trip',
+    category: 'Fund',
+    description: 'Japan Trip after Finals',
+    currentAmount: 1200,
+    totalAmount: 5000,
+    expiryDate:'2025-01-03',
+    transactions: [
+      { id: 1, date: '2022-01-01', amount: 800, description: 'Transaction 1' },
+      { id: 2, date: '2022-01-05', amount: 200, description: 'Transaction 2' },
+      { id: 3, date: '2022-01-06', amount: 200, description: 'Transaction 3',userID: 1 }
+      // Add more transactions as needed
+    ],
+  },
+  {
+    id: 2,
+    name: 'Dinner at Mcdonald',
+    category: 'Payment',
+    description: 'Last night dinner',
+    currentAmount: 6000,
+    totalAmount: 8000,
+    expiryDate:'2024-01-05',
+    transactions: [
+      { id: 3, date: '2022-01-10', amount: 1000, description: 'Transaction 3' },
+      { id: 4, date: '2022-01-15', amount: 500, description: 'Transaction 4' },
+      // Add more transactions as needed
+    ],
+  },
+  // Add more pools as needed
+],
     }
   },
   computed: {

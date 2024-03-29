@@ -52,32 +52,26 @@ class User(db.Model):
 #Login function
 @app.route("/login", methods=['POST'])
 def login():
-    
     data = request.get_json()
-    user = find_user(data['UserName'])
+    user = db.session.scalars(
+        db.select(User).filter_by(UserName=data['UserName'], Password=data['Password']).
+        limit(1)
+    ).first()
 
     if user:
-        if user.Password == data['Password']:
-            return jsonify(
-                {
-                    "code": 200,
-                    "data": user.json()
-                }
-            )
-        else:
-            return jsonify(
-                {
-                    "code": 401,
-                    "message": "Incorrect password."
-                }
-            ), 401
-    else:
         return jsonify(
             {
-                "code": 404,
-                "message": "User not found."
+                "code": 200,
+                "data": user.json()
             }
-        ), 404
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "User not found."
+        }
+    ), 404
+
 
 
 #get all users

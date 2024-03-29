@@ -143,6 +143,40 @@ services:
       - kong-net
 
 
+  ##################################
+  # pool_mapping: The pool_mapping microservice
+  ##################################
+  pool_mapping:
+    build:
+      context: ./pool_mapping_consumer
+      dockerfile: Dockerfile
+    image: fsorange/pool_mapping:esd_proj
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/pool
+      PYTHONUNBUFFERED: 1
+      
+  ##################################
+  # notification_consume: The notification_consume microservice
+  ##################################
+  notification_consume:
+    build:
+      context: ./notification_consume
+      dockerfile: Dockerfile
+    image: fsorange/notification_consume:esd_proj
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/notification
+      PYTHONUNBUFFERED: 1
+
 
   ####################################
   # RabbitMQ: The messaging broker   

@@ -147,6 +147,7 @@ services:
   # pool_mapping: The pool_mapping microservice
   ##################################
   pool_mapping:
+    container_name: "pool_mapping"
     build:
       context: ./pool_mapping_consumer
       dockerfile: Dockerfile
@@ -159,11 +160,14 @@ services:
       rabbit_port: 5672
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/pool
       PYTHONUNBUFFERED: 1
+    networks:
+      - kong-net
       
   ##################################
   # notification_consume: The notification_consume microservice
   ##################################
   notification_consume:
+    container_name: "notification_consume"
     build:
       context: ./notification_consume
       dockerfile: Dockerfile
@@ -176,6 +180,8 @@ services:
       rabbit_port: 5672
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/notification
       PYTHONUNBUFFERED: 1
+    networks:
+      - kong-net
 
 
   ####################################

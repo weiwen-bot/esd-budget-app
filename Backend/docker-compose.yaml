@@ -9,7 +9,6 @@ services:
   # payment: The payment microservice
   ###################################
   payment:
-    container_name: "payment"
     build:
       context: ./payment_microservice
       dockerfile: Dockerfile
@@ -22,14 +21,11 @@ services:
       STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
     ports:
       - "4242:4242"
-    networks:
-      - kong-net
  
   #######################################################
   # pool Record: The pool microservice
   #######################################################
   pool:
-    container_name: "pool"
     build:
       context: ./pool_microservice
       dockerfile: Dockerfile
@@ -40,14 +36,11 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5001:5001"
-    networks:
-      - kong-net
 
   ##################################
   # pool_request: The pool_request microservice
   ##################################
   pool_request:
-    container_name: "pool_request"
     build:
       context: ./pool_request_microservice
       dockerfile: Dockerfile
@@ -58,14 +51,11 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5002:5002"
-    networks:
-      - kong-net
 
   ##################################
   # transaction: The transaction microservice
   ##################################
   transaction:
-    container_name: "transaction"
     build:
       context: ./transaction_microservice
       dockerfile: Dockerfile
@@ -76,15 +66,11 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5003:5003"
-    networks:
-      - kong-net
 
-  # ##################################
-  # # user: The user microservice
-  # #################################
-
+  ##################################
+  # user: The user microservice
+  ##################################
   user:
-    container_name: user
     build:
       context: ./user_microservice
       dockerfile: Dockerfile
@@ -93,16 +79,13 @@ services:
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/user
       PYTHONUNBUFFERED: 1
-    networks:
-      - kong-net
-
-
+    ports:
+      - "5004:5004"
 
   ##################################
   # noti: The noti microservice
   ##################################
   notification:
-    container_name: "notification"
     build:
       context: ./notification_microservice
       dockerfile: Dockerfile
@@ -117,18 +100,32 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5005:5005"
-    networks:
-      - kong-net
 
   ##################################
-  # noti: The noti microservice
+  # pool_mapping: The pool_mapping microservice
   ##################################
-  error:
-    container_name: "error"
+  pool_mapping:
     build:
-      context: ./error_microservice
+      context: ./pool_mapping_consumer
       dockerfile: Dockerfile
-    image: yuanzhi/error:esd_proj
+    image: yuanzhi/pool_mapping:esd_proj
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/pool
+      PYTHONUNBUFFERED: 1
+      
+  ##################################
+  # notification_consume: The notification_consume microservice
+  ##################################
+  notification_consume:
+    build:
+      context: ./notification_consume
+      dockerfile: Dockerfile
+    image: yuanzhi/notification_consume:esd_proj
     restart: always
     depends_on:
       - rabbitmq
@@ -137,11 +134,6 @@ services:
       rabbit_port: 5672
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/notification
       PYTHONUNBUFFERED: 1
-    ports:
-      - "5008:5008"
-    networks:
-      - kong-net
-
 
 
   ####################################
@@ -158,17 +150,12 @@ services:
       - ./rabbitmq.config:/etc/rabbitmq/rabbitmq.config
       - ./rabbitmq_definitions.json:/etc/rabbitmq/rabbitmq_definitions.json
       - rabbitmq_data:/var/lib/rabbitmq
-
-    networks:
-      - kong-net
-
       
 
   ###############################################
   # Place Order: The Place Order microservice
   ###############################################
   pool_management:
-    container_name: "pool_management"
     build:
       context: ./poolmanagement_complexservice
       dockerfile: Dockerfile
@@ -187,10 +174,4 @@ services:
     ports:
       - "5100:5100"
 
-    networks:
-      - kong-net
-
-networks:
-  kong-net:
-    external: true
   

@@ -1,45 +1,26 @@
-<template>
-  <div class="flex justify-center items-center h-screen">
-    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-xs relative">
-      <div class="absolute left-3">
-      <router-link to="/" class="text-black hover:text-blue-700 text-lg">&lt; </router-link>   
-      </div>
-      <h1 class="text-2xl mb-4">Pool Invitations</h1>
-      <div v-if="pools.length > 0">
-        <div v-for="(pool, index) in pools" :key="pool.id">
-          <p><strong>Pool Number:</strong> {{ index + 1 }}</p>
-          <button @click="acceptInvitation(pool)" class="accept-button">Accept</button>
-          <button @click="declineInvitation(pool)" class="decline-button">Decline</button>
-        </div>
-      </div>
-      <div v-else>
-        <p>No pool invitations</p>
-      </div>
-    </div>
-  </div>
-</template>
+<template> 
+    <div> 
+      <h1>Pool Invitations</h1> 
+      <div v-if="pools.length > 0"> 
+        <div v-for="(pool, index) in pools" :key="pool.id"> 
+          <p><strong>Pool Number:</strong> {{ index + 1 }}</p> 
+          <button @click="acceptInvitation(pool)" class="accept-button">Accept</button> 
+          <button @click="declineInvitation(pool)" class="decline-button">Decline</button> 
+        </div> 
+      </div> 
+      <div v-else> 
+        <p>No pool invitations</p> 
+      </div> 
+    </div> 
+  </template> 
    
   <script> 
   export default { 
     name: 'PoolInvitePage', 
     data() { 
       return { 
-        pools: [
-        {
-          id: 1,
-          name: 'Pool 1',
-        },
-        {
-          id: 2,
-          name: 'Pool 2',
-        },
-        {
-          id: 3,
-          name: 'Pool 3',
-        },
-      ],
-    };
-      ; 
+        pools: [] 
+      }; 
     }, 
     created() { 
       this.fetchPoolInvitations(); 
@@ -48,7 +29,6 @@
       async fetchPoolInvitations() { 
         try { 
           const response = await fetch('http://localhost:5005/PoolInvitations'); // Adjust URL as needed 
-          resob
           const data = await response.json(); 
           if (response.ok) { 
             this.pools = data.data.pools; 

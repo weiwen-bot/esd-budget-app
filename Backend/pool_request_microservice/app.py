@@ -3,23 +3,25 @@ from flask_sqlalchemy import SQLAlchemy
 from os import environ
 from sqlalchemy.sql import func
 from datetime import datetime
-
+from flask_cors import CORS
 app = Flask(__name__)
 
 # Configure SQLAlchemy to use the provided database URL
 
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+mysqlconnector://root@host.docker.internal:3306/pool_request"
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or "mysql+mysqlconnector://root@localhost:3306/pool_request"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy
 db = SQLAlchemy(app)
+
+CORS(app)
 
 # Define the Pool model
 class pool_request(db.Model):
     __tablename__ = 'pool_request'
 
     pool_requestID = db.Column(db.Integer, primary_key=True,autoincrement=True)
-    created = db.Column(db.Date,nullable=False, default=datetime.now)
+    created = db.Column(db.DateTime,nullable=False, default=datetime.now)
     PoolID = db.Column(db.Integer, nullable=False)
     UserID = db.Column(db.Integer, nullable=False)
     status = db.Column(db.String(36), nullable=False)
@@ -82,7 +84,7 @@ def create_mul_poolrequest():
     try:
         data = request.get_json()
         for invite in data:
-            pool_requests = pool_request(invite['userid'],invite['poolid'],'pending')
+            pool_requests = pool_request(invite['poolid'],invite['userid'],'pending')
             db.session.add(pool_requests)
         db.session.commit()
         return jsonify({"code": 201, "data": data})
@@ -98,10 +100,21 @@ def update_poolrequest():
         poolid = data['PoolID']
         status = data['status']
 
-        pool_requests = pool_request.query.filter_by(UserID=userid,PoolID=poolid).first()
-        setattr(pool_requests, 'status', status)
-        db.session.commit()
-        return jsonify({"code": 200, "data": pool_requests.json()})
+        pool_requests = db.session.scalars(db.select(pool_request).filter_by(UserID=userid,PoolID=poolid).limit(1)).first()
+        print(pool_request.query.filter_by(PoolID=1).first())
+        print(pool_request.query.filter_by(PoolID=1).filter_by(UserID=5).first())
+        if pool_requests:
+            pool_requests.status = status
+            db.session.commit()
+            return jsonify({"code": 200, "data": pool_requests.json()})
+        else:
+            return jsonify({
+            "code": 404,
+            "data": {
+                "UserID": userid,
+                "PoolID": poolid
+            },
+            "message": "request not found."}), 404
     except Exception as e:
         return jsonify({"code": 500, "data": data, "message": "An error occurred updating the pool_request.", "error":str(e)}), 500
     

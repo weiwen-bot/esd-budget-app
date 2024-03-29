@@ -189,26 +189,26 @@ def get_Transactions_By_User(userID):
     ), 404
 
 
-def publish_transaction_message(transaction):
-    connection = amqp_connection.create_connection()
-    channel = connection.channel()
+# def publish_transaction_message(transaction):
+#     connection = amqp_connection.create_connection()
+#     channel = connection.channel()
 
-    exchange_name = 'Notification'
-    routing_key = 'transaction.created' if transaction.status == 'created' else 'transaction.deleted'
+#     exchange_name = 'Notification'
+#     routing_key = 'transaction.created' if transaction.status == 'created' else 'transaction.deleted'
 
-    message = {
-        'transaction_id': transaction.transactionID,
-        'amount': transaction.amount,
-        'status': transaction.status,
-        'transaction_date': transaction.transactionDate.strftime('%Y-%m-%d %H:%M:%S'),
-        'user_id': transaction.userID,
-        'pool_id': transaction.poolID
-    }
-    msg = json.dumps(message)
-    channel.basic_publish(exchange=exchange_name, routing_key=routing_key, body=msg)
+#     message = {
+#         'transaction_id': transaction.transactionID,
+#         'amount': transaction.amount,
+#         'status': transaction.status,
+#         'transaction_date': transaction.transactionDate.strftime('%Y-%m-%d %H:%M:%S'),
+#         'user_id': transaction.userID,
+#         'pool_id': transaction.poolID
+#     }
+#     msg = json.dumps(message)
+#     channel.basic_publish(exchange=exchange_name, routing_key=routing_key, body=msg)
 
-    channel.close()
-    connection.close()
+#     channel.close()
+#     connection.close()
 
 
     

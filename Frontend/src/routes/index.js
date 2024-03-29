@@ -14,6 +14,11 @@ import HomePage from "../pages/Home.vue"
 
 
 const routes =[
+  {
+    path:"/home",
+    name:"Home",
+    component: HomePage,
+},
     {
         path:"/",
         name:"PoolPage",

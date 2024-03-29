@@ -139,7 +139,58 @@ def poolcreation(pool):
             "message": "Failed to create pool."
         }    
 
+def poolcreation(pool):
+
+    print('\n-----Invoking pool microservice-----')
     
+    pool = {
+        "Expiry_Date":"2024-05-23",
+        "Current_amount":0,
+        "Budget": 100,
+        "Pool_Type":"Group",
+        "UserID":2,
+        "pool_name":"Pool1",
+        "pool_desc":"There is a pool for you to join!",
+        "Status":"Active"
+    }
+    pool_result = invoke_http("http://127.0.0.1:5001/Pool", method='POST', json=pool)
+    print('pool_result:', pool_result)
+
+    code = pool_result["code"]
+    message =pool_result
+
+ 
+    if code in range(200, 300):
+        return message
+    else:
+        return {
+            "code": 500,
+            "data": pool,
+            "message": "Failed to create pool. " + message
+        }   
+
+@app.route("/make_transaction", methods=['POST'])
+def process_transaction():
+    try:
+        # transaction_data = request.get_json()
+        transaction_data = {
+        "UserID": 1,
+        "PoolID": 1,
+        "Amount": 100,
+        "Status": "successful"
+        }
+        friend_res = invoke_http("http://127.0.0.1:5003/transactions", method='PUT', json=friend)
+        if friend_res['data']['status'] == 'Accepted':
+            pass
+
+        delete_status = invoke_http("http://127.0.0.1:5002/pool_request", method='DELETE', json=friend)
+        return jsonify({'code': 200, 'message': 'Pool request responded successfully','delete':delete_status['code'],'friend_res':friend_res['code']})
+    except Exception as e:
+        return jsonify({
+            "code": 500,
+            "message": "pool_management accept internal error: " + str(e)
+        }), 500
+     
 
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":

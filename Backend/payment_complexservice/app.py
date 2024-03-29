@@ -41,7 +41,10 @@ CORS(app, resources={r'/*': {'origins': '*'}})
 
 @app.route("/payment", methods=['POST'])
 def create_payment():
-   response = invoke_http("http://payment:4242/create-checkout-session", method='POST', json=request.json)
+   data = request.json
+   print(data)
+   response = invoke_http("http://payment:4242/create-checkout-session", method='POST', json=data)
+   print(response)
    return {"redirect":response['url']}
 
 @app.route('/webhook', methods=['POST'])

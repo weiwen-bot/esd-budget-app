@@ -32,7 +32,6 @@ class User(db.Model):
         self.PhoneNumber = PhoneNumber
         self.Credits = Credits
         self.Account_no = Account_no
-
         self.Email = Email
         self.Password = Password
 
@@ -53,6 +52,7 @@ class User(db.Model):
 #Login function
 @app.route("/login", methods=['POST'])
 def login():
+    
     data = request.get_json()
     user = find_user(data['UserName'])
 

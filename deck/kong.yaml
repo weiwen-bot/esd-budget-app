@@ -1,0 +1,777 @@
+_format_version: "3.0"
+plugins:
+- config:
+    credentials: false
+    exposed_headers: null
+    headers: null
+    max_age: null
+    methods:
+    - GET
+    - HEAD
+    - PUT
+    - PATCH
+    - POST
+    - DELETE
+    - OPTIONS
+    - TRACE
+    - CONNECT
+    origins:
+    - '*'
+    preflight_continue: false
+  enabled: true
+  instance_name: cors_my-service
+  name: cors
+  protocols:
+  - grpc
+  - grpcs
+  - http
+  - https
+services:
+- connect_timeout: 60000
+  enabled: true
+  host: pool_request
+  name: Accept_decline_pool_request
+  path: /pool_request
+  port: 5002
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: 7a2d09bc-0b50-4ff0-91b5-db640489f064
+    methods:
+    - PUT
+    path_handling: v0
+    paths:
+    - /accept_decline_pool_request
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: pool
+  name: Add_pool
+  path: /Pool
+  port: 5001
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: 6b971bec-cc4d-4e0d-a041-c0a33aa99289
+    methods:
+    - POST
+    path_handling: v0
+    paths:
+    - /add_pool
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: user
+  name: Add_user
+  path: /user
+  port: 5004
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: f7830907-d252-4e2e-ba14-295a9bdebfb3
+    methods:
+    - POST
+    path_handling: v0
+    paths:
+    - /api/v1/add_user
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: payment
+  name: Create_checkout
+  path: /create-checkout-session
+  port: 4242
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: 12325353-1f1c-44c7-aa58-27c17b37bfd0
+    methods:
+    - POST
+    path_handling: v0
+    paths:
+    - /create-checkout-session
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: pool_request
+  name: Create_pool_request
+  path: /pool_request/
+  port: 5002
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: dfb1d95c-068d-458d-b4da-2ba45d1387cb
+    methods:
+    - POST
+    path_handling: v0
+    paths:
+    - /create_pool_request
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: transaction
+  name: Create_transaction
+  path: /transactions
+  port: 5003
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: 450a32ec-0691-4a75-af29-02e40a907c36
+    methods:
+    - POST
+    path_handling: v0
+    paths:
+    - /create_transaction
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: notification
+  name: Delete_notification
+  path: /notifications
+  port: 5005
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: fcd14fb7-4805-4036-b906-fbe7324056ba
+    methods:
+    - DELETE
+    path_handling: v0
+    paths:
+    - /delete_notification
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+    tags:
+    - <int:notification_id>
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: pool
+  name: Delete_pool
+  path: /Pool
+  port: 5001
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: a248f227-9a51-4ba9-ab81-896fb841c926
+    methods:
+    - DELETE
+    path_handling: v0
+    paths:
+    - /delete_pool
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+    tags:
+    - <int:PoolID>
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: pool_request
+  name: Delete_pool_request
+  path: /pool_request
+  port: 5002
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: 40f2c561-988f-4e51-a3f7-0c5c163d2c80
+    methods:
+    - DELETE
+    path_handling: v0
+    paths:
+    - /delete_pool_request
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: transaction
+  name: Delete_transaction
+  path: /transactions
+  port: 5003
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: b092cca6-6f39-4694-a916-c209aed52168
+    methods:
+    - DELETE
+    path_handling: v0
+    paths:
+    - /delete_transaction
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+    tags:
+    - <int:transactionID>
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: transaction
+  name: Get_all_transaction
+  path: /transactions
+  port: 5003
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: 500a7418-7e28-4e6e-9ea7-a380ea58c83a
+    methods:
+    - GET
+    path_handling: v0
+    paths:
+    - /transactions
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: notification
+  name: Get_notification
+  path: /notifications
+  port: 5005
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: d17fe25c-5c92-4e9a-80cf-c25149ec34c8
+    methods:
+    - GET
+    path_handling: v0
+    paths:
+    - /get_notification
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: pool_request
+  name: Get_pool_request_by_user_id
+  path: /pool_request/user/
+  port: 5002
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: f3e760d3-e73b-4fe3-a306-7bd44eba772e
+    methods:
+    - GET
+    path_handling: v0
+    paths:
+    - /get_pool_request_by_user_id
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+    tags:
+    - <int:UserID>
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: transaction
+  name: Get_transaction_by_id
+  path: /transactions
+  port: 5003
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: 1f4f0585-3d22-4464-835f-3d522a2b4c20
+    methods:
+    - GET
+    path_handling: v0
+    paths:
+    - /transaction
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+    tags:
+    - <int:transactionID>
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: transaction
+  name: Get_transaction_by_pool_id
+  path: /transactions/pool
+  port: 5003
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: 801d0c9e-61b3-45f8-8e88-a06b67844c0b
+    methods:
+    - GET
+    path_handling: v0
+    paths:
+    - /get_transaction_by_pool_id
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+    tags:
+    - <int:PoolID>
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: transaction
+  name: Get_transaction_by_user_id
+  path: /transactions/user
+  port: 5003
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: 0eec7f8a-5ae3-4669-a876-34fdf90bf205
+    methods:
+    - GET
+    path_handling: v0
+    paths:
+    - /get_transaction_by_user_id
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+    tags:
+    - <int:UserID>
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: error
+  name: Send_error
+  path: /error
+  port: 5008
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: c8999cbb-c103-49e8-8c40-c4a6eaeb3593
+    methods:
+    - POST
+    path_handling: v0
+    paths:
+    - /error
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: notification
+  name: Send_notification
+  path: /notifications
+  port: 5005
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: 1ebe7604-1155-42eb-b3ce-c7fdf3f8816b
+    methods:
+    - POST
+    path_handling: v0
+    paths:
+    - /send_notification
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: transaction
+  name: Update_transaction
+  path: /transactions
+  port: 5003
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: f5d9786f-60f9-4986-8cb4-38f32254b418
+    methods:
+    - PUT
+    path_handling: v0
+    paths:
+    - /update_transaction
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+    tags:
+    - <int:transactionID>
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: user
+  name: Update_user
+  path: /user
+  port: 5004
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: fc25cdb5-2e0b-4f61-9b3d-33530e7d8204
+    methods:
+    - PUT
+    path_handling: v0
+    paths:
+    - /api/v1/update_user
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  tags:
+  - <int:UserID>
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: payment
+  name: Webhook
+  path: /webhook
+  port: 4242
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: cc8b115c-dccc-4d1e-bf89-7805afd992e4
+    methods:
+    - POST
+    path_handling: v0
+    paths:
+    - /webhook
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: pool_request
+  name: create_multiple_pool_request
+  path: /pool_request/multiple
+  port: 5002
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: ba595946-4a34-4247-bf3d-877782bd1d81
+    methods:
+    - POST
+    path_handling: v0
+    paths:
+    - /create_multiple_pool_request
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: pool
+  name: get_all_pool
+  path: /Pool
+  port: 5001
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    methods:
+    - GET
+    name: READ_ALL_POOL
+    path_handling: v0
+    paths:
+    - /pools
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: user
+  name: get_all_user
+  path: /user
+  port: 5004
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    methods:
+    - GET
+    name: READ
+    path_handling: v0
+    paths:
+    - /api/v1/users
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: pool
+  name: get_pool_by_id
+  path: /Pool
+  port: 5001
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: 0ce84214-f9d3-4dce-ba8a-bf3e12bf0a06
+    methods:
+    - GET
+    path_handling: v0
+    paths:
+    - /pool
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+    tags:
+    - <int:PoolID>
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: user
+  name: get_user_by_id
+  path: /user
+  port: 5004
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: e5aeb269-f19c-4601-bb52-75d469b15cdb
+    methods:
+    - GET
+    path_handling: v0
+    paths:
+    - /api/v1/user
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  tags:
+  - <int:UserID>
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: payment
+  name: payment_config
+  path: /config
+  port: 4242
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: 95b4ad9d-ce47-4b5f-943a-668d7c688524
+    path_handling: v0
+    paths:
+    - /config
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: user
+  name: user_login
+  path: /login
+  port: 5004
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    id: 93e36a4f-147d-4feb-a8cf-5b2ef57d94b6
+    methods:
+    - POST
+    path_handling: v0
+    paths:
+    - /api/v1/login
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000

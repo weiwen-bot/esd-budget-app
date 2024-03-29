@@ -10,15 +10,22 @@ import Register from "../pages/Register.vue"
 import PoolInvite from "../pages/PoolInvite.vue"
 import OwnerPoolPage from "../pages/OwnerPoolPage.vue"
 import HomePage from "../pages/Home.vue"
+import Test from "../pages/Test.vue"
+
 
 
 
 const routes =[
-  {
-    path:"/home",
-    name:"Home",
-    component: HomePage,
-},
+    {
+        path:"/home",
+        name:"Home",
+        component: HomePage,
+    },
+    {
+      path:"/test",
+      name:"Test",
+      component: Test,
+  },
     {
         path:"/",
         name:"PoolPage",

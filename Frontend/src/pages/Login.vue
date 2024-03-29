@@ -1,31 +1,26 @@
 <template>
   <div class="flex justify-center items-center h-screen">
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-xs">
-      <h1 class="text-2xl mb-4">Create a New Pool</h1>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="poolName">Pool Name:</label>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="poolName" type="text" v-model="poolName" required>
-      </div>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="poolType">Pool Type:</label>
-        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="poolType" v-model="poolType">
-          <option value="payment">Payment</option>
-          <option value="fund">Fund</option>
-        </select>
-      </div>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="targetBudget">Target Budget:</label>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="targetBudget" type="number" v-model="targetBudget" required>
-      </div>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="expiryDate">Expiry Date:</label>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="expiryDate" type="date" v-model="expiryDate" required>
-      </div>
-      <div class="flex items-center justify-center">
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" @click="createPool">
-          Create Pool
-        </button>
-      </div>
+      <h1 class="text-2xl mb-4">Login</h1>
+      <form @submit.prevent="login">
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="username">Username:</label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" v-model="username" required>
+        </div>
+        <div class="mb-6">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="password">Password:</label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" v-model="password" required>
+        </div>
+        <div class="flex items-center justify-center">
+          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+            Login
+          </button>
+        </div>
+      </form>
+      <div v-if="errorMessage" class="mt-4 text-red-500">{{ errorMessage }}</div>
+      <p class="text-sm text-black text-center mt-4">
+  Don't have an account? <router-link to="/register" class="underline text-blue-500 hover:text-blue-700"><p>Register</p></router-link>
+</p>
     </div>
   </div>
 </template>
@@ -40,6 +35,11 @@ export default {
       errorMessage: ''
     };
   },
+  created(){
+      this.username = sessionStorage.getItem("username");
+      this.password = sessionStorage.getItem("password");
+    
+  },
   methods: {
     async login() {
       if (!this.username || !this.password) {
@@ -47,7 +47,7 @@ export default {
         return;
       }
       try {
-        const response = await fetch('http://localhost:5006/login', {
+        const response = await fetch('http://localhost:5173/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -60,6 +60,9 @@ export default {
         const data = await response.json();
         if (response.ok) {
           console.log('Logged in successfully:', data);
+          console.log(this.username);
+          console.log(this.password);
+          
           // Redirect the user to another page after successful login
           // For example, using Vue Router: this.$router.push('/dashboard');
         } else {

@@ -1,11 +1,18 @@
 <template>
 
-    <div class="container mx-auto p-4">
-        <h1 class="text-2xl font-bold mb-4">Pool Details</h1>
-        <div class="bg-white shadow-md rounded-md p-4">
+    <div class="container mx-auto p-4 relative">
+      <h1 class="text-2xl font-bold mb-4">Pool Owner Page</h1>
+      <div class="absolute left-6">
+          <router-link to="/" class="text-black hover:text-blue-700 text-lg">&lt; </router-link>   
+      </div>
+            <div class="bg-white shadow-md rounded-md p-4">
             <div class="border-b-2 border-gray-400 mb-4 pb-2">
-                <h2 class="text-lg font-semibold">{{ pool.name }}</h2>
+                  <h2 class="text-lg font-semibold">{{ pool.name }}</h2>
+                <h2 class="text-sm font-semibold italic">Created by you!</h2>
             </div>
+            <div class="flex justify-center mb-3">
+                  <button class="border border-black text-black font-bold py-1 px-2 rounded text-sm hover:bg-black hover:text-white">Invite to Pool</button>
+                </div>
             <div class="mb-4">
                 <p class="mb-4"><strong>Description:</strong><br> {{ pool.description }}</p>
                 <p class="mb-4"><strong>Category:</strong><br>{{ pool.category }}</p>
@@ -19,12 +26,12 @@
                 </div>
             </div>
             <div class="flex justify-center mb-4 space-x-4">
-                <button @click="makePayment" class="make-payment-btn">Make Payment</button>
-                <button @click="refund" class="make-payment-btn">Refund</button>
-            </div>
-            <div class="flex justify-center mb-4 space-x-4">
-                <button @click="collect" class="make-payment-btn">Collect</button>
-                <button @click="deletePool" class="make-payment-btn">Delete</button>
+                <div class="flex justify-center mb-4 space-x-4">
+                    <button v-if="pool.category === 'Fund'" @click="contribute" class="btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Contribute</button>
+                    <button v-if="pool.category === 'Fund'" @click="makePayment" class="btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Make Payment</button>
+                    <button v-if="pool.category === 'Payment'" @click="reimburse" class="btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Reimburse</button>
+                    <button @click="deletePool" class="btn bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Delete Pool</button>
+                </div>
             </div>
           <p class="mb-4"><strong>Transaction History:</strong><br></p>
           <div class="overflow-x-auto">
@@ -61,9 +68,9 @@ export default {
     return {
       pool: {
         id: 1,
-        name: 'Japan Trip',
-        category: 'Fund',
-        description: 'Japan Trip after Finals',
+        name: 'Mcdonald dinner',
+        category: 'Payment',
+        description: 'Mcdonald Meal for 10',
         currentAmount: 1200,
         totalAmount: 5000,
         expiryDate: '2025-01-03',
@@ -106,14 +113,15 @@ export default {
                 console.error('Error fetching transaction history:', error);
             }
         },
-        async makePayment() {
+        async contribute() {
             // Make payment logic
         },
-        refund() {
-            // Refund logic
-        },
-        collect() {
+        async makePayment() {
             // Collect logic
+        },
+
+        async reimburse(){
+
         },
         deletePool() {
             // Delete pool logic
@@ -188,17 +196,7 @@ export default {
   padding-right: 1rem;
 }
 
-.make-payment-btn {
-  background-color: #3b82f6;
-  color: #fff;
-  font-weight: 700;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-}
 
-.make-payment-btn:hover {
-  background-color: #2563eb;
-}
 
 .progress-bar-container {
   width: 100%;
@@ -220,6 +218,19 @@ ul {
 li {
   margin-bottom: 0.5rem;
 }
+
+
+/* .make-payment-btn{
+  background-color: #3b82f6;
+  color: #fff;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+}
+
+.make-payment-btn:hover {
+  background-color: #2563eb;
+} */
 
 
 @media (min-width: 576px) {

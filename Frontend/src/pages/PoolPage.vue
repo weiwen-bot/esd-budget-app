@@ -3,24 +3,32 @@
     <h1 class="text-2xl font-bold mb-4">Pool List</h1>
     <p v-if="pools.length === 0" class="mb-2">You are not in any pools right now. Check your invite page or create one today!</p>
     <p v-else class="mb-2">You are in <strong>{{ pools.length }}</strong> pools</p>
+    <div class="flex justify-between space-x-4 mb-4">
+      <router-link to="/poolcreation" class="border border-black text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white">
+        Create Pool
+      </router-link>
+      <router-link to="/poolcreation" class="border border-black text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white">
+        Invite Page
+      </router-link>
+    </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       <div v-for="(pool, index) in pools" :key="index" class="border border-gray-400 rounded-md mb-4">
         <div class="bg-white shadow-md rounded-md p-4">
           <div class="border-b-2 border-gray-400 mb-4 pb-2">
             <h2 class="text-lg font-semibold">{{ pool.name }}</h2>
+            <h2 class="text-sm font-semibold italic">Created by {{ pool.userName }}</h2>
           </div>
           <div class="mb-4">
-            <p class="mb-4"><strong>Description:</strong><br> {{ pool.description }}</p>
-            <p class="mb-4"><strong>Category:</strong><br>{{ pool.category }}</p>
-            <p class="mb-4"><strong>Expiry Date:</strong><br>{{ pool.expiryDate }}</p> 
+            <p class="mb-4"><strong>Current Amount:</strong> ${{ pool.currentAmount }}</p> 
+            <p class="mb-4"><strong>Target Amount:</strong> ${{ pool.totalAmount }}</p> 
           </div>
           <div class="mb-4">
-            <p><strong>Progress:</strong></p>
-            <p>${{ pool.currentAmount }} / ${{ pool.totalAmount }}</p>
             <div class="progress-bar-container">
-              <div class="progress-bar" :style="{ width: `${pool.currentAmount/pool.totalAmount * 100}%` }"></div>
+              <div class="progress-bar" :style="{ width:  `${calculateProgressPercentage(pool.currentAmount, pool.totalAmount)}`}"></div>
             </div>
+            <p><strong>Progress: {{calculateProgressPercentage(pool.currentAmount, pool.totalAmount)}}</strong></p>
           </div>
+          
           <div class="flex justify-center mb-4">
             <button @click="viewPool(poolName)" class="view-pool-btn">
               View Pool
@@ -56,6 +64,7 @@ export default {
   {
     id: 1,
     name: 'Japan Trip',
+    userName: "John44",
     category: 'Fund',
     description: 'Japan Trip after Finals',
     currentAmount: 1200,
@@ -71,6 +80,7 @@ export default {
   {
     id: 2,
     name: 'Dinner at Mcdonald',
+    userName: "Sarah4",
     category: 'Payment',
     description: 'Last night dinner',
     currentAmount: 6000,
@@ -145,6 +155,9 @@ export default {
         .then((res) => {
           console.log(res);
         });
+    },
+    calculateProgressPercentage(currentAmount, totalAmount) {
+      return (currentAmount / totalAmount) * 100 + '%';
     },
   },
   components: {},

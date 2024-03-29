@@ -1,25 +1,29 @@
 <template>
 
-    <div class="container mx-auto p-4">
+    <div class="container mx-auto p-4 relative">
+      <div class="absolute left-6">
+      <router-link to="/" class="text-black hover:text-blue-700 text-lg">&lt; </router-link>   
+      </div>
       <h1 class="text-2xl font-bold mb-4">Pool Details</h1>
       <div class="bg-white shadow-md rounded-md p-4">
           <div class="border-b-2 border-gray-400 mb-4 pb-2">
             <h2 class="text-lg font-semibold">{{ pool.name }}</h2>
+            <h2 class="text-sm font-semibold italic">Created by {{ pool.userName }}</h2>
           </div>
           <div class="mb-4">
             <p class="mb-4"><strong>Description:</strong><br> {{ pool.description }}</p>
             <p class="mb-4"><strong>Category:</strong><br>{{ pool.category }}</p>
-            <p class="mb-4"><strong>Expiry Date:</strong><br>{{ pool.expiryDate }}</p> 
+            <p class="mb-4"><strong>Created by:</strong><br>{{ pool.userName }}</p> 
           </div>
           <div class="mb-4">
             <p><strong>Progress:</strong></p>
             <p>${{ pool.currentAmount }} / ${{ pool.totalAmount }}</p>
             <div class="progress-bar-container">
-              <div class="progress-bar" :style="{ width: `${pool.currentAmount/pool.totalAmount * 100}%` }"></div>
+              <div class="progress-bar" :style="{ width:  `${calculateProgressPercentage(pool.currentAmount, pool.totalAmount)}`}"></div>
             </div>
           </div>
           <div class="flex justify-center mb-4">
-           <button @click="makePayment" class="make-payment-btn">Make Payment</button>
+           <button @click="makePayment" class="make-payment-btn">Contribute</button>
           </div>
           <p class="mb-4"><strong>Transaction History:</strong><br></p>
           <div class="overflow-x-auto">
@@ -55,6 +59,7 @@ export default {
     return {
       pool: {
         id: 1,
+        userName: "John44",
         name: 'Japan Trip',
         category: 'Fund',
         description: 'Japan Trip after Finals',
@@ -125,7 +130,10 @@ export default {
         } catch (error) {
             console.error('Error making payment:', error);
         }
-        }
+        },
+    calculateProgressPercentage(currentAmount, totalAmount) {
+      return (currentAmount / totalAmount) * 100 + '%';
+    },
     }
 };
 </script>

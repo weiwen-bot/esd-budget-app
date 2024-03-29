@@ -43,6 +43,9 @@ CREATE TABLE IF NOT EXISTS `User` (
 -- No data is inserted initially for the 'User' table.
 -- You can insert data as needed using INSERT INTO statements.
 
+INSERT INTO User (UserName, PhoneNumber, Credits, Account_no, Email, Password)
+VALUES ("John Doe", "123-456-7890", 100.00, "1234567890", "johndoe@example.com", "password123");
+
 CREATE TABLE IF NOT EXISTS `poolmapping` (
   `PoolID` int(11) NOT NULL,
   `UserID` int(11) NOT NULL,

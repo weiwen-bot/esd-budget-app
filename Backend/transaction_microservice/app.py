@@ -41,9 +41,6 @@ class Transaction(db.Model):
 @app.route("/transactions")
 def get_All_Transactions():
     transactionlist = db.session.scalars(db.select(Transaction)).all()
-    
-
-
     if len(transactionlist) > 0:
         return jsonify(
             {

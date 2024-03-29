@@ -108,7 +108,7 @@ def get_all():
     return jsonify(
         {
             "code": 404,
-            "message": "There are no user."
+            "message": "There are no users."
         }
     ), 404
 

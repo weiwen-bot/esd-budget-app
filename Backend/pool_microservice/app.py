@@ -7,7 +7,8 @@ from datetime import datetime
 app = Flask(__name__)
 
 # Configure SQLAlchemy to use the provided database URL
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+mysqlconnector://root@host.docker.internal:3306/pool"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy
@@ -16,7 +17,6 @@ db = SQLAlchemy(app)
 # Define the Pool model
 class Pool(db.Model):
     __tablename__ = 'pool'
-
     PoolID = db.Column(db.Integer, primary_key=True,autoincrement=True)
     DateCreation = db.Column(db.Date,nullable=False, default=datetime.now)
     pool_name = db.Column(db.String(50), nullable=False)

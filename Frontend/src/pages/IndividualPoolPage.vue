@@ -7,7 +7,13 @@
       <h1 class="text-2xl font-bold mb-4">Pool Details</h1>
       <div class="bg-white shadow-md rounded-md p-4">
           <div class="border-b-2 border-gray-400 mb-4 pb-2">
-            <h2 class="text-lg font-semibold">{{ pool.name }}</h2>
+          <h2 class="text-lg font-semibold">{{ pool.name }} 
+            <button @click="toggleModal" style="margin: 0px; padding: 0px;">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <image href="../assets/Pool_Participant.png" width="24" height="24" />
+              </svg>
+            </button>
+          </h2>
             <h2 class="text-sm font-semibold italic">Created by {{ pool.userName }}</h2>
           </div>
           <div class="mb-4">
@@ -49,6 +55,27 @@
           
       </div>
     </div> 
+    <div v-if="showModal" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="toggleModal">&times;</span>
+        <h2 class="text-center"><strong>Participants</strong></h2>
+        <p>There are {{ users.length }} participants</p>
+        <table class="border-collapse border border-gray-400">
+    <thead>
+      <tr>
+        <th class="border border-gray-400 px-4 py-2">S/N</th>
+        <th class="border border-gray-400 px-4 py-2">Username</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(user, index) in users" :key="index" class="border border-gray-400">
+        <td class="border border-gray-400 px-4 py-2">{{ index + 1 }}</td>
+        <td class="border border-gray-400 px-4 py-2">{{ user }}</td>
+      </tr>
+    </tbody>
+  </table>
+      </div>
+    </div>
   
   </template>
   
@@ -67,6 +94,8 @@ export default {
         totalAmount: 5000,
         expiryDate: '2025-01-03',
       },
+      users: ['232323', '2323232', '2323'],
+      showModal: false,
       transactions: [
         { id: 1, date: '2022-01-01', amount: 800, description: 'Transaction 1',userID:3 },
         { id: 2, date: '2022-01-05', amount: 200, description: 'Transaction 2',userID: 1 },
@@ -79,6 +108,9 @@ export default {
     this.fetchTransactionHistory();
   },
   methods: {
+    toggleModal() {
+      this.showModal = !this.showModal;
+    },
     async fetchPoolDetails() {
       try {
         const response = await fetch('http://localhost:5005/Pool/1'); // Replace '1' with the actual pool ID
@@ -248,6 +280,44 @@ li {
   .grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border-radius: 0.375rem;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 1000;
+  max-width: 500px; 
+}
+
+.modal-content {
+  background-color:white;
+  padding: 50px;
+  border: 1px solid #888;
+  text-align:center;
+  width: 100%;
+}
+
+.close {
+  color: #aaa;
+  position: absolute;
+  top: 1rem; 
+  right: 1rem; 
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }
   </style>
   

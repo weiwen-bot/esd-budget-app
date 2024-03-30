@@ -4,13 +4,15 @@
       <router-link to="/" class="text-black hover:text-blue-700 text-lg">&lt; </router-link>
     </div>
     <h1 class="text-2xl font-bold mb-4">Pool Invites</h1>
+    <div v-if="poolInvites.length === 0" class="mb-2">You have no pending pool invites</div>
+        <div v-else class="mb-2">You have <strong>{{ poolInvites.length }}</strong> pending pool invite(s).</div>
     <div class="grid gap-4">
       <div v-for="(invite, index) in poolInvites" :key="index" class="bg-white shadow-md rounded-md p-4">
   <p class="text-xs text-gray-500 mb-2">{{daysAgo(invite.pool.inviteDate) }}</p>
   <p>You have been invited to join {{ invite.pool.name }} by {{ invite.pool.userName }}</p>
   <div class="flex justify-between mt-2">
-    <button @click="acceptInvite(invite)" class="btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Accept</button>
-    <button @click="declineInvite(invite)" class="btn bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Decline</button>
+    <button @click="acceptInvite(invite)" class="btn btn-accept">Accept</button>
+  <button @click="declineInvite(invite)" class="btn btn-decline">Decline</button>
   </div>
 </div>
 
@@ -181,4 +183,23 @@ export default {
 .text-white {
   color: #fff;
 }
+
+.btn-accept {
+  background-color: #34d399;
+  color: white;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  width: 45%; /* Adjust the width as needed */
+}
+
+.btn-decline {
+  background-color: #ef4444;
+  color: white;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  width: 45%; /* Adjust the width as needed */
+}
+
 </style>

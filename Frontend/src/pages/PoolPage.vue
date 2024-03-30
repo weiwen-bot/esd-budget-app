@@ -1,5 +1,10 @@
 <template>
-  <div class="container mx-auto p-4">
+  <div class="container mx-auto p-4 relative">
+    <router-link to="/notification" class="absolute top-4 right-4">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="black" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+        </svg>
+    </router-link>
     <h1 class="text-2xl font-bold mb-4">Pool List</h1>
     <p v-if="pools.length === 0" class="mb-2">You are not in any pools right now. Check your invite page or create one today!</p>
     <p v-else class="mb-2">You are in <strong>{{ pools.length }}</strong> pools</p>
@@ -7,7 +12,7 @@
       <router-link to="/poolcreation" class="border border-black text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white">
         Create Pool
       </router-link>
-      <router-link to="/poolcreation" class="border border-black text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white">
+      <router-link to="/poolinvite" class="border border-black text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white">
         Invite Page
       </router-link>
     </div>
@@ -69,13 +74,6 @@ export default {
     description: 'Japan Trip after Finals',
     currentAmount: 1200,
     totalAmount: 5000,
-    expiryDate:'2025-01-03',
-    transactions: [
-      { id: 1, date: '2022-01-01', amount: 800, description: 'Transaction 1' },
-      { id: 2, date: '2022-01-05', amount: 200, description: 'Transaction 2' },
-      { id: 3, date: '2022-01-06', amount: 200, description: 'Transaction 3',userID: 1 }
-      // Add more transactions as needed
-    ],
   },
   {
     id: 2,
@@ -86,13 +84,8 @@ export default {
     currentAmount: 6000,
     totalAmount: 8000,
     expiryDate:'2024-01-05',
-    transactions: [
-      { id: 3, date: '2022-01-10', amount: 1000, description: 'Transaction 3' },
-      { id: 4, date: '2022-01-15', amount: 500, description: 'Transaction 4' },
-      // Add more transactions as needed
-    ],
+    
   },
-  // Add more pools as needed
 ],
     }
   },

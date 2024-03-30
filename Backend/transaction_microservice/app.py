@@ -26,16 +26,19 @@ class Transaction(db.Model):
     transactionDate = db.Column(db.DateTime, nullable=False, default=datetime.now)
     userID = db.Column(db.Integer, db.ForeignKey('transaction.userID'), nullable=False)
     poolID = db.Column(db.Integer, db.ForeignKey('transaction.poolID'), nullable=False)
+    paymentIntent = db.Column(db.String(255), nullable=True)
 
-    def __init__(self, amount, status, userID, poolID):
+    def __init__(self, amount, status, userID, poolID, paymentIntent="Empty"):
         self.amount = amount
         self.status = status
         self.userID = userID
         self.poolID = poolID
+        self.paymentIntent = paymentIntent
 
 
     def json(self):
-        return {"transactionID": self.transactionID, "amount": self.amount, "status": self.status, "transactionDate": self.transactionDate, "userID": self.userID, "poolID": self.poolID}
+        return {"transactionID": self.transactionID, "amount": self.amount, "status": self.status, "transactionDate": self.transactionDate, "userID": self.userID, "poolID": self.poolID,
+                "paymentIntent": self.paymentIntent}
 
 #get all transactions
 @app.route("/transactions")
@@ -191,30 +194,6 @@ def get_Transactions_By_User(userID):
         }
     ), 404
 
-
-# def publish_transaction_message(transaction):
-#     connection = amqp_connection.create_connection()
-#     channel = connection.channel()
-
-#     exchange_name = 'Notification'
-#     routing_key = 'transaction.created' if transaction.status == 'created' else 'transaction.deleted'
-
-#     message = {
-#         'transaction_id': transaction.transactionID,
-#         'amount': transaction.amount,
-#         'status': transaction.status,
-#         'transaction_date': transaction.transactionDate.strftime('%Y-%m-%d %H:%M:%S'),
-#         'user_id': transaction.userID,
-#         'pool_id': transaction.poolID
-#     }
-#     msg = json.dumps(message)
-#     channel.basic_publish(exchange=exchange_name, routing_key=routing_key, body=msg)
-
-#     channel.close()
-#     connection.close()
-
-
     
 if __name__ == '__main__':
-#   amqp_connection.create_connection()
   app.run(host='0.0.0.0', port=5003, debug=True)

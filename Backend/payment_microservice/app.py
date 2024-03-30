@@ -77,7 +77,7 @@ def create_checkout_session():
     # userid = 1
     # poolid = 1
      #Amt in cents
-    max_amt = data['maximum'] * 100
+    max_amt = data['remaining'] * 100
     pool_name = data['pool_name']
     userid = data['UserID']
     poolid = data['PoolID']
@@ -98,7 +98,8 @@ def create_checkout_session():
             payment_method_types=["card"],
             mode="payment",
             line_items=[{"price": price_id, "quantity": 1}],
-            # metadata={"UserID": userid, "PoolID": poolid}
+            # int passed with be convereted to string
+            metadata={"UserID": userid, "PoolID": poolid}
 
 
         )
@@ -125,15 +126,15 @@ def webhook():
         raise e
 
     # Handle the event
-    if event['type'] == 'payment_intent.succeeded':
-      payment_intent = event['data']['object']
-      print("PaymentIntent was successful!")
-    elif event['type'] == 'checkout.session.completed':
+    # if event['type'] == 'payment_intent.succeeded':
+    #   payment_intent = event['data']['object']
+    #   print("PaymentIntent was successful!")
+    if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
         forward_webhook(event)
         return jsonify({"code":200,"session":session})
-    else:
-      print('Unhandled event type {}'.format(event['type']))
+    # else:
+    #   print('Unhandled event type {}'.format(event['type']))
 
     
 

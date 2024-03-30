@@ -72,19 +72,41 @@ def callback(channel, method, properties, body): # required signature for the ca
 def processNotification(notif):
     print("Notification: Recording an Notification")
     print(notif)
-    msg = f"{notif['UserName']} has {notif['status']} your request to join pool {notif['PoolName']}"
-    noti = Notification(
-        notification_type='hello',
-    receiver_id=notif['PoolOwner'],
+
+    if notif['notif_type'] == 'pool_request':
+        receiver = notif['PoolOwner']
+        msg = f"{notif['UserName']} has {notif['status']} your request to join pool {notif['PoolName']}"
+    elif notif['notif_type'] == 'payment_status':
+        receiver = notif['UserID']
+        msg = f"You has a payment status of {notif['payment_status']} for {notif['PoolName']} with an amount of {notif['amount_total']}"
+
+        msg_owner = f"Your {notif['PoolName']} have received an amount of {notif['amount_total']} from {notif['UserName']}"
+
+        storedb(notif['notif_type'],notif['PoolOwner'],msg_owner)
+    elif notif['notif_type'] == 'pool_status':
+        receiver = notif['PoolOwner']
+        msg = f"Your pool {notif['PoolName']} has a reached of a full amount of {notif['Budget']}"
+        print("Notification: Pool is completed")
+    
+    storedb(notif['notif_type'],receiver,msg)
+    print("Notification: Notification recorded successfully")
+
+
+def storedb(noti_type,receive,msg):
+    noti_owner = Notification(
+    notification_type=noti_type,
+    receiver_id=receive,
     message=msg,
     status='New'
     )
     try:
-        db.session.add(noti)
+        db.session.add(noti_owner)
         db.session.commit()
     except Exception as e:
         print(e)
         print("Notification: Error recording an Notification")
+    return noti_owner
+
 
 if __name__ == '__main__':
     print("activity_log: Getting Connection")

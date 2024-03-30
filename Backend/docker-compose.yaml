@@ -173,7 +173,7 @@ services:
       
 
   ###############################################
-  # Place Order: The Place Order microservice
+  # pool_management: The pool_management microservice
   ###############################################
   pool_management:
     build:
@@ -193,5 +193,38 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5100:5100"
+
+  ###############################################
+  # load_ui: The load_ui microservice
+  ###############################################
+  load_ui:
+    build:
+      context: ./load_ui_complexservice
+      dockerfile: Dockerfile
+    image: weiwen2022/load_ui:esd
+    restart: always
+    depends_on:
+      - user
+      - transaction
+      - pool
+    ports:
+      - "5200:5200"
+
+  ##################################
+  # transaction: The transaction microservice
+  ##################################
+  transaction_consume:
+    build:
+      context: ./transaction_consume
+      dockerfile: Dockerfile
+    image: weiwen2022/transaction_consume:esd_proj
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/transaction
+      PYTHONUNBUFFERED: 1
 
   

@@ -97,6 +97,7 @@ def processpool_request(friend):
     friend['PoolOwner'] = pool_info['data']['UserID']
     friend['PoolName'] = pool_info['data']['pool_name']
     friend['UserName'] = user_info['data']['UserName']
+    friend['notif_type'] = 'pool_request'
     message = json.dumps(friend)
     if res_status == 'Accepted':
         channel.basic_publish(exchange=exchangename, routing_key="poolrequest.success", 
@@ -104,6 +105,13 @@ def processpool_request(friend):
         
         print("\nRequest status ({:d}) published to the RabbitMQ Exchange:".format(
             200), friend)
+    elif res_status == 'Rejected':
+        channel.basic_publish(exchange=exchangename, routing_key="poolrequest.rejected", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2))
+        
+        print("\nRequest status ({:d}) published to the RabbitMQ Exchange:".format(
+            200), friend)
+
 
     delete_status = invoke_http("http://pool_request:5002/pool_request", method='DELETE', json=friend)
     return jsonify({'code': 200, 'message': 'Pool request responded successfully','delete':delete_status,'friend_res':friend_res})

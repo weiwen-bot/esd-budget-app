@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS `transaction` (
   `transactionDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `userID` int(11) NOT NULL,
   `poolID` int(11) NOT NULL,
+  `paymentIntent` varchar(255) NULL,
   PRIMARY KEY (`transactionID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

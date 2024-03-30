@@ -13,7 +13,7 @@ services:
     build:
       context: ./payment_microservice
       dockerfile: Dockerfile
-    image: yuanzhi/payment:esd_proj
+    image: fsorange/payment:esd_proj
     restart: always
     environment:
       PYTHONUNBUFFERED: 1
@@ -33,7 +33,7 @@ services:
     build:
       context: ./pool_microservice
       dockerfile: Dockerfile
-    image: yuanzhi/pool:esd_proj
+    image: fsorange/pool:esd_proj
     restart: always
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/pool
@@ -51,7 +51,7 @@ services:
     build:
       context: ./pool_request_microservice
       dockerfile: Dockerfile
-    image: yuanzhi/pool_request:esd_proj
+    image: fsorange/pool_request:esd_proj
     restart: always
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/pool_request
@@ -69,7 +69,7 @@ services:
     build:
       context: ./transaction_microservice
       dockerfile: Dockerfile
-    image: yuanzhi/transaction:esd_proj
+    image: fsorange/transaction:esd_proj
     restart: always
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/transaction
@@ -88,7 +88,7 @@ services:
     build:
       context: ./user_microservice
       dockerfile: Dockerfile
-    image: yuanzhi/user:esd_proj
+    image: fsorange/user:esd_proj
     restart: always
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/user
@@ -106,7 +106,7 @@ services:
     build:
       context: ./notification_microservice
       dockerfile: Dockerfile
-    image: yuanzhi/notification:esd_proj
+    image: fsorange/notification:esd_proj
     restart: always
     depends_on:
       - rabbitmq
@@ -128,7 +128,7 @@ services:
     build:
       context: ./error_microservice
       dockerfile: Dockerfile
-    image: yuanzhi/error:esd_proj
+    image: fsorange/error:esd_proj
     restart: always
     depends_on:
       - rabbitmq
@@ -151,7 +151,7 @@ services:
     build:
       context: ./pool_mapping_consumer
       dockerfile: Dockerfile
-    image: yuanzhi/pool_mapping:esd_proj
+    image: fsorange/pool_mapping:esd_proj
     restart: always
     depends_on:
       - rabbitmq
@@ -160,8 +160,8 @@ services:
       rabbit_port: 5672
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/pool
       PYTHONUNBUFFERED: 1
-    # networks:
-    #   - kong-net
+    networks:
+      - kong-net
       
   ##################################
   # notification_consume: The notification_consume microservice
@@ -171,7 +171,7 @@ services:
     build:
       context: ./notification_consume
       dockerfile: Dockerfile
-    image: yuanzhi/notification_consume:esd_proj
+    image: fsorange/notification_consume:esd_proj
     restart: always
     depends_on:
       - rabbitmq
@@ -180,8 +180,8 @@ services:
       rabbit_port: 5672
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/notification
       PYTHONUNBUFFERED: 1
-    # networks:
-    #   - kong-net
+    networks:
+      - kong-net
 
 
   ####################################
@@ -212,7 +212,7 @@ services:
     build:
       context: ./poolmanagement_complexservice
       dockerfile: Dockerfile
-    image: yuanzhi/pool_management:esd
+    image: fsorange/pool_management:esd
     restart: always
     depends_on:
       - user

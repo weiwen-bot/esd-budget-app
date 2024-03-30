@@ -121,7 +121,7 @@ services:
       - kong-net
 
   ##################################
-  # noti: The noti microservice
+  # error: The error microservice
   ##################################
   error:
     container_name: "error"

@@ -8,17 +8,17 @@
     <div class="bg-white shadow-md rounded-md p-4">
       <div class="border-b-2 border-gray-400 mb-4 pb-2">
         <h2 class="text-lg font-semibold">{{ pool.name }} 
-          <button @click="toggleModal" style="margin: 0px; padding: 0px;">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-              <image href="../assets/Pool_Participant.png" width="24" height="24" />
-            </svg>
-          </button>
+          <h2 class="text-sm font-semibold italic">Created by you!</h2>
+          <div class="flex justify-center mt-2 mb-2">
+  <button @click="toggleModal" style="margin: 0px; padding: 1px; border: 1px solid black; border-radius: 3px; background-color: #f8f8f8; box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); margin-right: 5px;" class="flex flex-col items-center">
+    <span class="text-sm">View Users</span>
+  </button>
+  <router-link to="/inviteusers" class="border border-black text-black rounded text-sm" style="margin: 0px; padding: 1px; border: 1px solid black; border-radius: 3px; background-color: #f8f8f8 rgba(0, 0, 0, 0.2);">
+    <span class="text-sm" style="margin:3px">Invite</span>
+  </router-link>
+</div>
 
         </h2>
-        <h2 class="text-sm font-semibold italic">Created by you!</h2>
-      </div>
-      <div class="flex justify-center mb-3">
-        <router-link to="/inviteusers" class="border border-black text-black font-bold py-1 px-2 rounded text-sm hover:bg-black hover:text-white">Invite to Pool</router-link>
       </div>
       <div class="mb-4">
         <p class="mb-4"><strong>Description:</strong><br> {{ pool.description }}</p>

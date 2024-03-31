@@ -29,11 +29,11 @@
           Add Participants
         </button>
       </div>
-      <div v-if="showUserList" class="mt-4">
+      <div v-if="showUserList" class="mt-4 ">
         <h2 class="text-lg font-semibold mb-2">Users:</h2>
-        <div v-for="user in userList" :key="user.id" class="flex items-center mb-2">
+        <div v-for="user in userList" :key="user.id" class="mb-2">
           <input type="checkbox"  v-model="selectedUsers" :value="user.id" class="mr-2">
-          <span class="text-center">{{ user.name }}</span>
+          <span>{{ user.name }}</span>
         </div>
       </div>
       <div class="flex items-center justify-center mt-4">

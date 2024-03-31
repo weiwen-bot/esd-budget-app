@@ -55,16 +55,16 @@
             </svg>
           </button>
         </h2>
-        <h2 class="text-sm font-semibold italic">Created by {{ pool.userName }}</h2>
+        <h2 class="text-sm font-semibold italic black">Created by {{ pool.userName }}</h2>
       </div>
       <div class="mb-4">
-        <p class="mb-4"><strong>Description:</strong><br> {{ pool.description }}</p>
-        <p class="mb-4"><strong>Category:</strong><br>{{ pool.category }}</p>
-        <p class="mb-4"><strong>Created by:</strong><br>{{ pool.userName }}</p>
+        <p class="mb-4" style="color:black"><strong>Description:</strong><br> {{ pool.description }}</p>
+        <p class="mb-4 text-black" style="color:black"><strong>Category:</strong><br>{{ pool.category }}</p>
+        <p class="mb-4 text-black" style="color:black"><strong>Created by:</strong><br>{{ pool.userName }}</p>
       </div>
       <div class="mb-4">
         <p><strong>Progress:</strong></p>
-        <p>${{ pool.currentAmount }} / ${{ pool.totalAmount }}</p>
+        <p style="color:black">${{ pool.currentAmount }} / ${{ pool.totalAmount }}</p>
         <div class="progress-bar-container">
           <div class="progress-bar"
             :style="{ width: `${calculateProgressPercentage(pool.currentAmount, pool.totalAmount)}` }"></div>

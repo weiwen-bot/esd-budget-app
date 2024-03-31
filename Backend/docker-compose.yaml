@@ -20,6 +20,7 @@ services:
       WEB_HOOK_SECRET: ${WEB_HOOK_SECRET}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
       STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+      dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/refund
     ports:
       - "4242:4242"
     networks:
@@ -183,6 +184,27 @@ services:
     networks:
       - kong-net
 
+  ###############################################
+  # payment complex Order: The payment complex microservice
+  ###############################################
+  payment_manage:
+    build:
+      context: ./payment_complexservice
+      dockerfile: Dockerfile
+    image: weiwen2022/payment_manage:esd
+    restart: always
+    depends_on:
+      - payment
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
+      WEB_HOOK_SECRET: ${WEB_HOOK_SECRET}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+    ports:
+      - "5101:5101"
+
 
   ####################################
   # RabbitMQ: The messaging broker   
@@ -205,7 +227,7 @@ services:
       
 
   ###############################################
-  # Place Order: The Place Order microservice
+  # pool_management: The pool_management microservice
   ###############################################
   pool_management:
     container_name: "pool_management"
@@ -227,10 +249,39 @@ services:
     ports:
       - "5100:5100"
 
-    networks:
-      - kong-net
 
-networks:
-  kong-net:
-    external: true
+  ###############################################
+  # load_ui: The load_ui microservice
+  ###############################################
+  load_ui:
+    build:
+      context: ./load_ui_complexservice
+      dockerfile: Dockerfile
+    image: weiwen2022/load_ui:esd
+    restart: always
+    depends_on:
+      - user
+      - transaction
+      - pool
+    ports:
+      - "5200:5200"
+
+  ##################################
+  # transaction: The transaction microservice
+  ##################################
+  transaction_consume:
+    build:
+      context: ./transaction_consume
+      dockerfile: Dockerfile
+    image: weiwen2022/transaction_consume:esd_proj
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/transaction
+      PYTHONUNBUFFERED: 1
+
+
   

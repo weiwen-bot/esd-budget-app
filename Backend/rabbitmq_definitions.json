@@ -45,12 +45,28 @@
         "durable": true,
         "auto_delete": false,
         "arguments": {}
+      },
+      {
+        "name": "transaction",
+        "vhost": "/",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
       }
   
     ],
     "exchanges": [
       {
         "name": "pool_request",
+        "vhost": "/",
+        "type": "topic",
+        "durable": true,
+        "auto_delete": false,
+        "internal": false,
+        "arguments": {}
+      },
+      {
+        "name": "payment_status",
         "vhost": "/",
         "type": "topic",
         "durable": true,
@@ -72,6 +88,22 @@
         "source": "pool_request",
         "vhost": "/",
         "destination": "pool_mapping",
+        "destination_type": "queue",
+        "routing_key": "*.success",
+        "arguments": {}
+      },
+      {
+        "source": "payment_status",
+        "vhost": "/",
+        "destination": "Notification",
+        "destination_type": "queue",
+        "routing_key": "#",
+        "arguments": {}
+      },
+      {
+        "source": "payment_status",
+        "vhost": "/",
+        "destination": "transaction",
         "destination_type": "queue",
         "routing_key": "*.success",
         "arguments": {}

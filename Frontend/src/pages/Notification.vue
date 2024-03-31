@@ -1,19 +1,19 @@
 <template>
-    <div class="container mx-auto p-4">
-        <h1 class="text-2xl font-bold mb-4">Notifications</h1>
-        <div v-if="notifications.length === 0" class="mb-2">You have no notifications</div>
-        <div v-else class="mb-2">You have <strong>{{ notifications.length }}</strong> notification(s).</div>
-        <div class="grid grid-cols-1 gap-4">
-        <div v-for="(notification, index) in notifications" :key="index" class="bg-white shadow-md rounded-md p-4 relative">
-            <button @click="deleteNotification(index)" class="text-red-500 relative top-0 left-0 text-xs">
-                X
-            </button>
-          <p>{{ notification }}</p>
-        </div>
+  <div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">Notifications</h1>
+    <div v-if="notifications.length === 0" class="mb-2">You have no notifications</div>
+    <div v-else class="mb-2">You have <strong>{{ notifications.length }}</strong> notification(s).</div>
+    <div class="grid grid-cols-1 gap-4">
+      <div v-for="(notification, index) in notifications" :key="index" class="bg-white shadow-md rounded-md p-4 flex items-center justify-between">
+        <p style="margin-right: 50px;">{{ notification }}</p>
+        <button @click="deleteNotification(index)" class="text-red-500 text-xs">
+          Delete
+        </button>
       </div>
     </div>
-  </template>
-  
+  </div>
+</template>
+
   <script>
   export default {
     name: 'Notifications',
@@ -34,12 +34,20 @@
   };
   </script>
   
-  <style>
+  <style scoped>
   .container {
     margin-left: auto;
     margin-right: auto;
     padding-left: 1rem;
     padding-right: 1rem;
+  }
+
+  button{
+    width: 60px;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    background-color: white;
   }
   
   .text-2xl {

@@ -13,7 +13,7 @@
         Create Pool
       </router-link>
       <router-link to="/poolinvite" class="border border-black text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white">
-        Invite Page
+        Invite Requests
       </router-link>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

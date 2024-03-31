@@ -1,8 +1,9 @@
 <template>
-  <div class="flex justify-center items-center h-screen bg-gray-100">
-    <div class="border-2 border-gray-300 rounded-lg shadow-md px-8 pt-6 pb-8 mb-4 w-full max-w-xs">
+  <div class="flex justify-center">
+    <div class="border-2 border-gray-300 rounded-lg shadow-md px-2 pt-6 pb-8 mb-4 w-full max-w-xs">
       <h1 class="text-2xl font-bold mb-4 text-gray-800">Login</h1>
       <form @submit.prevent="login" class="card">
+        <div>
         <div class="mb-4">
           <label class="block text-gray-700 text-sm font-bold mb-1" for="username">Username: </label>
           <input class="w-full px-3 py-2 border rounded-md focus:outline-none focus:shadow-outline-blue focus:ring focus:ring-blue-400" id="username" type="text" v-model="username" required>
@@ -20,7 +21,9 @@
             Login
           </button>
         </div>
+      </div>
       </form>
+      
       <div v-if="errorMessage" class="mt-4 text-red-500">{{ errorMessage }}</div>
       <p class="text-sm text-black text-center mt-4">
   Don't have an account? <router-link to="/register" class="underline text-blue-500 hover:text-blue-700"><p>Register</p></router-link>

@@ -23,7 +23,19 @@
         <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="expiryDate" type="date" v-model="expiryDate" required>
       </div>
       <div class="flex items-center justify-center">
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" @click="createPool">
+        <button class="border border-black text-black font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-sm" @click="showUserList =!showUserList">
+          Add Participants
+        </button>
+      </div>
+      <div v-if="showUserList" class="mt-4">
+        <h2 class="text-lg font-semibold mb-2">Users:</h2>
+        <div v-for="user in userList" :key="user.id" class="flex items-center mb-2">
+          <input type="checkbox"  v-model="selectedUsers" :value="user.id" class="mr-2">
+          <span class="text-center">{{ user.name }}</span>
+        </div>
+      </div>
+      <div class="flex items-center justify-center mt-4">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py- px-4 rounded focus:outline-none focus:shadow-outline" @click="createPool">
           Create Pool
         </button>
       </div>
@@ -40,16 +52,25 @@
         poolName: '', 
         poolType: 'payment', 
         targetBudget: '', 
-        expiryDate: '' 
+        expiryDate: '',
+        userList: [ 
+        { id: 1, name: 'User1' },
+        { id: 2, name: 'User2' },
+        { id: 3, name: 'User3' },
+      ],
+      showUserList: false,
+      selectedUsers: []
       }; 
     }, 
     methods: { 
       createPool() { 
-        console.log('Creating pool'); 
+        console.log('Creating pool with selected users');
+        console.log('Selected users:', this.selectedUsers);
+  
         // pool creating logic 
-      } 
-    } 
-  }; 
+      },
+  }
+}
   </script> 
    
   <style> 

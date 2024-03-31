@@ -1,6 +1,6 @@
 <template> 
     
-  <div class="flex justify-center items-center h-screen">
+  <div class="flex justify-center">
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-xs relative">
       <div class="absolute left-3">
       <router-link to="/login" class="text-black hover:text-blue-700 text-lg">&lt; </router-link>   

@@ -33,7 +33,7 @@
         </div>
       </div>
       <div class="flex justify-center mb-4 space-x-4">
-        <div class="flex justify-center mb-4 space-x-4">
+        <div class="mb-4 flex justify-center space-x-4">
           <button v-if="pool.category === 'Fund'" @click="contribute" class="btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Contribute</button>
           <button v-if="pool.category === 'Fund'" @click="makePayment" class="btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Make Payment</button>
           <button v-if="pool.category === 'Payment'" @click="reimburse" class="btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Reimburse</button>

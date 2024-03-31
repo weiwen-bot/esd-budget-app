@@ -1,7 +1,7 @@
 <template>
     <nav class="bg-white-800 p-4">
       <div class="max-w-7xl mx-auto">
-        <div class="flex justify-between">
+        <div class="flex justify-center">
           <div class="flex space-x-4">
             <ul class="flex border-b">
               <!-- Navigation Links -->

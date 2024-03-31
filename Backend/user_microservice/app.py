@@ -32,7 +32,6 @@ class User(db.Model):
         self.PhoneNumber = PhoneNumber
         self.Credits = Credits
         self.Account_no = Account_no
-
         self.Email = Email
         self.Password = Password
 
@@ -72,6 +71,8 @@ def login():
             "message": "User not found."
         }
     ), 404
+
+
 
 #get all users
 @app.route("/user")

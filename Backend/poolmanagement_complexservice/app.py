@@ -14,13 +14,19 @@ import amqp_connection
 app = Flask(__name__)
 CORS(app)
 
-order_URL = environ.get('order_URL') or "http://localhost:5001/order" 
-shipping_record_URL = environ.get('shipping_record_URL') or "http://localhost:5002/shipping_record" 
+# order_URL = environ.get('order_URL') or "http://localhost:5001/order" 
+# shipping_record_URL = environ.get('shipping_record_URL') or "http://localhost:5002/shipping_record" 
 #activity_log_URL = "http://localhost:5003/activity_log"
 #error_URL = "http://localhost:5004/error"
 
-exchangename = "order_topic" # exchange name
+exchangename = "pool_request" # exchange name
 exchangetype = "topic" # use a 'topic' exchange to enable interaction
+connection = amqp_connection.create_connection() 
+channel = connection.channel()
+
+if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
+    print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
+    sys.exit(0) 
 
 
 @app.route("/create_pool", methods=['POST'])
@@ -31,13 +37,16 @@ def create_pool():
             payload = request.get_json()
             pool_info = payload["pool_info"]
             pool_invite = payload["pool_invites"]
+            
             print("\nReceived an pool creation in JSON:", pool_info)
-
+            print(pool_info)
             result = poolcreation(pool_info)
             print('\n------------------------')
             print('\nresult: ', result)
             if result['code'] in range(200,300):
-                friend_result = invoke_http("http://127.0.0.1:5002/pool_request/multiple", method='POST', json=pool_invite)
+                poolID = result['data']['PoolID']
+                pool_invite = [{"poolid":poolID,"userid":x} for x in pool_invite]
+                friend_result = invoke_http("http://pool_request:5002/pool_request/multiple", method='POST', json=pool_invite)
                 print(friend_result, "FRIENDS HAS BEEN ADDED")
 
             return result
@@ -62,24 +71,73 @@ def create_pool():
 
 @app.route("/accept_pool_request", methods=['PUT'])
 def accept_pool_request():
+    print(request.get_json())
     try:
         friend = request.get_json()
-        friend = {
-        "UserID": 1,
-        "PoolID": 1,
-        "status": "Accepted"
-        }
-        friend_res = invoke_http("http://127.0.0.1:5002/pool_request", method='PUT', json=friend)
-        if friend_res['data']['status'] == 'Accepted':
-            pass
-
-        delete_status = invoke_http("http://127.0.0.1:5002/pool_request", method='DELETE', json=friend)
-        return jsonify({'code': 200, 'message': 'Pool request responded successfully','delete':delete_status['code'],'friend_res':friend_res['code']})
+        # friend = {
+        # "UserID": 1,
+        # "PoolID": 1,
+        # "status": "Accepted"
+        # }
+        result = processpool_request(friend)
+        return result
+       
     except Exception as e:
         return jsonify({
             "code": 500,
             "message": "pool_management accept internal error: " + str(e)
         }), 500
+
+def processpool_request(friend):
+    friend_res = invoke_http("http://pool_request:5002/pool_request", method='PUT', json=friend)
+    res_status = friend_res['data']['status']
+
+    pool_info = invoke_http("http://pool:5001/Pool/"+str(friend['PoolID']), method='GET')
+    user_info = invoke_http("http://user:5004/user/"+str(friend['UserID']), method='GET')
+    friend['PoolOwner'] = pool_info['data']['UserID']
+    friend['PoolName'] = pool_info['data']['pool_name']
+    friend['UserName'] = user_info['data']['UserName']
+    message = json.dumps(friend)
+    if res_status == 'Accepted':
+        channel.basic_publish(exchange=exchangename, routing_key="poolrequest.success", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2))
+        
+        print("\nRequest status ({:d}) published to the RabbitMQ Exchange:".format(
+            200), friend)
+
+    delete_status = invoke_http("http://pool_request:5002/pool_request", method='DELETE', json=friend)
+    return jsonify({'code': 200, 'message': 'Pool request responded successfully','delete':delete_status,'friend_res':friend_res})
+
+def poolcreation(pool):
+
+    print('\n-----Invoking pool microservice-----')
+    
+    pool = {
+        "Expiry_Date":"2024-05-23",
+        "Current_amount":0,
+        "Budget": 100,
+        "Pool_Type":"Group",
+        "UserID":2,
+        "pool_name":"Pool1",
+        "pool_desc":"There is a pool for you to join!",
+        "Status":"Active"
+    }
+    pool_result = invoke_http("http://pool:5001/Pool", method='POST', json=pool)
+    print('pool_result:', pool_result)
+
+    code = pool_result["code"]
+    message =pool_result
+
+ 
+    if code in range(200, 300):
+        print(message)
+        return message
+    else:
+        return {
+            "code": 500,
+            "data": pool,
+            "message": "Failed to create pool."
+        }    
 
 def poolcreation(pool):
 
@@ -109,9 +167,30 @@ def poolcreation(pool):
             "code": 500,
             "data": pool,
             "message": "Failed to create pool. " + message
-        }    
+        }   
 
-    
+@app.route("/make_transaction", methods=['POST'])
+def process_transaction():
+    try:
+        # transaction_data = request.get_json()
+        transaction_data = {
+        "UserID": 1,
+        "PoolID": 1,
+        "Amount": 100,
+        "Status": "successful"
+        }
+        friend_res = invoke_http("http://127.0.0.1:5003/transactions", method='PUT', json=friend)
+        if friend_res['data']['status'] == 'Accepted':
+            pass
+
+        delete_status = invoke_http("http://127.0.0.1:5002/pool_request", method='DELETE', json=friend)
+        return jsonify({'code': 200, 'message': 'Pool request responded successfully','delete':delete_status['code'],'friend_res':friend_res['code']})
+    except Exception as e:
+        return jsonify({
+            "code": 500,
+            "message": "pool_management accept internal error: " + str(e)
+        }), 500
+     
 
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":

@@ -15,14 +15,16 @@
             <input class="w-full px-3 py-2 border rounded-md focus:outline-none focus:shadow-outline-blue focus:ring focus:ring-blue-400" id="password" type="password" v-model="password" required>
           </div>
         </div>
-        <div class="button-group flex justify-center">  <button type="submit">
+        <div class="flex items-center justify-center">
+          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
             Login
           </button>
         </div>
       </form>
-      <div v-if="errorMessage" class="mt-4 text-red-500">
-        {{ errorMessage }}
-      </div>
+      <div v-if="errorMessage" class="mt-4 text-red-500">{{ errorMessage }}</div>
+      <p class="text-sm text-black text-center mt-4">
+  Don't have an account? <router-link to="/register" class="underline text-blue-500 hover:text-blue-700"><p>Register</p></router-link>
+</p>
     </div>
   </div>
 </template>
@@ -38,6 +40,11 @@ export default {
       errorMessage: ''
     };
   },
+  created(){
+      this.username = sessionStorage.getItem("username");
+      this.password = sessionStorage.getItem("password");
+    
+  },
   methods: {
     async login() {
       if (!this.username || !this.password) {
@@ -45,7 +52,7 @@ export default {
         return;
       }
       try {
-        const response = await fetch('http://localhost:5006/login', {
+        const response = await fetch('http://localhost:5173/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -58,6 +65,9 @@ export default {
         const data = await response.json();
         if (response.ok) {
           console.log('Logged in successfully:', data);
+          console.log(this.username);
+          console.log(this.password);
+          
           // Redirect the user to another page after successful login
           // For example, using Vue Router: this.$router.push('/dashboard');
         } else {

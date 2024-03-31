@@ -8,12 +8,9 @@
     <h1 class="text-2xl font-bold mb-4">Pool List</h1>
     <p v-if="pools.length === 0" class="mb-2">You are not in any pools right now. Check your invite page or create one today!</p>
     <p v-else class="mb-2">You are in <strong>{{ pools.length }}</strong> pools</p>
-    <div class="flex justify-between space-x-4 mb-4">
+    <div class="flex justify-center mb-4">
       <router-link to="/poolcreation" class="border border-black text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white">
         Create Pool
-      </router-link>
-      <router-link to="/poolinvite" class="border border-black text-black font-bold py-2 px-4 rounded hover:bg-black hover:text-white">
-        Invite Page
       </router-link>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

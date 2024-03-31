@@ -39,6 +39,8 @@
               View Pool
             </button>
           </div>
+          
+
         </div>
       </div>
     </div>
@@ -58,8 +60,9 @@ Status = db.Column(db.String(36), nullable=False) -->
 
 
 
-<script> 
+<script>
 import axios from 'axios';
+
 export default {
   name: 'PoolPage',
   data() {
@@ -90,24 +93,15 @@ export default {
     }
   },
   computed: {
+    //
   },
   methods: {
-    viewPool(poolName) { 
+    viewPool(poolName) {
       this.$router.push({ name: 'IndividualPoolPage', params: { poolName } });
-      console.log(`Viewing pool: ${poolName}`); 
+      console.log(`Viewing pool: ${poolName}`);
     },
     async fetchPoolDetails() {
-      try {
-        const response = await fetch('http://localhost:5005/Pool/1'); // Replace '1' with the actual pool ID
-        const data = await response.json();
-        if (response.ok) {
-          this.pools = data.data;
-        } else {
-          console.error('Failed to fetch pool details:', data.message);
-        }
-      } catch (error) {
-        console.error('Error fetching pool details:', error);
-      }
+      // API call to fetch pool details
     },
     async fetchTransactionHistory() {
       try {
@@ -155,11 +149,14 @@ export default {
   },
   components: {},
   created() {
-    this.getStripePublishableKey();
+    // Calculate progress percentage and fetch data on component creation
+    this.pools.forEach((pool) => {
+      pool.progressPercentage = this.calculateProgressPercentage(pool.currentAmount, pool.totalAmount);
+    });
     this.fetchPoolDetails();
     this.fetchTransactionHistory();
   },
-}
+};
 </script>
 
 

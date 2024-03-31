@@ -1,6 +1,7 @@
 
 import amqp_connection
 import json
+import pika
 
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
@@ -42,6 +43,54 @@ class Transaction(db.Model):
         return {"transactionID": self.transactionID, "amount": self.amount, "status": self.status, "transactionDate": self.transactionDate, "userID": self.userID, "poolID": self.poolID,
                 "paymentIntent": self.paymentIntent, "refund_status": self.refund_status}
 
+
+
+e_queue_name = environ.get('Transaction') or 'Transaction'
+
+def receiveTransaction():
+    try:
+        connection = amqp_connection.create_connection()
+        channel = connection.channel()
+
+        try:
+            channel.queue_declare(queue=e_queue_name, durable=True)
+
+            # Bind the queue to the exchange
+            exchange_name = 'Transaction'
+            channel.queue_bind(exchange=exchange_name, queue=e_queue_name, routing_key='transaction')
+
+            def callback(channel, method, properties, body):
+                print(json.loads(body), "hello")
+                try:
+                    msg = json.loads(body)
+                    new_transaction = Transaction(
+                        amount = msg["amount"],
+                        status = msg["status"],
+                        userID = msg["user_id"],
+                        poolID = msg["pool_id"]
+                    )
+                    db.session.add(new_transaction)
+                    db.session.commit()
+                   
+                    
+                    print(f"Added new transaction with ID {new_transaction.transactionID} to the database.")
+                    
+                except Exception as e:
+                    print(f"Error processing message: {e}")
+                        
+            channel.basic_consume(queue=e_queue_name, on_message_callback=callback, auto_ack=True)
+
+            print('transaction microservice: Consuming from queue:', e_queue_name)
+            channel.start_consuming()
+
+        except KeyboardInterrupt:
+            print("transaction microservice: Program interrupted by user.")
+
+    except pika.exceptions.AMQPError as e:
+        print(f"transaction microservice: Failed to connect: {e}")
+        
+    except Exception as e:
+        print(f"transaction microservice: Failed to consume messages: {e}")
 
 
 #get all transactions

@@ -74,11 +74,6 @@ def accept_pool_request():
     print(request.get_json())
     try:
         friend = request.get_json()
-        # friend = {
-        # "UserID": 1,
-        # "PoolID": 1,
-        # "status": "Accepted"
-        # }
         result = processpool_request(friend)
         return result
        
@@ -120,16 +115,16 @@ def poolcreation(pool):
 
     print('\n-----Invoking pool microservice-----')
     
-    pool = {
-        "Expiry_Date":"2024-05-23",
-        "Current_amount":0,
-        "Budget": 100,
-        "Pool_Type":"Group",
-        "UserID":2,
-        "pool_name":"Pool1",
-        "pool_desc":"There is a pool for you to join!",
-        "Status":"Active"
-    }
+    # pool = {
+    #     "Expiry_Date":"2024-05-23",
+    #     "Current_amount":0,
+    #     "Budget": 100,
+    #     "Pool_Type":"Group",
+    #     "UserID":2,
+    #     "pool_name":"Pool1",
+    #     "pool_desc":"There is a pool for you to join!",
+    #     "Status":"Active"
+    # }
     pool_result = invoke_http("http://pool:5001/Pool", method='POST', json=pool)
     print('pool_result:', pool_result)
 
@@ -147,7 +142,7 @@ def poolcreation(pool):
             "message": "Failed to create pool."
         }    
 
-    
+# To implement delete
 
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":

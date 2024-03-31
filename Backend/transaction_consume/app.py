@@ -31,18 +31,20 @@ class Transaction(db.Model):
     userID = db.Column(db.Integer, db.ForeignKey('transaction.userID'), nullable=False)
     poolID = db.Column(db.Integer, db.ForeignKey('transaction.poolID'), nullable=False)
     paymentIntent = db.Column(db.String(255), nullable=True)
+    refund_status = db.Column(db.String(36), nullable=True)
 
-    def __init__(self, amount, status, userID, poolID, paymentIntent="Empty"):
+    def __init__(self, amount, status, userID, poolID, paymentIntent="Empty",refund_status="Empty"):
         self.amount = amount
         self.status = status
         self.userID = userID
         self.poolID = poolID
         self.paymentIntent = paymentIntent
+        self.refund_status = refund_status
 
 
     def json(self):
         return {"transactionID": self.transactionID, "amount": self.amount, "status": self.status, "transactionDate": self.transactionDate, "userID": self.userID, "poolID": self.poolID,
-                "paymentIntent": self.paymentIntent}
+                "paymentIntent": self.paymentIntent, "refund_status": self.refund_status}
 
 
     
@@ -69,20 +71,41 @@ def callback(channel, method, properties, body): # required signature for the ca
 def processTransaction(notif):
     print("Transaction: Recording an Transaction")
     print(notif)
+    if notif['notif_type'] == "refund":
+        for transaction in notif['batchmessage']:
+            recordTransaction(transaction)
+        return 200
+        
+    recordTransaction(notif)
+    # noti = Transaction(
+    # amount = notif['amount_total'],
+    # status = notif['payment_status'],
+    # userID = notif['UserID'],
+    # poolID = notif['PoolID'],
+    # paymentIntent= notif['payment_intent']
+    # )
+    # try:
+    #     db.session.add(noti)
+    #     db.session.commit()
+    # except Exception as e:
+    #     print(e)
+    #     print("Transaction: Error recording an Transaction")
 
-    noti = Transaction(
-    amount = notif['amount_total'],
-    status = notif['payment_status'],
-    userID = notif['UserID'],
-    poolID = notif['PoolID'],
-    paymentIntent= notif['payment_intent']
+def recordTransaction(transaction):
+    trans = Transaction(
+    amount = transaction['amount_total'],
+    status = transaction['payment_status'],
+    userID = transaction['UserID'],
+    poolID = transaction['PoolID'],
+    paymentIntent= transaction['payment_intent']
     )
     try:
-        db.session.add(noti)
+        db.session.add(trans)
         db.session.commit()
     except Exception as e:
         print(e)
         print("Transaction: Error recording an Transaction")
+
 
 if __name__ == '__main__':
     print("activity_log: Getting Connection")

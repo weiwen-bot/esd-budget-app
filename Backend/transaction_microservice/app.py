@@ -27,18 +27,22 @@ class Transaction(db.Model):
     userID = db.Column(db.Integer, db.ForeignKey('transaction.userID'), nullable=False)
     poolID = db.Column(db.Integer, db.ForeignKey('transaction.poolID'), nullable=False)
     paymentIntent = db.Column(db.String(255), nullable=True)
+    refund_status = db.Column(db.String(36), nullable=True)
 
-    def __init__(self, amount, status, userID, poolID, paymentIntent="Empty"):
+    def __init__(self, amount, status, userID, poolID, paymentIntent="Empty",refund_status="new"):
         self.amount = amount
         self.status = status
         self.userID = userID
         self.poolID = poolID
         self.paymentIntent = paymentIntent
+        self.refund_status = refund_status
 
 
     def json(self):
         return {"transactionID": self.transactionID, "amount": self.amount, "status": self.status, "transactionDate": self.transactionDate, "userID": self.userID, "poolID": self.poolID,
-                "paymentIntent": self.paymentIntent}
+                "paymentIntent": self.paymentIntent, "refund_status": self.refund_status}
+
+
 
 #get all transactions
 @app.route("/transactions")
@@ -134,7 +138,7 @@ def update_transaction(transactionID):
         return jsonify({"code": 404, "message": "Transaction not found."}), 404
 
 #delete transaction
-@app.route("/transactions/<string:transaction_id>", methods=['DELETE'])
+@app.route("/transactions/<int:transaction_id>", methods=['DELETE'])
 def delete_transaction(transaction_id):
 
     try:
@@ -173,10 +177,9 @@ def get_Transactions_By_Pool(poolID):
         }
     ), 404
 
-#get transaction by user
-@app.route("/transactions/user/<int:userID>")
-def get_Transactions_By_User(userID):
-    transactionlist = db.session.scalars(db.select(Transaction).filter_by(userID=userID)).all()
+@app.route("/transactions/pool/<int:poolID>/status/<string:refund_status>" , methods=['GET'])
+def get_Transactions_By_poolandstatus(poolID,refund_status):
+    transactionlist = db.session.scalars(db.select(Transaction).filter_by(poolID=poolID,refund_status=refund_status)).all()
 
     if len(transactionlist) > 0:
         return jsonify(
@@ -193,6 +196,46 @@ def get_Transactions_By_User(userID):
             "message": "No Transactions Found."
         }
     ), 404
+
+@app.route("/transactions/pool/<int:poolID>/status/<string:refund_status>", methods=['PUT'])
+def update_Transactions_By_Pool(poolID,refund_status):
+    transactionlist = db.session.scalars(db.select(Transaction).filter_by(poolID=poolID,refund_status=refund_status)).all()
+
+    if len(transactionlist) > 0:
+        try:
+            for transaction in transactionlist:
+                transaction.refund_status = "refunded"
+            db.session.commit()
+            return jsonify({"code": 200, "data": [transaction.json() for transaction in transactionlist]})
+        except Exception as e:
+            return jsonify({"code": 500, "data": [transaction.json() for transaction in transactionlist], "message": "An error occurred updating the transaction.", "error":str(e)}), 500
+    return jsonify(
+        {
+            "code": 404,
+            "message": "No Transactions Found."
+        }
+    ), 404
+
+# #get transaction by user
+# @app.route("/transactions/user/<int:userID>")
+# def get_Transactions_By_User(userID):
+#     transactionlist = db.session.scalars(db.select(Transaction).filter_by(userID=userID)).all()
+
+#     if len(transactionlist) > 0:
+#         return jsonify(
+#             {
+#                 "code": 200,
+#                 "data": {
+#                     "transactions": [transaction.json() for transaction in transactionlist]
+#                 }
+#             }
+#         )
+#     return jsonify(
+#         {
+#             "code": 404,
+#             "message": "No Transactions Found."
+#         }
+#     ), 404
 
     
 if __name__ == '__main__':

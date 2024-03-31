@@ -19,6 +19,7 @@ services:
       WEB_HOOK_SECRET: ${WEB_HOOK_SECRET}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
       STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+      dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/refund
     ports:
       - "4242:4242"
  

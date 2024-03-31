@@ -22,6 +22,9 @@ CORS(app)
 
 @app.route("/get_userpools/<int:userid>", methods=['GET'])
 def gethomepage(userid):
+        '''
+        Get all Available pools belonging to the user
+        '''
     # Simple check of input format and data of the request are JSON
         try:
             #Owner
@@ -67,6 +70,10 @@ def gethomepage(userid):
 @app.route("/get_pool/<int:poolid>", methods=['GET'])
 def get_pool(poolid):
     # Simple check of input format and data of the request are JSON
+
+    '''
+    Get the pooldetails for the pool
+    '''
     try:
         #Owner
         pool_details = invoke_http(f"http://pool:5001/Pool/{poolid}", method='GET')
@@ -79,12 +86,6 @@ def get_pool(poolid):
         poolmapping = invoke_http("http://pool:5001/pool_mapping", method='GET')
 
         all_poolmapping = poolmapping['data']['pool_mapping']
-
-        # print(pool_details)
-        # print(all_users)
-        # print(poolmapping)
-        # print(all_poolmapping)
-
 
         member_poolid = [x["UserID"] for x in all_poolmapping if x['PoolID'] == poolid]
         print(member_poolid)
@@ -101,7 +102,7 @@ def get_pool(poolid):
 
 
 
-        return pool_dict
+        return pool_dict ,200
     except Exception as e:
         # Unexpected error in code
         exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -115,9 +116,48 @@ def get_pool(poolid):
         }), 500
 
 
-
+@app.route("/get_users/<int:userid>", methods=['GET'])
+def get_pool_invites(userid):
     
+    try:
+        all_users = invoke_http(f"http://user:5004/user", method='GET')['data']['users']
 
+        pool_dict = {"users":[]}
+        for user in all_users:
+            if user['UserID'] != userid:
+                pool_dict['users'].append(user)
+
+        return pool_dict, 200
+
+    except Exception as e:
+        return jsonify({
+            "code": 500,
+            "message": "pool_management internal error: " + str(e)
+        }), 500
+    
+@app.route("/get_newusers/<int:userid>/<int:poolid>", methods=['GET'])
+def get_new_pool_invites(userid,poolid):
+    
+    try:
+        all_users = invoke_http(f"http://user:5004/user", method='GET')['data']['users']
+
+        poolmapping = invoke_http("http://pool:5001/pool_mapping", method='GET')['data']['pool_mapping']
+
+        member_poolid = [x["UserID"] for x in poolmapping if x['PoolID'] == poolid]
+        member_poolid.append(userid)
+
+        pool_dict = {"users":[]}
+        for user in all_users:
+            if user['UserID'] not in member_poolid:
+                pool_dict['users'].append(user)
+
+        return pool_dict, 200
+
+    except Exception as e:
+        return jsonify({
+            "code": 500,
+            "message": "pool_management internal error: " + str(e)
+        }), 500
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for POOL Related...")

@@ -66,6 +66,7 @@ CREATE TABLE IF NOT EXISTS `transaction` (
   `userID` int(11) NOT NULL,
   `poolID` int(11) NOT NULL,
   `paymentIntent` varchar(255) NULL,
+  `refund_status` varchar(36) NULL,
   PRIMARY KEY (`transactionID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -100,5 +101,23 @@ CREATE TABLE IF NOT EXISTS `notification` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+
+CREATE DATABASE IF NOT EXISTS `refund` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `refund`;
+--
+-- Table structure for table `transaction`
+--
+
+DROP TABLE IF EXISTS `refund`;
+CREATE TABLE IF NOT EXISTS `refund` (
+  `refundID` int(11) NOT NULL AUTO_INCREMENT,
+  `amount` decimal(10,2) NOT NULL,
+  `status` varchar(36) NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `userID` int(11) NOT NULL,
+  `poolID` int(11) NOT NULL,
+  PRIMARY KEY (`refundID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 COMMIT;

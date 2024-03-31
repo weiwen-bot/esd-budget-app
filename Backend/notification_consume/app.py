@@ -87,6 +87,17 @@ def processNotification(notif):
         receiver = notif['PoolOwner']
         msg = f"Your pool {notif['PoolName']} has a reached of a full amount of {notif['Budget']}"
         print("Notification: Pool is completed")
+    elif notif['notif_type'] == 'refund':
+
+        for refund in notif['batchmessage']:
+            receiver = refund['UserID']
+            msg = f"You has been refunded {refund['amount']} from pool {refund['PoolName']}"
+            storedb(notif['notif_type'],receiver,msg)
+        for refund in notif['owner_msg']:
+            receiver = refund['PoolOwner']
+            msg = f"You have refunded {refund['total_amt']} from {refund['PoolName']} to the contributors"
+            storedb(notif['notif_type'],receiver,msg)
+        return 200
     
     storedb(notif['notif_type'],receiver,msg)
     print("Notification: Notification recorded successfully")

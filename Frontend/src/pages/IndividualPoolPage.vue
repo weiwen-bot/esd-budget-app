@@ -48,10 +48,10 @@
           </div>
         </div>
         <h2 class="text-lg font-semibold">{{ pool.name }}
-          <button @click="toggleModal" style="margin: 0px; padding: 0px;">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-              stroke="currentColor" class="w-6 h-6">
-              <image href="../assets/Pool_Participant.png" width="24" height="24" />
+          <button @click="toggleModal" style="margin: 0px; padding: 0px;" class="">
+            <svg xmlns="http://www.w3.org/2000/svg"  fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-6 h-6 ">
+              <image href="../assets/Pool_Participant.png" width="24" height="24"/>
             </svg>
           </button>
         </h2>

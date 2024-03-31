@@ -1,8 +1,8 @@
 <template>
   <div class="flex justify-center">
-    <div class="border-2 border-gray-300 rounded-lg shadow-md px-2 pt-6 pb-8 mb-4 w-full max-w-xs">
+    <div class="border-2 border-gray-300 rounded-lg shadow-md px-6 pt-6 pb-8 mb-4 w-full max-w-xs">
       <h1 class="text-2xl font-bold mb-4 text-gray-800">Login</h1>
-      <form @submit.prevent="login" class="card">
+      <form @submit.prevent="login" class="card flex flex-col items-center">
         <div>
         <div class="mb-4">
           <label class="block text-gray-700 text-sm font-bold mb-1" for="username">Username: </label>

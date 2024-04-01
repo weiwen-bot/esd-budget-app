@@ -43,9 +43,11 @@ export const useUsersStore = defineStore({
         
         async accept_pool_request(payload){
             console.log(payload,"SDDS")
+            const url = 'http://127.0.0.1:5100/accept_pool_request'
+            // const url = 'http://localhost:8000/pm/accept_pool_request'
             try{
                 const info = await axios
-                .put(`http://127.0.0.1:5100/accept_pool_request`,
+                .put(url,
                 payload,
                 {headers:{ "Content-Type":"application/json"}})
                 console.log(info)

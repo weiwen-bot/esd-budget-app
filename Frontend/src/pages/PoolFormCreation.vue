@@ -42,43 +42,96 @@
         </button>
       </div>
     </div>
+
+    <!-- Success pop-up -->
+    <div v-if="showSuccessPopup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <p class="text-lg font-semibold text-green-500">Pool created successfully!</p>
+        <button @click="hideSuccessPopup" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg focus:outline-none">Close</button>
+      </div>
+    </div>
   </div>
 </template>
 
-
-
-
-
-   
-  <script> 
-  export default { 
-    name: 'PoolCreation', 
-    data() { 
-      return { 
-        poolName: '', 
-        poolType: 'payment', 
-        targetBudget: '', 
-        expiryDate: '',
-        userList: [ 
+<script> 
+export default { 
+  name: 'PoolCreation', 
+  data() { 
+    return { 
+      poolName: '', 
+      poolType: 'payment', 
+      targetBudget: '', 
+      expiryDate: '',
+      userList: [ 
         { id: 1, name: 'User1' },
         { id: 2, name: 'User2' },
         { id: 3, name: 'User3' },
       ],
       showUserList: false,
-      selectedUsers: []
-      }; 
-    }, 
-    methods: { 
-      createPool() { 
-        console.log('Creating pool with selected users');
-        console.log('Selected users:', this.selectedUsers);
-  
-        // pool creating logic 
-      },
+      selectedUsers: [],
+      showSuccessPopup: false
+    }; 
+  }, 
+  methods: { 
+    async createPool() {
+      // Prepare data to send to the Flask server
+      const requestData = {
+        pool_name: this.poolName,
+        pool_desc: '', // You can add a description field if needed
+        Expiry_Date: this.expiryDate,
+        Current_amount: 0, // This might be initialized with 0 initially
+        Budget: parseFloat(this.targetBudget), // Make sure to parse as float
+        Pool_Type: this.poolType,
+        UserID: 1, // Assuming a default user ID or you need to handle this
+        Status: 'active' // You may want to set default status or handle it dynamically
+      };
+
+      try {
+        // Make POST request to Flask server
+        const response = await fetch('http://127.0.0.1:5001/Pool', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestData)
+        });
+
+        // Check if the request was successful
+        if (response.ok) {
+          // Show success popup
+          this.showSuccessPopup = true;
+
+          // Optionally, you can reset form fields here
+          this.resetForm();
+        } else {
+          // Handle error response
+          const errorData = await response.json();
+          console.error('Failed to create pool:', errorData);
+          // Optionally, you can show error message here
+        }
+      } catch (error) {
+        console.error('Error creating pool:', error);
+        // Handle network error or other exceptions
+      }
+    },
+
+    resetForm() {
+      // Reset form fields
+      this.poolName = '';
+      this.poolType = 'payment';
+      this.targetBudget = '';
+      this.expiryDate = '';
+      this.selectedUsers = [];
+    },
+
+    hideSuccessPopup() {
+      // Hide success pop-up
+      this.showSuccessPopup = false;
+    }
   }
 }
-  </script> 
-   
-  <style> 
+</script> 
+
+<style> 
   
-  </style>
+</style>

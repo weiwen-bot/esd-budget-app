@@ -183,7 +183,7 @@ services:
     build:
       context: ./payment_complexservice
       dockerfile: Dockerfile
-    image: fsorange/payment_manage:esd
+    image: weiwen2022/payment_manage:esd
     restart: always
     depends_on:
       - payment
@@ -248,7 +248,7 @@ services:
     build:
       context: ./load_ui_complexservice
       dockerfile: Dockerfile
-    image: fsorange/load_ui:esd
+    image: weiwen2022/load_ui:esd
     restart: always
     depends_on:
       - user
@@ -264,7 +264,7 @@ services:
     build:
       context: ./transaction_consume
       dockerfile: Dockerfile
-    image: fsorange/transaction_consume:esd_proj
+    image: weiwen2022/transaction_consume:esd_proj
     restart: always
     depends_on:
       - rabbitmq

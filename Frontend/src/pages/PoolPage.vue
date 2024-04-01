@@ -145,7 +145,7 @@ await Promise.all(this.pools.map(async (pool) => {
 },
 
     calculateProgressPercentage(currentAmount, totalAmount) {
-      return (currentAmount / totalAmount) * 100 + '%';
+      return Math.round((currentAmount / totalAmount) * 100) + '%';
     },
   },
   components: {},
@@ -155,7 +155,6 @@ await Promise.all(this.pools.map(async (pool) => {
       pool.progressPercentage = this.calculateProgressPercentage(pool.currentAmount, pool.totalAmount);
     });
     this.fetchPoolDetails();
-    this.fetchTransactionHistory();
   },
 };
 </script>

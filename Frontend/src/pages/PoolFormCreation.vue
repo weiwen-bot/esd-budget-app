@@ -58,7 +58,13 @@
   </div>
 </template>
 
-<script> 
+<script>
+
+import axios from 'axios';
+import { mapStores } from 'pinia';
+import { useAuthStore } from '../store/authStore';
+import { useUsersStore } from '../store/userStore';
+
 export default { 
   name: 'PoolCreation', 
   data() { 
@@ -76,20 +82,33 @@ export default {
       showUserList: false,
       selectedUsers: [],
       showSuccessPopup: false,
-      users: []
+      users: [],
+      userid : '',
+      username : ''
     }; 
-  }, 
+  },
+  computed: {
+    // computed
+    ...mapStores(useAuthStore),
+    ...mapStores(useUsersStore),
+  },
   created() {
     this.fetchUsers();
     },
   methods: { 
     async fetchUsers() {
+      const authStore = useAuthStore();
+      this.userid = authStore.userID
+      this.username = authStore.user
       try {
         const response = await fetch('http://127.0.0.1:5004/user');
         const responseData = await response.json();
 
         if (response.ok) {
           this.users = responseData.data.users;
+          const index = this.users.indexOf(username)
+          this.users = this.users.splice(index, 1);
+
           this.showUserList = true;
         } else {
           console.error('Failed to fetch users:', responseData.message);
@@ -107,7 +126,7 @@ export default {
         Current_amount: 0, // This might be initialized with 0 initially
         Budget: parseFloat(this.targetBudget), // Make sure to parse as float
         Pool_Type: this.poolType,
-        UserID: 1, // Assuming a default user ID or you need to handle this
+        UserID: this.userid, // Assuming a default user ID or you need to handle this
         // 
         // GET USERID FROM LOGIN AND CHANGE THE 1
         // 

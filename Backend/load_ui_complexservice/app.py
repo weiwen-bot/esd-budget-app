@@ -129,17 +129,24 @@ def get_notification(userid):
         all_notification = invoke_http(f"http://notification:5005/notifications/{userid}", method='GET')
         all_request = invoke_http(f"http://pool_request:5002/pool_request/user/{userid}",method='GET')
 
-        pool = invoke_http(f"http://pool:5001/Pool", method='GET')['data']['pools']
-        pool_map = {x["PoolID"]:x["pool_name"] for x in pool}
-        user = invoke_http(f"http://user:5004/user", method='GET')['data']['users']
-        user_map = {x["UserID"]:x["UserName"] for x in user}
+        pool_response = invoke_http(f"http://pool:5001/Pool", method='GET')
+        pool_data = pool_response.get('data', {})
+        pools = pool_data.get('pools', [])
+        pool_map = {x["PoolID"]: x["pool_name"] for x in pools}
+
+        user_response = invoke_http(f"http://user:5004/user", method='GET')
+        user_data = user_response.get('data', {})
+        users = user_data.get('users', [])
+        user_map = {x["UserID"]: x["UserName"] for x in users}
 
         all_req = {"notif":[],"request":[]}
 
         if all_request["code"] != 404:
             for req in all_request['data']:
-                req['PoolName'] = pool_map[req['PoolID']]
-                req['PoolOwner'] = user_map[[ x for x in pool if pool['PoolID'] == req['PoolID']][0]['UserID']]
+                req['PoolName'] = pool_map.get(req['PoolID'], '')
+                pool_owner_id = [pool['UserID'] for pool in pools if pool['PoolID'] == req['PoolID']]
+                if pool_owner_id:
+                    req['PoolOwner'] = user_map.get(pool_owner_id[0], '')
                 all_req['request'].append(req)
             all_req['request'] = all_request['data']
 

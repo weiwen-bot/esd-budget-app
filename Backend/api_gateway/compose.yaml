@@ -1,10 +1,10 @@
 volumes:
   pgdata: 
 
-networks:
-  kong-net:
-    driver: bridge
-    name: kong-net
+# networks:
+#   kong-net:
+#     driver: bridge
+#     name: kong-net
 
 services:
 

@@ -14,8 +14,8 @@
 
           <p>You have been invited to join {{ req.PoolName }} by {{ req.PoolOwner }}</p>
           <div class="flex justify-between mt-2">
-            <button @click="acceptInvite(notification)" class="btn btn-accept">Accept</button>
-            <button @click="declineInvite(notification)" class="btn btn-decline">Decline</button>
+            <button @click="accept_request(req.PoolID,'Accepted')" class="btn btn-accept">Accept</button>
+            <button @click="accept_request(req.PoolID,'Rejected')" class="btn btn-decline">Decline</button>
           </div>
 
 
@@ -68,14 +68,7 @@ export default {
     ...mapStores(useUsersStore),
   },
   methods: {
-    acceptInvite(invite) {
-      console.log('Accepted invite:', invite);
-    },
-    declineInvite(invite) {
-      console.log('Declined invite:', invite);
-    },
     daysAgo(dateString) {
-      console.log(dateString)
       const today = new Date();
       const inviteDate = new Date(dateString);
       const diffTime = today.getTime() - inviteDate.getTime();
@@ -90,17 +83,37 @@ export default {
       }
     },
 
-    
+    async accept_request(poolid,Status){
+      const authStore = useAuthStore();
+      const userStore = useUsersStore();
+      this.userid = authStore.userID;
+      // userid, poolid, Status
+      var payload = {
+        "UserID": this.userid,
+        "PoolID": poolid,
+        "status": Status
+      }
+      console.log(payload)
+      var res = await userStore.accept_pool_request(payload)
+      await this.update_data();
+      return res
+    },
+
+    async update_data(){
+      const authStore = useAuthStore();
+      const userStore = useUsersStore();
+      this.userid = authStore.userID;
+
+      this.data = await userStore.getUserNoti(this.userid);
+      this.notification = this.data.data.data.notif.reverse()
+      this.request = this.data.data.data.request.reverse()
+    }
+
+
 
   },
   async created(){
-    const authStore = useAuthStore();
-    const userStore = useUsersStore();
-    this.userid = authStore.userID;
-
-    this.data = await userStore.getUserNoti(this.userid);
-    this.notification = this.data.data.data.notif
-    this.request = this.data.data.data.request
+    await this.update_data();
 
 
   }

@@ -42,10 +42,65 @@ export const useUsersStore = defineStore({
           },
         
         async accept_pool_request(payload){
+            console.log(payload,"SDDS")
+            try{
+                const info = await axios
+                .put(`http://127.0.0.1:5100/accept_pool_request`,
+                payload,
+                {headers:{ "Content-Type":"application/json"}})
+                console.log(info)
+                return info
+            }
+            catch (error)
+            {
+                console.log(error)
+            }
+            
+    },  
+
+    async payment(payload){
+        // {
+        //     "pool_name": "pool_name",
+        //     "UserID": 1,
+        //     "PoolID": 1,
+        //     "remaining": 100 * 100
+        // }
+        console.log(payload,"SDDS")
+        try{
             const info = await axios
-            .put(`http://127.0.0.1:5100/accept_pool_request/`,{headers:{ "Content-Type":"application/json"}}, payload)
+            .post(`http://127.0.0.1:5101/payment`,
+            payload,
+            {headers:{ "Content-Type":"application/json"}})
             console.log(info)
             return info
+        }
+        catch (error)
+        {
+            console.log(error)
+        }
+        
+    },
+
+    async refund(poolid){
+        // {
+        //     "pool_name": "pool_name",
+        //     "UserID": 1,
+        //     "PoolID": 1,
+        //     "remaining": 100 * 100
+        // }
+        console.log(payload,"SDDS")
+        try{
+            const info = await axios
+            .post(`http://127.0.0.1:5101/refund/${poolid}`,
+            {headers:{ "Content-Type":"application/json"}})
+            console.log(info)
+            return info
+        }
+        catch (error)
+        {
+            console.log(error)
+        }
+        
     },  
 }
 });

@@ -147,6 +147,20 @@ def create_checkout_session():
         return jsonify({"sessionId": checkout_session["id"],"url":checkout_session["url"]})
     except Exception as e:
         return jsonify(error=str(e)), 403
+    
+
+@app.route("/refund_mul", methods=['POST'])
+def refund_mul():
+    data = request.get_json()["refunds"]
+    for refund in data:
+        refund_obj = stripe.Refund.create(
+        payment_intent=refund['paymentIntent'],
+        metadata=refund["metadata"],
+        amount=refund["amt"],
+            
+        )
+        
+    return jsonify({"code": 201, "data": data})
 
 @app.route('/webhook', methods=['POST'])
 def webhook():

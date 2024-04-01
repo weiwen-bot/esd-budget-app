@@ -18,7 +18,7 @@ services:
     build:
       context: ./payment_microservice
       dockerfile: Dockerfile
-    image: fsorange/payment:esd_proj
+    image: weiwen2022/payment:esd_proj
     restart: always
     environment:
       PYTHONUNBUFFERED: 1
@@ -28,8 +28,7 @@ services:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/refund
     ports:
       - "4242:4242"
-    networks:
-      - kong-net
+    
  
   #######################################################
   # pool Record: The pool microservice
@@ -39,15 +38,14 @@ services:
     build:
       context: ./pool_microservice
       dockerfile: Dockerfile
-    image: fsorange/pool:esd_proj
+    image: weiwen2022/pool:esd_proj
     restart: always
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/pool
       PYTHONUNBUFFERED: 1
     ports:
       - "5001:5001"
-    networks:
-      - kong-net
+    
 
   ##################################
   # pool_request: The pool_request microservice
@@ -57,15 +55,14 @@ services:
     build:
       context: ./pool_request_microservice
       dockerfile: Dockerfile
-    image: fsorange/pool_request:esd_proj
+    image: weiwen2022/pool_request:esd_proj
     restart: always
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/pool_request
       PYTHONUNBUFFERED: 1
     ports:
       - "5002:5002"
-    networks:
-      - kong-net
+    
 
   ##################################
   # transaction: The transaction microservice
@@ -75,15 +72,14 @@ services:
     build:
       context: ./transaction_microservice
       dockerfile: Dockerfile
-    image: fsorange/transaction:esd_proj
+    image: weiwen2022/transaction:esd_proj
     restart: always
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/transaction
       PYTHONUNBUFFERED: 1
     ports:
       - "5003:5003"
-    networks:
-      - kong-net
+    
 
   # ##################################
   # # user: The user microservice
@@ -94,13 +90,12 @@ services:
     build:
       context: ./user_microservice
       dockerfile: Dockerfile
-    image: fsorange/user:esd_proj
+    image: weiwen2022/user:esd_proj
     restart: always
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/user
       PYTHONUNBUFFERED: 1
-    networks:
-      - kong-net
+    
 
 
 
@@ -112,7 +107,7 @@ services:
     build:
       context: ./notification_microservice
       dockerfile: Dockerfile
-    image: fsorange/notification:esd_proj
+    image: weiwen2022/notification:esd_proj
     restart: always
     depends_on:
       - rabbitmq
@@ -123,30 +118,28 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5005:5005"
-    networks:
-      - kong-net
+    
 
   ##################################
   # error: The error microservice
   ##################################
-  error:
-    container_name: "error"
-    build:
-      context: ./error_microservice
-      dockerfile: Dockerfile
-    image: fsorange/error:esd_proj
-    restart: always
-    depends_on:
-      - rabbitmq
-    environment:
-      rabbit_host: rabbitmq
-      rabbit_port: 5672
-      dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/notification
-      PYTHONUNBUFFERED: 1
-    ports:
-      - "5008:5008"
-    networks:
-      - kong-net
+  # error:
+  #   container_name: "error"
+  #   build:
+  #     context: ./error_microservice
+  #     dockerfile: Dockerfile
+  #   image: weiwen2022/error:esd_proj
+  #   restart: always
+  #   depends_on:
+  #     - rabbitmq
+  #   environment:
+  #     rabbit_host: rabbitmq
+  #     rabbit_port: 5672
+  #     dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/notification
+  #     PYTHONUNBUFFERED: 1
+  #   ports:
+  #     - "5008:5008"
+    
 
 
   ##################################
@@ -157,7 +150,7 @@ services:
     build:
       context: ./pool_mapping_consumer
       dockerfile: Dockerfile
-    image: fsorange/pool_mapping:esd_proj
+    image: weiwen2022/pool_mapping:esd_proj
     restart: always
     depends_on:
       - rabbitmq
@@ -166,8 +159,7 @@ services:
       rabbit_port: 5672
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/pool
       PYTHONUNBUFFERED: 1
-    networks:
-      - kong-net
+    
       
   ##################################
   # notification_consume: The notification_consume microservice
@@ -177,7 +169,7 @@ services:
     build:
       context: ./notification_consume
       dockerfile: Dockerfile
-    image: fsorange/notification_consume:esd_proj
+    image: weiwen2022/notification_consume:esd_proj
     restart: always
     depends_on:
       - rabbitmq
@@ -186,8 +178,7 @@ services:
       rabbit_port: 5672
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/notification
       PYTHONUNBUFFERED: 1
-    networks:
-      - kong-net
+    
 
   ###############################################
   # payment complex Order: The payment complex microservice
@@ -226,8 +217,7 @@ services:
       - ./rabbitmq_definitions.json:/etc/rabbitmq/rabbitmq_definitions.json
       - rabbitmq_data:/var/lib/rabbitmq
 
-    networks:
-      - kong-net
+    
 
       
 
@@ -239,7 +229,7 @@ services:
     build:
       context: ./poolmanagement_complexservice
       dockerfile: Dockerfile
-    image: fsorange/pool_management:esd
+    image: weiwen2022/pool_management:esd
     restart: always
     depends_on:
       - user

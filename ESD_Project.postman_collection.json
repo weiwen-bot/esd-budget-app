@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "c938dc86-1d46-45a7-bcb8-028cd2a80297",
+		"_postman_id": "e04f4b72-c316-400d-bedc-204106d95d43",
 		"name": "ESD_Project",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "29864461"
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "23209689"
 	},
 	"item": [
 		{
@@ -16,55 +16,50 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"PoolID\": 2,\r\n    \"UserID\": 1,\r\n    \"status\": \"Pending\"\r\n}",
+							"raw": "{\r\n    \"UserID\":1,\r\n    \"PoolID\":1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"url": {
-							"raw": "http://localhost:5002/pool_request",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5002",
-							"path": [
-								"pool_request"
-							]
-						}
+						"url": "http://127.0.0.1:5002/pool_request"
 					},
 					"response": []
 				},
 				{
-					"name": "accept/decline request",
+					"name": "update pool request",
 					"request": {
 						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"UserID\":1,\r\n    \"PoolID\":2,\r\n    \"status\":\"Accept\"\r\n}",
+							"raw": "{\r\n    \"UserID\":2,\r\n    \"PoolID\":3,\r\n    \"status\":\"Accept\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"url": {
-							"raw": "http://127.0.0.1:5002/pool_request",
-							"protocol": "http",
-							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
-							],
-							"port": "5002",
-							"path": [
-								"pool_request"
-							]
-						}
+						"url": "http://127.0.0.1:5002/pool_request"
+					},
+					"response": []
+				},
+				{
+					"name": "update pool request Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"UserID\":2,\r\n    \"PoolID\":3,\r\n    \"status\":\"Accept\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5002/pool_request"
 					},
 					"response": []
 				},
@@ -73,67 +68,25 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": {
-							"raw": "http://localhost:5002/pool_request/user/1",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5002",
-							"path": [
-								"pool_request",
-								"user",
-								"1"
-							]
-						}
+						"url": "http://127.0.0.1:5002/pool_request/user/52"
 					},
 					"response": []
 				},
 				{
-					"name": "create multiple pool_request",
+					"name": "group invite",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\r\n    {\r\n        \"userid\": 1,\r\n        \"poolid\": 2\r\n    },\r\n    {\r\n        \"userid\": 1,\r\n        \"poolid\": 3\r\n    },\r\n    {\r\n        \"userid\": 2,\r\n        \"poolid\": 1\r\n    }\r\n]\r\n",
+							"raw": "[\r\n    {\"userid\":50,\"poolid\":51},\r\n    {\"userid\":50,\"poolid\":52}\r\n]",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"url": {
-							"raw": "http://localhost:5002/pool_request/multiple",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5002",
-							"path": [
-								"pool_request",
-								"multiple"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "delete request",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:5002/pool_request",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5002",
-							"path": [
-								"pool_request"
-							]
-						}
+						"url": "http://127.0.0.1:5002/pool_request/multiple"
 					},
 					"response": []
 				}
@@ -147,17 +100,7 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": {
-							"raw": "http://localhost:5001/Pool",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5001",
-							"path": [
-								"Pool"
-							]
-						}
+						"url": "http://127.0.0.1:5001/Pool"
 					},
 					"response": []
 				},
@@ -168,24 +111,14 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"pool_name\": \"Sample Pool\",\r\n    \"pool_desc\": \"This is a sample pool description\",\r\n    \"Expiry_Date\": \"2024-12-31\", // Example expiry date\r\n    \"Current_amount\": 1000.0,\r\n    \"Budget\": 5000.0,\r\n    \"Pool_Type\": \"Sample Type\",\r\n    \"UserID\": 1, // Assuming this is the ID of the user who created the pool\r\n    \"Status\": \"Active\"\r\n}",
+							"raw": "{\r\n    \"Expiry_Date\":\"2024-05-23\",\r\n        \"Current_amount\":0,\r\n        \"Budget\": 100,\r\n        \"Pool_Type\":\"Group\",\r\n        \"UserID\":2,\r\n        \"pool_name\":\"Pool1\",\r\n        \"pool_desc\":\"There is a pool for you to join!\",\r\n        \"Status\":\"Active\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"url": {
-							"raw": "http://localhost:5001/Pool",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5001",
-							"path": [
-								"Pool"
-							]
-						}
+						"url": "http://127.0.0.1:5001/Pool"
 					},
 					"response": []
 				},
@@ -194,38 +127,16 @@
 					"request": {
 						"method": "PUT",
 						"header": [],
-						"url": {
-							"raw": "http://localhost:5001/Pool/3",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5001",
-							"path": [
-								"Pool",
-								"3"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "delete pool by id",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:5001/Pool/<int:PoolID>",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5001",
-							"path": [
-								"Pool",
-								"<int:PoolID>"
-							]
-						}
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Expiry_Date\": \"2024-05-23\",\r\n    \"Current_amount\":500.00,\r\n    \"Budget\":500.00,\r\n    \"Pool_Type\":\"Group\",\r\n    \"UserID\":12,\r\n    \"Status\":\"Active\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5001/Pool/6"
 					},
 					"response": []
 				},
@@ -234,18 +145,16 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": {
-							"raw": "http://localhost:5001/Pool/2",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5001",
-							"path": [
-								"Pool",
-								"2"
-							]
-						}
+						"url": "http://127.0.0.1:5001/Pool/6"
+					},
+					"response": []
+				},
+				{
+					"name": "delete pool by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://127.0.0.1:5001/Pool/6"
 					},
 					"response": []
 				}
@@ -259,9 +168,7 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": {
-							"raw": ""
-						}
+						"url": "http://127.0.0.1:5004/user"
 					},
 					"response": []
 				},
@@ -270,42 +177,52 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": {
-							"raw": ""
-						}
+						"url": "http://127.0.0.1:5004/user/1"
 					},
 					"response": []
 				},
 				{
 					"name": "create user",
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [],
-						"url": {
-							"raw": ""
-						}
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"UserName\":\"Joh2n\",\r\n    \"PhoneNumber\":\"1231241\",\r\n    \"Credits\":123.22,\r\n    \"Account_no\":\"12123124213\",\r\n    \"Email\":\"we@gmail.com\",\r\n    \"Password\":\"ddwda\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5004/user"
 					},
 					"response": []
 				},
 				{
 					"name": "update user information",
 					"request": {
-						"method": "GET",
+						"method": "PUT",
 						"header": [],
-						"url": {
-							"raw": ""
-						}
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"UserName\":\"Joh22n\",\r\n    \"PhoneNumber\":\"1231241\",\r\n    \"Credits\":123.22,\r\n    \"Account_no\":\"12123124213\",\r\n    \"Email\":\"dsdsd\",\r\n    \"password\":\"sdasd\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://127.0.0.1:5004/user/1"
 					},
 					"response": []
 				},
 				{
 					"name": "delete user",
 					"request": {
-						"method": "GET",
+						"method": "DELETE",
 						"header": [],
-						"url": {
-							"raw": ""
-						}
+						"url": "http://127.0.0.1:5004/user/1"
 					},
 					"response": []
 				}
@@ -319,18 +236,7 @@
 					"request": {
 						"method": "DELETE",
 						"header": [],
-						"url": {
-							"raw": "http://localhost:5003/transactions/2",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5003",
-							"path": [
-								"transactions",
-								"2"
-							]
-						}
+						"url": "http://127.0.0.1:5003/transactions/1"
 					},
 					"response": []
 				},
@@ -339,17 +245,7 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": {
-							"raw": "http://localhost:5003/transactions",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5003",
-							"path": [
-								"transactions"
-							]
-						}
+						"url": "http://127.0.0.1:5003/transactions"
 					},
 					"response": []
 				},
@@ -360,24 +256,14 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"amount\": 50.00,\r\n    \"status\": \"Pending\",\r\n    \"userID\": 1,\r\n    \"poolID\": 2\r\n}\r\n\r\n",
+							"raw": "{\r\n    \"amount\":200,\r\n    \"status\":\"not complete\",\r\n    \"userID\":2,\r\n    \"poolID\":1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"url": {
-							"raw": "http://localhost:5003/transactions",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5003",
-							"path": [
-								"transactions"
-							]
-						}
+						"url": "http://127.0.0.1:5003/transactions"
 					},
 					"response": []
 				},
@@ -386,18 +272,7 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": {
-							"raw": "http://localhost:5003/transactions/1",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5003",
-							"path": [
-								"transactions",
-								"1"
-							]
-						}
+						"url": "http://127.0.0.1:5003/transactions/4"
 					},
 					"response": []
 				},
@@ -406,9 +281,7 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": {
-							"raw": ""
-						}
+						"url": "http://127.0.0.1:5003/transactions/pool/1"
 					},
 					"response": []
 				},
@@ -417,19 +290,7 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": {
-							"raw": "http://localhost:5003/transactions/user/1",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5003",
-							"path": [
-								"transactions",
-								"user",
-								"1"
-							]
-						}
+						"url": "http://127.0.0.1:5003/transactions/user/2"
 					},
 					"response": []
 				},
@@ -440,206 +301,106 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"amount\": 40.00,\r\n    \"status\": \"Pending\",\r\n    \"userID\": 1,\r\n    \"poolID\": 2\r\n}\r\n",
+							"raw": "{\r\n    \"amount\":230,\r\n    \"status\":\"not complete\",\r\n    \"userID\":2,\r\n    \"poolID\":1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"url": {
-							"raw": "http://localhost:5003/transactions/1",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5003",
-							"path": [
-								"transactions",
-								"1"
-							]
-						}
+						"url": "http://127.0.0.1:5003/transactions/4"
 					},
 					"response": []
 				}
 			]
 		},
 		{
-			"name": "Error",
-			"item": [
-				{
-					"name": "error post request",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"error\": \"An error occurred while processing the request.\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5008/error",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5008",
-							"path": [
-								"error"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Notifications",
-			"item": [
-				{
-					"name": "Get notificcations",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:5005/notifications",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5005",
-							"path": [
-								"notifications"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Post notification",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"notificationType\": \"Type of Notification\",\r\n    \"senderID\": \"Sender's ID\",\r\n    \"receiverID\": \"Receiver's ID\",\r\n    \"message\": \"Notification message content\",\r\n    \"status\": \"unread\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5005/notifications",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5005",
-							"path": [
-								"notifications"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete notification",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:5005/notifications/1",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5005",
-							"path": [
-								"notifications",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Pool management",
-			"item": [
-				{
-					"name": "create pool",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"pool_name\": \"Sample Pool\",\r\n    \"pool_desc\": \"This is a sample pool description\",\r\n    \"Expiry_Date\": \"2024-12-31\", // Example expiry date\r\n    \"Current_amount\": 1000.0,\r\n    \"Budget\": 5000.0,\r\n    \"Pool_Type\": \"Sample Type\",\r\n    \"UserID\": 2, // Assuming this is the ID of the user who created the pool\r\n    \"Status\": \"Active\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5100/create_pool",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5100",
-							"path": [
-								"create_pool"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "accept_pool_request",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:5100/accept_pool_request",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5100",
-							"path": [
-								"accept_pool_request"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "complex_pool",
+			"name": "Create pool",
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [],
-				"url": {
-					"raw": ""
-				}
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pool_info\":{\r\n        \"Expiry_Date\":\"2024-05-23\",\r\n        \"Current_amount\":0,\r\n        \"Budget\": 1000,\r\n        \"Pool_Type\":\"Group\",\r\n        \"UserID\":3,\r\n        \"pool_name\":\"Pool1\",\r\n        \"pool_desc\":\"There is a pool for you to join!\",\r\n        \"Status\":\"Active\"\r\n    },\r\n    \"pool_invites\":[1,2]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5100/create_pool"
 			},
 			"response": []
 		},
 		{
 			"name": "accept friend request",
 			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"UserID\":2,\r\n    \"PoolID\":4,\r\n    \"status\":\"Accepted\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5100/accept_pool_request"
+			},
+			"response": []
+		},
+		{
+			"name": "create payment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\r\n    \"remaining\":500,\r\n    \"pool_name\":\"pool Name\",\r\n    \"UserID\": 1,\r\n    \"PoolID\":4\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5101/payment"
+			},
+			"response": []
+		},
+		{
+			"name": "getuserpools",
+			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": ""
-				}
+				"url": "http://127.0.0.1:5200/get_userpools/3"
+			},
+			"response": []
+		},
+		{
+			"name": "get pool detail by pool id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://127.0.0.1:5200/get_pool/1"
+			},
+			"response": []
+		},
+		{
+			"name": "getnewuser",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://127.0.0.1:5200/get_newusers/1/2"
+			},
+			"response": []
+		},
+		{
+			"name": "refund",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "http://127.0.0.1:5101/refund/4"
 			},
 			"response": []
 		}

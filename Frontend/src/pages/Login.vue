@@ -2,7 +2,7 @@
   <div class="flex justify-center">
     <div class="border-2 border-gray-300 rounded-lg shadow-md px-6 pt-6 pb-8 mb-4 w-full max-w-xs">
       <h1 class="text-2xl font-bold mb-4 text-gray-800">Login</h1>
-      <form @submit.prevent="login" class="card flex flex-col items-center">
+      <form @submit.prevent="submitForm" class="card flex flex-col items-center">
         <div>
         <div class="mb-4">
           <label class="block text-gray-700 text-sm font-bold mb-1" for="username">Username: </label>
@@ -34,6 +34,11 @@
 
 
 <script>
+
+import axios from "axios";
+import { mapStores } from 'pinia';
+import { useAuthStore } from '../store/authStore';
+
 export default {
   name: 'Login',
   data() {
@@ -48,39 +53,55 @@ export default {
       this.password = sessionStorage.getItem("password");
     
   },
+  computed: {
+    ...mapStores(useAuthStore)
+  },
   methods: {
-    async login() {
-      if (!this.username || !this.password) {
-        this.errorMessage = 'Please enter both username and password';
-        return;
-      }
-      try {
-        const response = await fetch('http://localhost:5173/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            username: this.username,
-            password: this.password
-          })
-        });
-        const data = await response.json();
-        if (response.ok) {
-          console.log('Logged in successfully:', data);
-          console.log(this.username);
-          console.log(this.password);
+    // async login() {
+    //   if (!this.username || !this.password) {
+    //     this.errorMessage = 'Please enter both username and password';
+    //     return;
+    //   }
+    //   try {
+    //     const response = await fetch('http://localhost:5173/login', {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json'
+    //       },
+    //       body: JSON.stringify({
+    //         username: this.username,
+    //         password: this.password
+    //       })
+    //     });
+    //     const data = await response.json();
+    //     if (response.ok) {
+    //       console.log('Logged in successfully:', data);
+    //       console.log(this.username);
+    //       console.log(this.password);
           
-          // Redirect the user to another page after successful login
-          // For example, using Vue Router: this.$router.push('/dashboard');
-        } else {
-          this.errorMessage = data.message || 'Failed to login';
-        }
-      } catch (error) {
-        console.error('Error logging in:', error);
-        this.errorMessage = 'An error occurred while logging in';
+    //       // Redirect the user to another page after successful login
+    //       // For example, using Vue Router: this.$router.push('/dashboard');
+    //     } else {
+    //       this.errorMessage = data.message || 'Failed to login';
+    //     }
+    //   } catch (error) {
+    //     console.error('Error logging in:', error);
+    //     this.errorMessage = 'An error occurred while logging in';
+    //   }
+    // }
+
+    async submitForm() {
+      const authStore = useAuthStore();
+      var resp = await authStore.login(this.username, this.password);
+      console.log(resp, "te")
+      if (resp) {
+        console.log('hi')
+        this.$router.push({ path: '/canceled' })
+      } else {
+        alert("Wrong Info")
       }
-    }
+
+    },
   }
 };
 </script>

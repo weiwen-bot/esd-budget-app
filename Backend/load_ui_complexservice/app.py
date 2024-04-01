@@ -31,6 +31,8 @@ def gethomepage(userid):
             all_pool = invoke_http("http://pool:5001/Pool", method='GET')
             #members
             poolmapping = invoke_http("http://pool:5001/pool_mapping", method='GET')
+
+            
             
             print(all_pool)
             print(poolmapping)
@@ -42,9 +44,13 @@ def gethomepage(userid):
 
             pool_dict = {"pools":[]}
 
+            
+
             for pool in all_pool:
                 if pool['UserID'] == userid:
                     pool['ownership'] = "Owner"
+                    username = invoke_http(f"http://user:5004/user/{pool['UserID']}", method='GET')['data']['UserName']
+                    pool['PoolOwner'] = username
                     pool_dict['pools'].append(pool)
                 elif pool['PoolID'] in member_poolid:
                     pool['ownership'] = "Member"
@@ -115,19 +121,31 @@ def get_pool(poolid):
             "message": "pool_management internal error: " + ex_str
         }), 500
 
-
-@app.route("/get_users/<int:userid>", methods=['GET'])
-def get_pool_invites(userid):
+#get all notification
+@app.route("/get_notification/<int:userid>", methods=['GET'])
+def get_notification(userid):
     
     try:
-        all_users = invoke_http(f"http://user:5004/user", method='GET')['data']['users']
+        all_notification = invoke_http(f"http://notification:5005/notifications/{userid}", method='GET')
+        all_request = invoke_http(f"http://pool_request:5002/pool_request/user/{userid}",method='GET')
 
-        pool_dict = {"users":[]}
-        for user in all_users:
-            if user['UserID'] != userid:
-                pool_dict['users'].append(user)
+        all_req = {"notif":[],"request":[]}
 
-        return pool_dict, 200
+        if all_request["code"] != 404:
+            for req in all_request['data']:
+                pool = invoke_http(f"http://pool:5001/Pool/{req['PoolID']}", method='GET')['data']
+                req['PoolName'] = pool['PoolName']
+                user = invoke_http(f"pool['UserID']")['data']
+                all_req['request'].append(req)
+            all_req['request'] = all_request['data']
+
+        if all_notification["code"] != 404:
+            all_req['notif'] = all_notification['data']
+            
+
+        
+
+        return jsonify({"code":200, "data": all_req}), 200
 
     except Exception as e:
         return jsonify({

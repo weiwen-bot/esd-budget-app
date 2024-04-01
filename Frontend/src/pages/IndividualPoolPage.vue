@@ -56,6 +56,9 @@
           <span class="text-sm" style="margin:3px;">View Users</span>
           </button>
         </div>
+        <div class="flex justify-center mt-2 mb-2">
+          <button @click="toggleModalAddUsers" style="color:black; margin: 0px; padding: 1px; border: 1px solid black; border-radius: 3px; background-color: #f8f8f8; box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);" class="invite-users-btn">Invite Users</button>
+          </div>
       </div>
       <div class="mb-4">
   
@@ -102,27 +105,39 @@
 
     </div>
     <div v-if="showModal" class="modal">
-  <div class="modal-content">
-    <span class="close" @click="toggleModal">&times;</span>
-    <h2 class="text-center"><strong>Participants</strong></h2>
-    <p>There are {{ poolMembers.length }} participants</p>
-    <table class="border-collapse border border-gray-400">
-      <thead>
-        <tr>
-          <th class="border border-gray-400 px-4 py-2">S/N</th>
-          <th class="border border-gray-400 px-4 py-2">User ID</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(userID, index) in poolMembers" :key="index" class="border border-gray-400">
-          <td class="border border-gray-400 px-4 py-2">{{ index + 1 }}</td>
-          <td class="border border-gray-400 px-4 py-2">{{ userID }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+      <div class="modal-content">
+        <span class="close" @click="toggleModal">&times;</span>
+        <h2 class="text-center"><strong>Participants</strong></h2>
+        <p>There are {{ poolMembers.length }} participants</p>
+        <table class="border-collapse border border-gray-400">
+          <thead>
+            <tr>
+              <th class="border border-gray-400 px-4 py-2">S/N</th>
+              <th class="border border-gray-400 px-4 py-2">User ID</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(userID, index) in poolMembers" :key="index" class="border border-gray-400">
+              <td class="border border-gray-400 px-4 py-2">{{ index + 1 }}</td>
+              <td class="border border-gray-400 px-4 py-2">{{ userID }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Modal for adding users -->
+    <div v-if="showModalAddUsers" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="toggleModalAddUsers">&times;</span>
+        <h2 class="text-center"><strong>Available Users</strong></h2>
+        <div v-for="(user, index) in availableUsers" :key="index">
+          <input type="checkbox" :id="`user_${index}`" v-model="selectedUsersToAdd" :value="user.UserID">
+          <label :for="`user_${index}`">{{ user.UserName }}</label>
+        </div>
+        <button @click="sendPoolRequestsToSelectedUsers" style="color:black; margin: 0px; padding: 1px; border: 1px solid black; border-radius: 3px; background-color: #f8f8f8; box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);" class="add-selected-users-btn">Add Selected Users</button>
 
+      </div>
+    </div>
   </div>
   
 
@@ -155,6 +170,10 @@ export default {
       showModal: false,
       transactions: [],
       poolMembers: [],
+
+      showModalAddUsers: false,
+        availableUsers: [],
+        selectedUsersToAdd: [],
       poolID:'',
 
     };
@@ -164,6 +183,7 @@ export default {
     this.fetchPoolDetails();
     this.fetchTransactionHistory();
     this.fetchPoolMembers();
+    this.fetchPoolRequestsAndAvailableUsers();
     console.log('PoolID:', this.poolID);
   },
   computed: {
@@ -172,6 +192,96 @@ export default {
     ...mapStores(useUsersStore),
   },
   methods: {
+    async sendPoolRequestsToSelectedUsers() {
+  try {
+    if (this.selectedUsersToAdd.length === 0) {
+      console.log('No users selected to add.');
+      return;
+    }
+
+    // Create an array of user IDs to send pool requests to
+    const userIDs = this.selectedUsersToAdd.map(user => user.UserID);
+
+    // Prepare data for sending pool requests
+    const requestData = this.selectedUsersToAdd.map(user => ({
+      poolid: this.poolID,
+      userid: user
+    }));
+    console.log(requestData)
+
+    // Send pool requests to selected users
+    const response = await fetch('http://127.0.0.1:5002/pool_request/multiple', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestData)
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      console.log('Pool requests sent successfully.');
+      // Clear the selectedUsersToAdd array
+      this.selectedUsersToAdd = [];
+      // Close the modal
+      this.toggleModalAddUsers();
+    } else {
+      console.error('Failed to send pool requests:', data.message);
+    }
+  } catch (error) {
+    console.error('Error sending pool requests:', error);
+  }
+},
+
+    toggleModalAddUsers() {
+    this.showModalAddUsers = !this.showModalAddUsers;
+  },
+    async fetchPoolRequestsAndAvailableUsers() {
+  try {
+    // Fetch all users
+    const usersResponse = await fetch('http://127.0.0.1:5004/user');
+    const usersData = await usersResponse.json();
+    let allUsers = [];
+    if (usersResponse.ok) {
+      allUsers = usersData.data.users;
+    } else {
+      console.error('Failed to fetch users:', usersData.message);
+      return;
+    }
+
+    // Fetch pool requests
+    const poolRequestsResponse = await fetch(`http://127.0.0.1:5002/pool_request/pool/${this.poolID}`);
+    const poolRequestsData = await poolRequestsResponse.json();
+    let poolRequestUserIDs = [];
+    if (poolRequestsResponse.ok) {
+      poolRequestUserIDs = poolRequestsData.data.map(poolRequest => poolRequest.UserID);
+    } else {
+      console.error('Failed to fetch pool requests:', poolRequestsData.message);
+      return;
+    }
+
+    // Fetch pool members
+    const poolMembersResponse = await fetch(`http://127.0.0.1:5001/pool_mapping/${this.poolID}`);
+    const poolMembersData = await poolMembersResponse.json();
+    let poolMembers = [];
+    if (poolMembersResponse.ok) {
+      poolMembers = poolMembersData.data.map(poolMapping => poolMapping.UserID);
+    } else {
+      console.error('Failed to fetch pool members:', poolMembersData.message);
+      return;
+    }
+
+    // Filter out users who are already in the pool or have requested to join the pool
+    const usersNotInPool = allUsers.filter(user => !poolMembers.includes(user.UserID) && !poolRequestUserIDs.includes(user.UserID));
+
+    // Display the modal with available users
+    this.availableUsers = usersNotInPool;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+},
+
+
     toggleModal() {
       this.showModal = !this.showModal;
     },

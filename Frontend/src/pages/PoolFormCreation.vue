@@ -31,11 +31,12 @@
       </div>
       <div v-if="showUserList" class="mt-4 ">
         <h2 class="text-lg font-semibold mb-2">Users:</h2>
-        <div v-for="user in userList" :key="user.id" class="mb-2">
-          <input type="checkbox"  v-model="selectedUsers" :value="user.id" class="mr-2">
-          <span>{{ user.name }}</span>
+        <div v-for="user in users" :key="user.UserID" class="mb-2">
+          <input type="checkbox" v-model="selectedUsers" :value="user.UserID" class="mr-2">
+          <span>{{ user.UserName }}</span>
         </div>
       </div>
+
       <div class="flex items-center justify-center mt-4">
         <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py- px-4 rounded focus:outline-none focus:shadow-outline" @click="createPool">
           Create Pool
@@ -62,17 +63,36 @@ export default {
       poolType: 'payment', 
       targetBudget: '', 
       expiryDate: '',
-      userList: [ 
-        { id: 1, name: 'User1' },
-        { id: 2, name: 'User2' },
-        { id: 3, name: 'User3' },
-      ],
+      // userList: [ 
+      //   { id: 1, name: 'User1' },
+      //   { id: 2, name: 'User2' },
+      //   { id: 3, name: 'User3' },
+      // ],
       showUserList: false,
       selectedUsers: [],
-      showSuccessPopup: false
+      showSuccessPopup: false,
+      users: []
     }; 
   }, 
+  created() {
+    this.fetchUsers();
+    },
   methods: { 
+    async fetchUsers() {
+      try {
+        const response = await fetch('http://127.0.0.1:5004/user');
+        const responseData = await response.json();
+
+        if (response.ok) {
+          this.users = responseData.data.users;
+          this.showUserList = true;
+        } else {
+          console.error('Failed to fetch users:', responseData.message);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    },
     async createPool() {
       // Prepare data to send to the Flask server
       const requestData = {

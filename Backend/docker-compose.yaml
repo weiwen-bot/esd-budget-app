@@ -3,6 +3,7 @@ version: "3.8"
 volumes:
   rabbitmq_data:
 
+
 services:
  
   ###################################
@@ -81,7 +82,7 @@ services:
   # #################################
 
   user:
-    container_name: user
+    container_name: "user"
     build:
       context: ./user_microservice
       dockerfile: Dockerfile
@@ -90,7 +91,6 @@ services:
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/user
       PYTHONUNBUFFERED: 1
-
     ports:
       - "5004:5004"
     
@@ -121,22 +121,22 @@ services:
   ##################################
   # error: The error microservice
   ##################################
-  # error:
-  #   container_name: "error"
-  #   build:
-  #     context: ./error_microservice
-  #     dockerfile: Dockerfile
-  #   image: weiwen2022/error:esd_proj
-  #   restart: always
-  #   depends_on:
-  #     - rabbitmq
-  #   environment:
-  #     rabbit_host: rabbitmq
-  #     rabbit_port: 5672
-  #     dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/notification
-  #     PYTHONUNBUFFERED: 1
-  #   ports:
-  #     - "5008:5008"
+  error:
+    container_name: "error"
+    build:
+      context: ./error_microservice
+      dockerfile: Dockerfile
+    image: weiwen2022/error:esd_proj
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/notification
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5008:5008"
     
 
 

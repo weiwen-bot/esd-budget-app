@@ -18,7 +18,7 @@
         <div class="bg-white shadow-md rounded-md p-4">
           <div class="border-b-2 border-gray-400 mb-4 pb-2">
             <h2 class="text-lg font-semibold">{{ pool.pool_name }}</h2>
-            <h2 class="text-sm font-semibold italic">Created by {{ pool.PoolOwner }}</h2>
+            <h2 class="text-sm font-semibold italic">Created by {{ pool.userName }}</h2>
           </div>
           <div class="mb-4">
             <p class="mb-4"><strong>Current Amount:</strong> ${{ pool.Current_amount }}</p> 
@@ -26,13 +26,13 @@
           </div>
           <div class="mb-4">
             <div class="progress-bar-container">
-              <div class="progress-bar" :style="{ width:  `${pool.progressPercentage}`}"></div>
+              <div class="progress-bar" :style="{ width:  `${calculateProgressPercentage(pool.Current_amount, pool.Budget)}`}"></div>
             </div>
-            <p><strong>Progress: {{ pool.progressPercentage }}</strong></p>
+            <p><strong>Progress: {{calculateProgressPercentage(pool.Current_amount, pool.Budget)}}</strong></p>
           </div>
           
           <div class="flex justify-center mb-4">
-            <button @click="viewPool(poolName)" class="view-pool-btn">
+            <button @click="viewPool(pool)" class="view-pool-btn">
               View Pool
             </button>
           </div>
@@ -100,15 +100,60 @@ export default {
     ...mapStores(useUsersStore),
   },
   methods: {
-    viewPool(poolName) {
-      this.$router.push({ name: 'IndividualPoolPage', params: { poolName } });
-      console.log(`Viewing pool: ${poolName}`);
-    },
+    viewPool(pool) {
+  this.$router.push({ 
+    name: 'IndividualPoolPage', 
+    params: { 
+      poolName: pool.pool_name,
+      poolID: pool.PoolID // Pass the poolID as a parameter
+    } 
+  });
+  console.log(`Viewing pool: ${pool.pool_name}`);
+},
+
     async fetchPoolDetails() {
       // API call to fetch pool details
-      // http://127.0.0.1:5200/get_userpools/3
     },
-    
+    async fetchTransactionHistory() {
+      try {
+        const response = await fetch('http://localhost:5005/TransactionHistory/1'); // Replace '1' with the actual pool ID
+        const data = await response.json();
+        if (response.ok) {
+          this.transactions = data.data.transactions;
+        } else {
+          console.error('Failed to fetch transaction history:', data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching transaction history:', error);
+      }
+    },
+    getStripePublishableKey() {
+      fetch('http://localhost:4242/config')
+        .then((result) => result.json())
+        .then((data) => {
+          // Initialize Stripe.js
+          this.stripe = Stripe(data.publicKey);
+        });
+    },
+    handlePurchaseBook() {
+      // Get Checkout Session ID
+      fetch('http://127.0.0.1:4242/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ book_id: '2' }),
+      })
+        .then((result) => result.json())
+        .then((data) => {
+          console.log(data);
+          // Redirect to Stripe Checkout
+          return this.stripe.redirectToCheckout({ sessionId: data.sessionId });
+        })
+        .then((res) => {
+          console.log(res);
+        });
+    },
     calculateProgressPercentage(currentAmount, totalAmount) {
       return Math.round((currentAmount / totalAmount) * 100) + '%';
     },

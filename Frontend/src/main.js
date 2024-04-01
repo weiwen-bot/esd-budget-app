@@ -3,5 +3,11 @@ import App from './App.vue'
 import router from "./routes/index.js"
 import { createApp,markRaw  } from 'vue'
 
+import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
-createApp(App).use(router).mount('#app')
+const pinia = createPinia().use(({ store }) => {
+    store.$router = markRaw(router)
+  });
+  pinia.use(piniaPluginPersistedstate)
+createApp(App).use(pinia).use(router).mount('#app')

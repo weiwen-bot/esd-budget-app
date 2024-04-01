@@ -1,9 +1,10 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import NavBar from './pages/NavBar.vue';
 </script>
 
 <template>
   <div id="app">
+    <NavBar></NavBar>
     <router-view></router-view>
   </div>
 </template>
@@ -21,4 +22,7 @@ import HelloWorld from './components/HelloWorld.vue'
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
 }
+
+
+
 </style>

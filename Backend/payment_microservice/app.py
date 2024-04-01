@@ -80,7 +80,7 @@ class Refund(db.Model):
 
 
 
-@app.route("/config")
+@app.route("/config", methods=['GET'])
 def get_publishable_key():
     stripe_config = {"publicKey": stripe_keys["publishable_key"]}
     return jsonify(stripe_config)

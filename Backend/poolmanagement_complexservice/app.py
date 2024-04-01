@@ -89,6 +89,7 @@ def processpool_request(friend):
 
     pool_info = invoke_http("http://pool:5001/Pool/"+str(friend['PoolID']), method='GET')
     user_info = invoke_http("http://user:5004/user/"+str(friend['UserID']), method='GET')
+    #Check again
     friend['PoolOwner'] = pool_info['data']['UserID']
     friend['PoolName'] = pool_info['data']['pool_name']
     friend['UserName'] = user_info['data']['UserName']

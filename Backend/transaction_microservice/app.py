@@ -144,7 +144,7 @@ def create_Transaction():
         ), 500
 
 #get by transaction
-@app.route("/transactions/<int:transactionID>")
+@app.route("/transactions/<int:transactionID>", methods=['GET'])
 def find_by_Transaction_id(transactionID):
     transaction = db.session.scalars(db.select(Transaction).filter_by(transactionID=transactionID).limit(1)).first()
 
@@ -203,7 +203,7 @@ def delete_transaction(transaction_id):
     
 
 #get transaction by pool
-@app.route("/transactions/pool/<int:poolID>")
+@app.route("/transactions/pool/<int:poolID>", methods=['GET'])
 def get_Transactions_By_Pool(poolID):
     transactionlist = db.session.scalars(db.select(Transaction).filter_by(poolID=poolID)).all()
 

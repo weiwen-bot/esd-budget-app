@@ -23,8 +23,7 @@ services:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/refund
     ports:
       - "4242:4242"
-    networks:
-      - kong-net
+    
  
   #######################################################
   # pool Record: The pool microservice
@@ -41,8 +40,7 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5001:5001"
-    networks:
-      - kong-net
+    
 
   ##################################
   # pool_request: The pool_request microservice
@@ -59,8 +57,7 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5002:5002"
-    networks:
-      - kong-net
+    
 
   ##################################
   # transaction: The transaction microservice
@@ -77,8 +74,7 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5003:5003"
-    networks:
-      - kong-net
+    
 
   # ##################################
   # # user: The user microservice
@@ -94,8 +90,7 @@ services:
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/user
       PYTHONUNBUFFERED: 1
-    networks:
-      - kong-net
+    
 
 
 
@@ -118,30 +113,28 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5005:5005"
-    networks:
-      - kong-net
+    
 
   ##################################
   # error: The error microservice
   ##################################
-  error:
-    container_name: "error"
-    build:
-      context: ./error_microservice
-      dockerfile: Dockerfile
-    image: fsorange/error:esd_proj
-    restart: always
-    depends_on:
-      - rabbitmq
-    environment:
-      rabbit_host: rabbitmq
-      rabbit_port: 5672
-      dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/notification
-      PYTHONUNBUFFERED: 1
-    ports:
-      - "5008:5008"
-    networks:
-      - kong-net
+  # error:
+  #   container_name: "error"
+  #   build:
+  #     context: ./error_microservice
+  #     dockerfile: Dockerfile
+  #   image: guiquan1/error:esd_proj
+  #   restart: always
+  #   depends_on:
+  #     - rabbitmq
+  #   environment:
+  #     rabbit_host: rabbitmq
+  #     rabbit_port: 5672
+  #     dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/notification
+  #     PYTHONUNBUFFERED: 1
+  #   ports:
+  #     - "5008:5008"
+    
 
 
   ##################################
@@ -152,7 +145,7 @@ services:
     build:
       context: ./pool_mapping_consumer
       dockerfile: Dockerfile
-    image: fsorange/pool_mapping:esd_proj
+    image: guiquan1/pool_mapping:esd_proj
     restart: always
     depends_on:
       - rabbitmq
@@ -161,8 +154,7 @@ services:
       rabbit_port: 5672
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/pool
       PYTHONUNBUFFERED: 1
-    networks:
-      - kong-net
+    
       
   ##################################
   # notification_consume: The notification_consume microservice
@@ -172,7 +164,7 @@ services:
     build:
       context: ./notification_consume
       dockerfile: Dockerfile
-    image: fsorange/notification_consume:esd_proj
+    image: guiquan1/notification_consume:esd_proj
     restart: always
     depends_on:
       - rabbitmq
@@ -181,8 +173,7 @@ services:
       rabbit_port: 5672
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/notification
       PYTHONUNBUFFERED: 1
-    networks:
-      - kong-net
+    
 
   ###############################################
   # payment complex Order: The payment complex microservice
@@ -191,7 +182,7 @@ services:
     build:
       context: ./payment_complexservice
       dockerfile: Dockerfile
-    image: weiwen2022/payment_manage:esd
+    image: guiquan1/payment_manage:esd
     restart: always
     depends_on:
       - payment
@@ -221,8 +212,7 @@ services:
       - ./rabbitmq_definitions.json:/etc/rabbitmq/rabbitmq_definitions.json
       - rabbitmq_data:/var/lib/rabbitmq
 
-    networks:
-      - kong-net
+    
 
       
 
@@ -257,7 +247,7 @@ services:
     build:
       context: ./load_ui_complexservice
       dockerfile: Dockerfile
-    image: weiwen2022/load_ui:esd
+    image: guiquan1/load_ui:esd
     restart: always
     depends_on:
       - user
@@ -273,7 +263,7 @@ services:
     build:
       context: ./transaction_consume
       dockerfile: Dockerfile
-    image: weiwen2022/transaction_consume:esd_proj
+    image: guiquan1/transaction_consume:esd_proj
     restart: always
     depends_on:
       - rabbitmq

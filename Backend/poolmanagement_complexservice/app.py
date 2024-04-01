@@ -74,11 +74,6 @@ def accept_pool_request():
     print(request.get_json())
     try:
         friend = request.get_json()
-        # friend = {
-        # "UserID": 1,
-        # "PoolID": 1,
-        # "status": "Accepted"
-        # }
         result = processpool_request(friend)
         return result
        
@@ -97,6 +92,7 @@ def processpool_request(friend):
     friend['PoolOwner'] = pool_info['data']['UserID']
     friend['PoolName'] = pool_info['data']['pool_name']
     friend['UserName'] = user_info['data']['UserName']
+    friend['notif_type'] = 'pool_request'
     message = json.dumps(friend)
     if res_status == 'Accepted':
         channel.basic_publish(exchange=exchangename, routing_key="poolrequest.success", 
@@ -104,6 +100,13 @@ def processpool_request(friend):
         
         print("\nRequest status ({:d}) published to the RabbitMQ Exchange:".format(
             200), friend)
+    elif res_status == 'Rejected':
+        channel.basic_publish(exchange=exchangename, routing_key="poolrequest.rejected", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2))
+        
+        print("\nRequest status ({:d}) published to the RabbitMQ Exchange:".format(
+            200), friend)
+
 
     delete_status = invoke_http("http://pool_request:5002/pool_request", method='DELETE', json=friend)
     return jsonify({'code': 200, 'message': 'Pool request responded successfully','delete':delete_status,'friend_res':friend_res})
@@ -112,16 +115,16 @@ def poolcreation(pool):
 
     print('\n-----Invoking pool microservice-----')
     
-    pool = {
-        "Expiry_Date":"2024-05-23",
-        "Current_amount":0,
-        "Budget": 100,
-        "Pool_Type":"Group",
-        "UserID":2,
-        "pool_name":"Pool1",
-        "pool_desc":"There is a pool for you to join!",
-        "Status":"Active"
-    }
+    # pool = {
+    #     "Expiry_Date":"2024-05-23",
+    #     "Current_amount":0,
+    #     "Budget": 100,
+    #     "Pool_Type":"Group",
+    #     "UserID":2,
+    #     "pool_name":"Pool1",
+    #     "pool_desc":"There is a pool for you to join!",
+    #     "Status":"Active"
+    # }
     pool_result = invoke_http("http://pool:5001/Pool", method='POST', json=pool)
     print('pool_result:', pool_result)
 
@@ -139,7 +142,7 @@ def poolcreation(pool):
             "message": "Failed to create pool."
         }    
 
-    
+# To implement delete
 
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":

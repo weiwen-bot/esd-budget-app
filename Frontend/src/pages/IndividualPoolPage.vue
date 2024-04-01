@@ -47,24 +47,25 @@
             </div>
           </div>
         </div>
-        <h2 class="text-lg font-semibold">{{ pool.name }}
-          <button @click="toggleModal" style="margin: 0px; padding: 0px;" class="">
-            <svg xmlns="http://www.w3.org/2000/svg"  fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-              stroke="currentColor" class="w-6 h-6 ">
-              <image href="../assets/Pool_Participant.png" width="24" height="24"/>
-            </svg>
-          </button>
+        <h2 class="text-lg font-semibold flex flex-col items-center justify-center">
+          {{ pool.name }}
         </h2>
-        <h2 class="text-sm font-semibold italic">Created by {{ pool.userName }}</h2>
+        <h2 class="text-sm font-semibold italic black mt-2 mb-2">Created by {{ pool.userName }}</h2>
+        <div class="flex justify-center mt-2 mb-2">
+          <button @click="toggleModal" style="margin: 0px; padding: 1px; border: 1px solid black; border-radius: 3px; background-color: #f8f8f8; box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);" class="flex flex-col items-center">
+          <span class="text-sm" style="margin:3px;">View Users</span>
+          </button>
+        </div>
       </div>
       <div class="mb-4">
-        <p class="mb-4"><strong>Description:</strong><br> {{ pool.description }}</p>
-        <p class="mb-4"><strong>Category:</strong><br>{{ pool.category }}</p>
-        <p class="mb-4"><strong>Created by:</strong><br>{{ pool.userName }}</p>
+  
+        <p class="mb-4" style="color:black"><strong>Description:</strong><br> {{ pool.description }}</p>
+        <p class="mb-4 text-black" style="color:black"><strong>Category:</strong><br>{{ pool.category }}</p>
+        <p class="mb-4 text-black" style="color:black"><strong>Created by:</strong><br>{{ pool.userName }}</p>
       </div>
       <div class="mb-4">
         <p><strong>Progress:</strong></p>
-        <p>${{ pool.currentAmount }} / ${{ pool.totalAmount }}</p>
+        <p style="color:black">${{ pool.currentAmount }} / ${{ pool.totalAmount }}</p>
         <div class="progress-bar-container">
           <div class="progress-bar"
             :style="{ width: `${calculateProgressPercentage(pool.currentAmount, pool.totalAmount)}` }"></div>

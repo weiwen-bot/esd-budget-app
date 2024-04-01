@@ -6,7 +6,6 @@ import Login from "../pages/Login.vue"
 import IndividualPoolPage from "../pages/IndividualPoolPage.vue"
 import PoolFormCreation from "../pages/PoolFormCreation.vue"
 import Register from "../pages/Register.vue"
-import PoolInvite from "../pages/PoolInvite.vue"
 import OwnerPoolPage from "../pages/OwnerPoolPage.vue"
 import HomePage from "../pages/Home.vue"
 import Test from "../pages/Test.vue"
@@ -45,11 +44,6 @@ const routes =[
       path: "/register",
       name: "Register",
       component: Register,
-    },
-    {
-      path: "/poolinvite",
-      name: "PoolInvite",
-      component: PoolInvite,
     },
     {
       path: "/poolcreation",

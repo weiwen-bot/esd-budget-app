@@ -117,6 +117,13 @@ def get_all_pools():
         return jsonify({"code": 200, "data": {"pools": [pool.json() for pool in pool_list]}})
     return jsonify({"code": 404, "message": "There are no pools."}), 404
 
+@app.route("/pool_mapping", methods=['GET'])
+def get_all_poolmapping():
+    pool_list = PoolMapping.query.all()
+    if pool_list:
+        return jsonify({"code": 200, "data": {"pool_mapping": [pool.json() for pool in pool_list]}})
+    return jsonify({"code": 404, "message": "There are no pools."}), 404
+
 # API endpoint to get a specific pool by PoolID
 @app.route("/Pool/<int:PoolID>", methods=['GET'])
 def get_pool(PoolID):

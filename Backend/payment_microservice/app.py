@@ -13,13 +13,22 @@
 #   python3 -m flask run --port=4242
 
 import json
-import os
 import stripe
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 from invokes import invoke_http
+from datetime import datetime
+
+from flask_sqlalchemy import SQLAlchemy
+from os import environ
+import os
+from sqlalchemy.sql import func
+from datetime import datetime
+import json
+
 app = Flask(__name__)
+
 
 # CORS(app)
 stripe_keys = {
@@ -30,6 +39,10 @@ stripe_keys = {
 
 # The library needs to be configured with your account's secret key.
 # Ensure the key is kept out of any version control system you might be using.
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
 
 stripe.api_key = stripe_keys["secret_key"]
 
@@ -39,25 +52,55 @@ endpoint_secret = stripe_keys["webhook_secret"]
 CORS(app, resources={r'/*': {'origins': '*'}})
 
 
+class Refund(db.Model):
+    __tablename__ = 'refund'
+
+    refundID = db.Column(db.Integer, primary_key=True,autoincrement=True)
+    created = db.Column(db.DateTime,nullable=False, default=datetime.now)
+    amount = db.Column(db.String(50), nullable=False)
+    status = db.Column(db.String(50), nullable=False)
+    UserID = db.Column(db.Integer, nullable=False)
+    PoolID = db.Column(db.Integer, nullable=False)
+
+    def __init__(self,amount,status, UserID, PoolID):
+        self.amount = amount
+        self.status = status
+        self.UserID = UserID
+        self.PoolID = PoolID
+
+
+
+    def json(self):
+        return {
+            "amount": self.amount,
+            "status": self.status,
+            "UserID": self.UserID,
+            "PoolID": self.PoolID
+        }
+
+
 
 @app.route("/config")
 def get_publishable_key():
     stripe_config = {"publicKey": stripe_keys["publishable_key"]}
     return jsonify(stripe_config)
 
-def create_prod():
+def update_prod(pool_name, max_amt):
     stripe.api_key = stripe_keys["secret_key"]
-    product = stripe.Product.create(
-        name='Testing_prod',
+    product = stripe.Product.modify(
+        "prod_PozyyQarWAcdS1",
+        name=f'Payment are made to {pool_name}',
+        description = f'Maximum amount is {max_amt} SGD',
+        
     )
     return product.id
 
-def create_price(PRODUCT_ID):
+def create_price(max_amt,prod_id):
     stripe.api_key = stripe_keys["secret_key"]
     create_price = stripe.Price.create(
-        currency='sgd',
-        custom_unit_amount={"enabled": True},
-        product=PRODUCT_ID,
+        currency="sgd",
+        product = prod_id,
+        custom_unit_amount = {"enabled": True,"maximum":max_amt * 100}
     )
     return create_price.id
 
@@ -67,22 +110,27 @@ def create_checkout_session():
     stripe.api_key = stripe_keys["secret_key"]
 
     data = json.loads(request.data)
-    print(data)
+
+   
+    # max_amt = 2 * 100
+    # pool_name = 'Pool Name'
+    # userid = 1
+    # poolid = 1
+     #Amt in cents
+    max_amt = data['remaining']
+    pool_name = data['pool_name']
+    userid = data['UserID']
+    poolid = data['PoolID']
 
     try:
-        # Create new Checkout Session for the order
-        # Other optional params include:
-        # [billing_address_collection] - to display billing address details on the page
-        # [customer] - if you have an existing Stripe Customer ID
-        # [payment_intent_data] - capture the payment later
-        # [customer_email] - prefill the email input in the form
         # For full details see https://stripe.com/docs/api/checkout/sessions/create
 
         # ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
 
-        prod_id = create_prod()
-        price_id = create_price(prod_id)
-        
+        prod_id = update_prod(pool_name,max_amt)
+        print("product Updated")
+        price_id = create_price(max_amt,prod_id)
+        print("price_id Updated")
 
         checkout_session = stripe.checkout.Session.create(
             success_url=domain_url + "/success?session_id={CHECKOUT_SESSION_ID}",
@@ -90,6 +138,9 @@ def create_checkout_session():
             payment_method_types=["card"],
             mode="payment",
             line_items=[{"price": price_id, "quantity": 1}],
+            # int passed with be convereted to string
+            metadata={"UserID": userid, "PoolID": poolid}
+
 
         )
         print(checkout_session)
@@ -114,30 +165,81 @@ def webhook():
         # Invalid signature
         raise e
 
-    # Handle the event
-    if event['type'] == 'payment_intent.succeeded':
-      payment_intent = event['data']['object']
-    # ... handle other event types
-      print("PaymentIntent was successful!")
-    elif event['type'] == 'checkout.session.completed':
-        print("Payment Success!")
+    if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
-        print("session",session)
-        print(event)
         forward_webhook(event)
         return jsonify({"code":200,"session":session})
-    else:
-      print('Unhandled event type {}'.format(event['type']))
-
-    
-
+    elif event['type'] == 'charge.refund.updated':
+        res = storeRefund(event)
+        return f"Successful Recording of Refund {res}"
     return jsonify(success=True), 200
 
 def forward_webhook(payload):
-    print(payload,"PAYLOAD!!!!!!!!!!!!!!!!")
-    response = invoke_http("http://payment_manage:5101/webhook", method='POST', json=payload)
+    try:
+        response = invoke_http("http://payment_manage:5101/webhook", method='POST', json=payload)
+        return jsonify({'status': 'forwarded', 'message': response}), 200
+    except Exception as e:
+        return jsonify(error=str(e)), 401
+    
+@app.route('/refund/<int:poolid>', methods=['GET'])
+def get_all_refund(poolid):
+    refundlist = db.session.scalars(db.select(Refund).filter_by(PoolID=poolid)).all()
 
-    return 200
+    if len(refundlist) > 0:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "refunds": [ref.json() for ref in refundlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "No refunds Found."
+        }
+    ), 404
+
+@app.route('/delete_refund', methods=['DELETE'])
+def delete_all_refund():
+    try:
+        db.session.query(Refund).delete()
+        db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "message": "All Refunds have been deleted."
+            }
+        )
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while deleting all Refunds."
+            }
+        ), 500    
+
+def storeRefund(event):
+    print("Refund: Recording an Refund")
+    print(event)
+    userid = event['data']['object']['metadata']['UserID']
+    poolid = event['data']['object']['metadata']['PoolID']
+    noti = Refund(
+    amount = event['data']['object']['amount'] / 100 ,
+    status = 'refunded',
+    UserID = userid,
+    PoolID = poolid,
+    )
+    try:
+        db.session.add(noti)
+        db.session.commit()
+    except Exception as e:
+        print(e)
+        print("Transaction: Error recording an Refund")
+    
+
+    
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0', port=4242, debug=True)

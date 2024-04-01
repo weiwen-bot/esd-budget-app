@@ -3,10 +3,6 @@ version: "3.8"
 volumes:
   rabbitmq_data:
 
-networks:
-  kong-net:
-    external:
-      name: "kong-net"
 
 services:
  
@@ -123,22 +119,22 @@ services:
   ##################################
   # error: The error microservice
   ##################################
-  # error:
-  #   container_name: "error"
-  #   build:
-  #     context: ./error_microservice
-  #     dockerfile: Dockerfile
-  #   image: weiwen2022/error:esd_proj
-  #   restart: always
-  #   depends_on:
-  #     - rabbitmq
-  #   environment:
-  #     rabbit_host: rabbitmq
-  #     rabbit_port: 5672
-  #     dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/notification
-  #     PYTHONUNBUFFERED: 1
-  #   ports:
-  #     - "5008:5008"
+  error:
+    container_name: "error"
+    build:
+      context: ./error_microservice
+      dockerfile: Dockerfile
+    image: weiwen2022/error:esd_proj
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/notification
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5008:5008"
     
 
 

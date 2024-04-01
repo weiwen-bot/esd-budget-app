@@ -4,11 +4,28 @@
       <router-link to="/" class="text-black hover:text-blue-700 text-lg">&lt; </router-link>
     </div>
     <h1 class="text-2xl font-bold mb-4">Notifications</h1>
-    <div v-if="notifications.length === 0" class="mb-2">You have no notifications</div>
+    <div v-if="notification.length + request.length === 0" class="mb-2">You have no notifications</div>
     <div v-else class="mb-2">You have <strong>{{ notifications.length }}</strong> notification(s)</div>
     <div class="grid gap-4">
+
+      <div v-for="(notification, index) in request" :key="index" class="bg-white shadow-md rounded-md p-4">
+        <p class="text-xs text-gray-500 mb-2">{{ daysAgo(notification.notificationDate) }}</p>
+
+
+          <p>You have been invited to join {{ notification.pool.name }} by {{ notification.pool.userName }}</p>
+          <div class="flex justify-between mt-2">
+            <button @click="acceptInvite(notification)" class="btn btn-accept">Accept</button>
+            <button @click="declineInvite(notification)" class="btn btn-decline">Decline</button>
+          </div>
+
+
+    
+
+      </div>
+
       <div v-for="(notification, index) in notifications" :key="index" class="bg-white shadow-md rounded-md p-4">
         <p class="text-xs text-gray-500 mb-2">{{ daysAgo(notification.date) }}</p>
+
         <div v-if="notification.type === 'invite'">
           <p>You have been invited to join {{ notification.pool.name }} by {{ notification.pool.userName }}</p>
           <div class="flex justify-between mt-2">
@@ -16,26 +33,49 @@
             <button @click="declineInvite(notification)" class="btn btn-decline">Decline</button>
           </div>
         </div>
+
         <div v-else>
           <p>{{ notification.message }}</p>
         </div>
+
       </div>
+
+
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+import { mapStores } from 'pinia';
+import { useAuthStore } from '../store/authStore';
+import { useUsersStore } from '../store/userStore';
+
 export default {
   name: 'NotificationsPage',
   data() {
     return {
-      notifications: [
-        { id: 1, type: 'invite', date: '2024-3-30', pool: { name: 'Japan Trip', userName: 'John22'}},
-        { id: 3, type: 'message', message: 'You have a new message',date: '2024-3-25'},
-        { id: 2, type: 'invite', date: '2024-3-22', pool: { name: 'Mcdonald Thursday', userName: 'Dave3'} },
-  
+      userid: '',
+      data:[],
+      notification: [
+
+      ],
+      request:[
+
       ]
+
+      // notifications: [
+      //   { id: 1, type: 'invite', date: '2024-3-30', pool: { name: 'Japan Trip', userName: 'John22'}},
+      //   { id: 3, type: 'message', message: 'You have a new message',date: '2024-3-25'},
+      //   { id: 2, type: 'invite', date: '2024-3-22', pool: { name: 'Mcdonald Thursday', userName: 'Dave3'} },
+  
+      // ]
     };
+  },
+  computed: {
+    // computed
+    ...mapStores(useAuthStore),
+    ...mapStores(useUsersStore),
   },
   methods: {
     acceptInvite(invite) {
@@ -58,6 +98,16 @@ export default {
         return `${diffDays} days ago`;
       }
     },
+  },
+  async created(){
+    const authStore = useAuthStore();
+    const userStore = useUsersStore();
+    this.userid = authStore.userID;
+
+    this.data = await userStore.getUserNoti(this.userid);
+    this.notification = this.pools.data.data.data.notif
+    this.request = this.pools.data.data.data.request
+
   }
 };
 </script>

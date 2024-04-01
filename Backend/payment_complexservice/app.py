@@ -109,6 +109,7 @@ def refund(poolid):
         percentage_ref = temp[userid]
         ref_amt = transaction['amount'] * percentage_ref
         print(userid , poolid ,"THIS IS THE REFUND META VALUE")
+        # Store as list send over bunch of refund
         refund_obj = stripe.Refund.create(
             payment_intent=transaction['paymentIntent'],
             metadata={"UserID": userid, "PoolID": poolid},

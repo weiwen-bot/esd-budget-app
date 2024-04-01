@@ -13,6 +13,7 @@
     "cors": "^2.8.5",
     "flowbite": "^1.8.1",
     "pinia": "^2.1.7",
+    "pinia-plugin-persistedstate": "^3.2.1",
     "stripe": "^14.21.0",
     "vue": "^3.4.19",
     "vue-router": "^4.3.0",

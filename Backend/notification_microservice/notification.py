@@ -98,42 +98,22 @@ def get_notifications():
         response.append(notification.json())
     return jsonify(response)
 
-# @app.route('/notifications', methods=['POST'])
-# def post_notification():
-#     notification_data = request.get_json()
+@app.route('/notifications/<int:receiverID>', methods=['GET'])
+def get_notifications_by_receiver(receiverID):
+    notifications = Notification.query.filter_by(receiverID=receiverID).all()
+    if notifications:
+        try:
+        
+            response = []
+            for notification in notifications:
+                response.append(notification.json())
+            return jsonify({"code":200,"data":response}), 200
+        
+        except Exception as e:
+            return jsonify({"code": 500, "message": "An error occurred retrieving notifications.", "error": str(e)}), 500
+    return jsonify({"code": 404, "message": "Notification not found."}), 404
 
-#     try:
-#         notification_id = db.session.query(func.coalesce(func.max(Notification.notificationID), 0) + 1)[0][0]
-#         notification_type = notification_data.get('notificationType')
-#         sender_id = notification_data.get('senderID')
-#         receiver_id = notification_data.get('receiverID')
-#         message = notification_data.get('message')
 
-#         if notification_type and sender_id and receiver_id and message:
-#             new_notification = Notification(
-#                 notification_type=notification_type,
-#                 sender_id=sender_id,
-#                 receiver_id=receiver_id,
-#                 message=message
-#             )
-
-#             db.session.add(new_notification)
-#             db.session.commit()
-
-#             print(f"New notification with ID {new_notification.notificationID} has been posted.")
-
-#             return jsonify({'success': True, 'message': 'New notification has been posted.'}), 201
-
-#         else:
-#             print("One or more required fields are missing.")
-#             return jsonify({'success': False, 'message': 'One or more required fields are missing.'}), 400
-
-#     except Exception as e:
-#         db.session.rollback()
-#         print(f"Error posting notification:")
-#         return jsonify({'success': False, 'message': 'Error posting notification', 'error':  str(e)}), 500
-
-#add notification
 @app.route("/notifications", methods=['POST'])
 def create_notification():
     data = request.get_json()

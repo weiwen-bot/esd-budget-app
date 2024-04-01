@@ -17,18 +17,18 @@
       <div v-for="(pool, index) in pools" :key="index" class="border border-gray-400 rounded-md mb-4">
         <div class="bg-white shadow-md rounded-md p-4">
           <div class="border-b-2 border-gray-400 mb-4 pb-2">
-            <h2 class="text-lg font-semibold">{{ pool.name }}</h2>
-            <h2 class="text-sm font-semibold italic">Created by {{ pool.userName }}</h2>
+            <h2 class="text-lg font-semibold">{{ pool.pool_name }}</h2>
+            <h2 class="text-sm font-semibold italic">Created by {{ pool.PoolOwner }}</h2>
           </div>
           <div class="mb-4">
-            <p class="mb-4"><strong>Current Amount:</strong> ${{ pool.currentAmount }}</p> 
-            <p class="mb-4"><strong>Target Amount:</strong> ${{ pool.totalAmount }}</p> 
+            <p class="mb-4"><strong>Current Amount:</strong> ${{ pool.Current_amount }}</p> 
+            <p class="mb-4"><strong>Target Amount:</strong> ${{ pool.Budget }}</p> 
           </div>
           <div class="mb-4">
             <div class="progress-bar-container">
-              <div class="progress-bar" :style="{ width:  `${calculateProgressPercentage(pool.currentAmount, pool.totalAmount)}`}"></div>
+              <div class="progress-bar" :style="{ width:  `${pool.progressPercentage}`}"></div>
             </div>
-            <p><strong>Progress: {{calculateProgressPercentage(pool.currentAmount, pool.totalAmount)}}</strong></p>
+            <p><strong>Progress: {{ pool.progressPercentage }}</strong></p>
           </div>
           
           <div class="flex justify-center mb-4">
@@ -59,38 +59,45 @@ Status = db.Column(db.String(36), nullable=False) -->
 
 <script>
 import axios from 'axios';
+import { mapStores } from 'pinia';
+import { useAuthStore } from '../store/authStore';
+import { useUsersStore } from '../store/userStore';
 
 export default {
   name: 'PoolPage',
   data() {
     return {
       stripe: null,
-      pools: [
-  {
-    id: 1,
-    name: 'Japan Trip',
-    userName: "John44",
-    category: 'Fund',
-    description: 'Japan Trip after Finals',
-    currentAmount: 1200,
-    totalAmount: 5000,
-  },
-  {
-    id: 2,
-    name: 'Dinner at Mcdonald',
-    userName: "Sarah4",
-    category: 'Payment',
-    description: 'Last night dinner',
-    currentAmount: 6000,
-    totalAmount: 8000,
-    expiryDate:'2024-01-05',
+      pools: [],
+      userid: '',
+//       pools: [
+//   {
+//     id: 1,
+//     name: 'Japan Trip',
+//     userName: "John44",
+//     category: 'Fund',
+//     description: 'Japan Trip after Finals',
+//     currentAmount: 1200,
+//     totalAmount: 5000,
+//   },
+//   {
+//     id: 2,
+//     name: 'Dinner at Mcdonald',
+//     userName: "Sarah4",
+//     category: 'Payment',
+//     description: 'Last night dinner',
+//     currentAmount: 6000,
+//     totalAmount: 8000,
+//     expiryDate:'2024-01-05',
     
-  },
-],
+//   },
+// ],
     }
   },
   computed: {
-    //
+    // computed
+    ...mapStores(useAuthStore),
+    ...mapStores(useUsersStore),
   },
   methods: {
     viewPool(poolName) {
@@ -99,59 +106,27 @@ export default {
     },
     async fetchPoolDetails() {
       // API call to fetch pool details
+      // http://127.0.0.1:5200/get_userpools/3
     },
-    async fetchTransactionHistory() {
-      try {
-        const response = await fetch('http://localhost:5005/TransactionHistory/1'); // Replace '1' with the actual pool ID
-        const data = await response.json();
-        if (response.ok) {
-          this.transactions = data.data.transactions;
-        } else {
-          console.error('Failed to fetch transaction history:', data.message);
-        }
-      } catch (error) {
-        console.error('Error fetching transaction history:', error);
-      }
-    },
-    getStripePublishableKey() {
-      fetch('http://localhost:4242/config')
-        .then((result) => result.json())
-        .then((data) => {
-          // Initialize Stripe.js
-          this.stripe = Stripe(data.publicKey);
-        });
-    },
-    handlePurchaseBook() {
-      // Get Checkout Session ID
-      fetch('http://127.0.0.1:4242/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ book_id: '2' }),
-      })
-        .then((result) => result.json())
-        .then((data) => {
-          console.log(data);
-          // Redirect to Stripe Checkout
-          return this.stripe.redirectToCheckout({ sessionId: data.sessionId });
-        })
-        .then((res) => {
-          console.log(res);
-        });
-    },
+    
     calculateProgressPercentage(currentAmount, totalAmount) {
-      return (currentAmount / totalAmount) * 100 + '%';
+      return Math.round((currentAmount / totalAmount) * 100) + '%';
     },
   },
   components: {},
-  created() {
+  async created() {
     // Calculate progress percentage and fetch data on component creation
+    const authStore = useAuthStore();
+    const userStore = useUsersStore();
+    this.userid = authStore.userID;
+
+    this.pools = await userStore.getUserPools(this.userid);
+    this.pools = this.pools.data.pools
+    console.log(this.pools,"POOLS HERE")
+
     this.pools.forEach((pool) => {
-      pool.progressPercentage = this.calculateProgressPercentage(pool.currentAmount, pool.totalAmount);
+      pool.progressPercentage = this.calculateProgressPercentage(pool.Current_amount, pool.Budget);
     });
-    this.fetchPoolDetails();
-    this.fetchTransactionHistory();
   },
 };
 </script>

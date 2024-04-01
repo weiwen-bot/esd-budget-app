@@ -72,8 +72,11 @@
         </div>
       </div>
       <div class="flex justify-center mb-4">
-        <button @click="makePayment" class="make-payment-btn">Contribute</button>
+        <button @click="make_payment" class="make-payment-btn ">Contribute</button>
       </div>
+
+      <button @click="make_refund" class="make-payment-btn2">Refund</button>
+
       <p class="mb-4"><strong>Transaction History:</strong><br></p>
       <div class="overflow-x-auto">
         <table class="table-auto w-full">
@@ -126,6 +129,10 @@
 </template>
 
 <script>
+import axios from 'axios';
+import { mapStores } from 'pinia';
+import { useAuthStore } from '../store/authStore';
+import { useUsersStore } from '../store/userStore';
 export default {
   name: 'IndividualPoolPage',
   props: ['poolID', 'pool_name'],
@@ -133,29 +140,36 @@ export default {
     return {
       isFlipped: false,
       pool: {
-        id: 1,
-        userName: "John44",
-        name: 'Japan Trip',
-        category: 'Fund',
-        description: 'Japan Trip after Finals',
-        currentAmount: 1200,
-        totalAmount: 5000,
-        expiryDate: '2025-01-03',
+        // id: 1,
+        // userName: "John44",
+        // name: 'Japan Trip',
+        // category: 'Fund',
+        // description: 'Japan Trip after Finals',
+        // currentAmount: 1200,
+        // totalAmount: 5000,
+        // expiryDate: '2025-01-03',
 
       },
-      users: ['232323', '2323232', '2323'],
+      users: [],
+      userid :'',
       showModal: false,
       transactions: [],
       poolMembers: [],
+      poolID:'',
 
     };
   },
   created() { 
-    const poolID = this.$route.params.poolID;
+     this.poolID = this.$route.params.poolID;
     this.fetchPoolDetails();
     this.fetchTransactionHistory();
     this.fetchPoolMembers();
     console.log('PoolID:', this.poolID);
+  },
+  computed: {
+    // computed
+    ...mapStores(useAuthStore),
+    ...mapStores(useUsersStore),
   },
   methods: {
     toggleModal() {
@@ -191,6 +205,34 @@ export default {
     console.error('Error fetching pool members:', error);
   }
 },
+  async make_payment(){
+    const authStore = useAuthStore();
+      const userStore = useUsersStore();
+      this.userid = authStore.userID;
+      // userid, poolid, Status
+      var payload = {
+        "pool_name": this.pool.pool_name,
+            "UserID": this.userid,
+            "PoolID": this.pool.PoolID,
+            "remaining": (this.pool.Budget - this.pool.Current_amount)
+      }
+      console.log(payload)
+      var res = await userStore.payment(payload)
+      window.location.href = res.data.redirect
+      return res
+  },
+
+  async make_refund(){
+    const authStore = useAuthStore();
+      const userStore = useUsersStore();
+      this.userid = authStore.userID;
+      // userid, poolid, Status
+      var res = await userStore.refund(this.$route.params.poolID)
+      await this.fetchPoolDetails();
+      await this.fetchTransactionHistory();
+      await this.fetchPoolMembers();
+      return res
+  },
 
   async fetchPoolDetails() {
   try {
@@ -252,32 +294,34 @@ async fetchTransactionHistory() {
   }
 },
 
-    async makePayment() {
-      try {
-        const response = await fetch('http://localhost:5100/pool_management', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            poolID: 1, // Replace '1' with the actual pool ID
-            userID: 1, // User ID = 1 
-            amount: 100 // Replace '100' with the actual payment amount
-          })
-        });
-        const data = await response.json();
-        if (response.ok) {
-          alert('Payment successful');
-          // Optionally, you can update the pool details or transaction history after payment
-          // this.fetchPoolDetails();
-          // this.fetchTransactionHistory();
-        } else {
-          console.error('Failed to make payment:', data.message);
-        }
-      } catch (error) {
-        console.error('Error making payment:', error);
-      }
-    },
+    // async makePayment() {
+    //   try {
+    //     const response = await fetch('http://localhost:5100/pool_management', {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json'
+    //       },
+    //       body: JSON.stringify({
+    //         poolID: 1, // Replace '1' with the actual pool ID
+    //         userID: 1, // User ID = 1 
+    //         amount: 100 // Replace '100' with the actual payment amount
+    //       })
+    //     });
+    //     const data = await response.json();
+    //     if (response.ok) {
+    //       alert('Payment successful');
+    //       // Optionally, you can update the pool details or transaction history after payment
+    //       // this.fetchPoolDetails();
+    //       // this.fetchTransactionHistory();
+    //     } else {
+    //       console.error('Failed to make payment:', data.message);
+    //     }
+    //   } catch (error) {
+    //     console.error('Error making payment:', error);
+    //   }
+    // },
+
+
     calculateProgressPercentage(currentAmount, totalAmount) {
       return (currentAmount / totalAmount) * 100 + '%';
     },
@@ -366,6 +410,18 @@ async fetchTransactionHistory() {
 
 .make-payment-btn:hover {
   background-color: #2563eb;
+}
+
+.make-payment-btn2 {
+  background-color: black;
+  color: #fff;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+}
+
+.make-payment-btn2:hover {
+  background-color: black;
 }
 
 .progress-bar-container {

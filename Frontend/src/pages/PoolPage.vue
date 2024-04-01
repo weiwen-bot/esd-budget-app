@@ -58,38 +58,25 @@ Status = db.Column(db.String(36), nullable=False) -->
 
 
 <script>
-
+import axios from 'axios';
+import { mapStores } from 'pinia';
+import { useAuthStore } from '../store/authStore';
+import { useUsersStore } from '../store/userStore';
 export default {
   name: 'PoolPage',
   data() {
     return {
       stripe: null,
       pools: [
-  {
-    id: 1,
-    name: 'Japan Trip',
-    userName: "John44",
-    category: 'Fund',
-    description: 'Japan Trip after Finals',
-    currentAmount: 1200,
-    totalAmount: 5000,
-  },
-  {
-    id: 2,
-    name: 'Dinner at Mcdonald',
-    userName: "Sarah4",
-    category: 'Payment',
-    description: 'Last night dinner',
-    currentAmount: 6000,
-    totalAmount: 8000,
-    expiryDate:'2024-01-05',
-    
-  },
+
 ],
+userid:''
     }
   },
   computed: {
-    //
+    // computed
+    ...mapStores(useAuthStore),
+    ...mapStores(useUsersStore),
   },
   methods: {
     viewPool(pool) {
@@ -104,11 +91,15 @@ export default {
 },
 
     async fetchPoolDetails() {
+      const authStore = useAuthStore();
+      this.userid = authStore.userID;
   try {
-    const response = await fetch('http://127.0.0.1:5001/Pool');
+    const response = await fetch(`http://127.0.0.1:5200/get_userpools/${this.userid}`);
+    
     if (response.ok) {
       const data = await response.json();
-      this.pools = data.data.pools;
+      console.log(data)
+      this.pools = data.pools;
 
       // Fetch usernames for each pool
       // Inside the fetchPoolDetails method

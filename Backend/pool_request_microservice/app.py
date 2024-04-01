@@ -57,6 +57,21 @@ def get_by_user(UserId):
         return jsonify({"code": 404, "message": "Pool not found."}), 404
     
 
+@app.route("/pool_request/pool/<int:PoolID>", methods=['GET'])
+def get_by_req_pool(PoolID):
+    pool_requests = pool_request.query.filter_by(PoolID=PoolID)
+    pool_requests = [row.json() for row in pool_requests]
+
+    if pool_requests:
+        try:
+            return jsonify({"code": 200, "data": pool_requests})
+        except Exception as e:
+            return jsonify({"code": 500, "data": pool_requests, "message": "An error occurred getting the pool_request.", "error":str(e)}), 500
+    else:
+        return jsonify({"code": 404, "message": "Pool_req not found."}), 404
+    
+    
+
 # create pool request for the poolid and userid
 @app.route("/pool_request",methods=['POST'])
 def create_poolrequest():

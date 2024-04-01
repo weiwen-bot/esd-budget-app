@@ -88,7 +88,6 @@ export const useUsersStore = defineStore({
         //     "PoolID": 1,
         //     "remaining": 100 * 100
         // }
-        console.log(payload,"SDDS")
         try{
             const info = await axios
             .post(`http://127.0.0.1:5101/refund/${poolid}`,

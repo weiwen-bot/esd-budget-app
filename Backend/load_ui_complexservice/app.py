@@ -139,7 +139,9 @@ def get_notification(userid):
         if all_request["code"] != 404:
             for req in all_request['data']:
                 req['PoolName'] = pool_map[req['PoolID']]
-                req['PoolOwner'] = user_map[req['UserID']]
+                # req['PoolOwner'] = user_map[req['UserID']]
+                req['PoolOwner'] = user_map[[ x for x in pool if pool['PoolID'] == req['PoolID']][0]['UserID']]
+                                    
                 all_req['request'].append(req)
             all_req['request'] = all_request['data']
 

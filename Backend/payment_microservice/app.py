@@ -133,7 +133,8 @@ def create_checkout_session():
         print("price_id Updated")
 
         checkout_session = stripe.checkout.Session.create(
-            success_url=domain_url + "/success?session_id={CHECKOUT_SESSION_ID}",
+            # success_url=domain_url + "/success?session_id={CHECKOUT_SESSION_ID}",
+            success_url=domain_url + f"/ipp/{poolid}",
             cancel_url=domain_url + "/canceled",
             payment_method_types=["card"],
             mode="payment",
@@ -152,9 +153,10 @@ def create_checkout_session():
 @app.route("/refund_mul", methods=['POST'])
 def refund_mul():
     data = request.get_json()["refunds"]
+    print(data,"REFDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD")
     for refund in data:
         refund_obj = stripe.Refund.create(
-        payment_intent=refund['paymentIntent'],
+        payment_intent=refund['payment_intent'],
         metadata=refund["metadata"],
         amount=refund["amt"],
             

@@ -144,47 +144,6 @@ await Promise.all(this.pools.map(async (pool) => {
   }
 },
 
-
-    async fetchTransactionHistory() {
-      try {
-        const response = await fetch('http://localhost:5005/TransactionHistory/1'); // Replace '1' with the actual pool ID
-        const data = await response.json();
-        if (response.ok) {
-          this.transactions = data.data.transactions;
-        } else {
-          console.error('Failed to fetch transaction history:', data.message);
-        }
-      } catch (error) {
-        console.error('Error fetching transaction history:', error);
-      }
-    },
-    getStripePublishableKey() {
-      fetch('http://localhost:4242/config')
-        .then((result) => result.json())
-        .then((data) => {
-          // Initialize Stripe.js
-          this.stripe = Stripe(data.publicKey);
-        });
-    },
-    handlePurchaseBook() {
-      // Get Checkout Session ID
-      fetch('http://127.0.0.1:4242/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ book_id: '2' }),
-      })
-        .then((result) => result.json())
-        .then((data) => {
-          console.log(data);
-          // Redirect to Stripe Checkout
-          return this.stripe.redirectToCheckout({ sessionId: data.sessionId });
-        })
-        .then((res) => {
-          console.log(res);
-        });
-    },
     calculateProgressPercentage(currentAmount, totalAmount) {
       return (currentAmount / totalAmount) * 100 + '%';
     },

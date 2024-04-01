@@ -10,6 +10,10 @@
         <input class="shadow appearance-none border rounded w-64 py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline bg-white text-center" type="text" id="poolName" v-model="poolName" />
       </div>
       <div class="flex flex-col items-center"> 
+        <label for="poolDesc" class="mr-2">Pool Description:</label>
+        <input class="shadow appearance-none border rounded w-64 py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline bg-white text-center" type="text" id="poolDesc" v-model="poolDesc" />
+      </div>
+      <div class="flex flex-col items-center"> 
         <label for="poolType" class="mr-2">Pool Type:</label>
         <select class="shadow appearance-none border rounded w-64 py-2 px-3 text-center text-black leading-tight focus:outline-none focus:shadow-outline bg-white" id="poolType" v-model="poolType">
           <option value="payment">Payment</option>
@@ -60,9 +64,10 @@ export default {
   data() { 
     return { 
       poolName: '', 
-      poolType: 'payment', 
+      poolType: 'Payment', 
       targetBudget: '', 
       expiryDate: '',
+      poolDesc: '',
       // userList: [ 
       //   { id: 1, name: 'User1' },
       //   { id: 2, name: 'User2' },
@@ -97,7 +102,7 @@ export default {
       // Prepare data to send to the Flask server
       const requestData = {
         pool_name: this.poolName,
-        pool_desc: '', // You can add a description field if needed
+        pool_desc: this.poolDesc, // You can add a description field if needed
         Expiry_Date: this.expiryDate,
         Current_amount: 0, // This might be initialized with 0 initially
         Budget: parseFloat(this.targetBudget), // Make sure to parse as float
@@ -108,15 +113,15 @@ export default {
         // 
         Status: 'active' // You may want to set default status or handle it dynamically
       };
-
+      var payload = {"pool_info" : requestData, "pool_invites" : this.selectedUsers}
       try {
         // Make POST request to Flask server
-        const response = await fetch('http://127.0.0.1:5001/Pool', {
+        const response = await fetch('http://127.0.0.1:5100/create_pool', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(requestData)
+          body: JSON.stringify(payload)
         });
 
         // Check if the request was successful

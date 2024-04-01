@@ -99,26 +99,27 @@
 
     </div>
     <div v-if="showModal" class="modal">
-    <div class="modal-content">
-      <span class="close" @click="toggleModal">&times;</span>
-      <h2 class="text-center"><strong>Participants</strong></h2>
-      <p>There are {{ users.length }} participants</p>
-      <table class="border-collapse border border-gray-400">
-        <thead>
-          <tr>
-            <th class="border border-gray-400 px-4 py-2">S/N</th>
-            <th class="border border-gray-400 px-4 py-2">Username</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(user, index) in users" :key="index" class="border border-gray-400">
-            <td class="border border-gray-400 px-4 py-2">{{ index + 1 }}</td>
-            <td class="border border-gray-400 px-4 py-2">{{ user }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="modal-content">
+    <span class="close" @click="toggleModal">&times;</span>
+    <h2 class="text-center"><strong>Participants</strong></h2>
+    <p>There are {{ poolMembers.length }} participants</p>
+    <table class="border-collapse border border-gray-400">
+      <thead>
+        <tr>
+          <th class="border border-gray-400 px-4 py-2">S/N</th>
+          <th class="border border-gray-400 px-4 py-2">User ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(userID, index) in poolMembers" :key="index" class="border border-gray-400">
+          <td class="border border-gray-400 px-4 py-2">{{ index + 1 }}</td>
+          <td class="border border-gray-400 px-4 py-2">{{ userID }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
+</div>
+
   </div>
   
 
@@ -144,11 +145,8 @@ export default {
       },
       users: ['232323', '2323232', '2323'],
       showModal: false,
-      transactions: [
-        { id: 1, date: '2022-01-01', amount: 800, description: 'Transaction 1', userID: 3 },
-        { id: 2, date: '2022-01-05', amount: 200, description: 'Transaction 2', userID: 1 },
-        { id: 3, date: '2022-01-06', amount: 200, description: 'Transaction 3', userID: 1 }
-      ],
+      transactions: [],
+      poolMembers: [],
 
     };
   },
@@ -156,16 +154,45 @@ export default {
     const poolID = this.$route.params.poolID;
     this.fetchPoolDetails();
     this.fetchTransactionHistory();
+    this.fetchPoolMembers();
     console.log('PoolID:', this.poolID);
   },
   methods: {
-    getUsername(userID) {
-    return this.usersDict[userID] || 'Unknown User';
-  },
     toggleModal() {
       this.showModal = !this.showModal;
     },
-    async fetchPoolDetails() {
+    async fetchPoolMembers() {
+  try {
+    const response = await fetch(`http://127.0.0.1:5001/pool_mapping/${this.poolID}`);
+    const data = await response.json();
+    if (response.ok) {
+      // Set the poolMembers array with the fetched pool members
+      this.poolMembers = data.data.map(poolMapping => poolMapping.UserID);
+
+      // Fetch all users to create a dictionary of user IDs to usernames
+      const usersResponse = await fetch(`http://127.0.0.1:5004/user`);
+      const usersData = await usersResponse.json();
+      if (usersResponse.ok) {
+        // Create a dictionary of user IDs to usernames
+        const usersDict = {};
+        usersData.data.users.forEach(user => {
+          usersDict[user.UserID] = user.UserName;
+        });
+        // Set the username for each pool member
+        this.poolMembers = this.poolMembers.map(userID => usersDict[userID]);
+        console.log(this.poolMembers);
+      } else {
+        console.error('Failed to fetch users:', usersData.message);
+      }
+    } else {
+      console.error('Failed to fetch pool members:', data.message);
+    }
+  } catch (error) {
+    console.error('Error fetching pool members:', error);
+  }
+},
+
+  async fetchPoolDetails() {
   try {
     const response = await fetch(`http://127.0.0.1:5001/Pool/${this.poolID}`);
     const data = await response.json();

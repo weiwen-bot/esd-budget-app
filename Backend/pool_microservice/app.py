@@ -109,6 +109,15 @@ def update_pool(PoolID):
     else:
         return jsonify({"code": 404, "message": "Pool not found."}), 404
 
+@app.route("/pool_mapping/<int:PoolID>", methods=['GET'])
+def get_all_poolmapping_id(PoolID):
+    try:
+        pool_map = PoolMapping.query.filter_by(PoolID=PoolID).all()
+    except Exception as e:
+        return jsonify({"code": 500, "message": "An error occurred getting the pool mapping.", "error": str(e)}), 500
+    if pool_map:
+        return jsonify({"code": 200, "data": [pool.json() for pool in pool_map]})
+    return jsonify({"code": 404, "message": "Pool not found."}), 404
 # API endpoint to get all pools
 @app.route("/Pool", methods=['GET'])
 def get_all_pools():

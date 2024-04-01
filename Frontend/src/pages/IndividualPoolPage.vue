@@ -48,9 +48,9 @@
           </div>
         </div>
         <h2 class="text-lg font-semibold flex flex-col items-center justify-center">
-          {{ pool.name }}
+          {{ pool.pool_name }}
         </h2>
-        <h2 class="text-sm font-semibold italic black mt-2 mb-2">Created by {{ pool.userName }}</h2>
+        <h2 class="text-sm font-semibold italic black mt-2 mb-2">Created by {{ pool.UserID }}</h2>
         <div class="flex justify-center mt-2 mb-2">
           <button @click="toggleModal" style="margin: 0px; padding: 1px; border: 1px solid black; border-radius: 3px; background-color: #f8f8f8; box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);" class="flex flex-col items-center">
           <span class="text-sm" style="margin:3px;">View Users</span>
@@ -59,16 +59,16 @@
       </div>
       <div class="mb-4">
   
-        <p class="mb-4" style="color:black"><strong>Description:</strong><br> {{ pool.description }}</p>
-        <p class="mb-4 text-black" style="color:black"><strong>Category:</strong><br>{{ pool.category }}</p>
-        <p class="mb-4 text-black" style="color:black"><strong>Created by:</strong><br>{{ pool.userName }}</p>
+        <p class="mb-4" style="color:black"><strong>Description:</strong><br> {{ pool.pool_desc}}</p>
+        <p class="mb-4 text-black" style="color:black"><strong>Category:</strong><br>{{ pool.Pool_Type }}</p>
+        <p class="mb-4 text-black" style="color:black"><strong>Created by:</strong><br>{{ pool.UserID }}</p>
       </div>
       <div class="mb-4">
         <p><strong>Progress:</strong></p>
-        <p style="color:black">${{ pool.currentAmount }} / ${{ pool.totalAmount }}</p>
+        <p style="color:black">${{ pool.Current_amount }} / ${{ pool.Budget }}</p>
         <div class="progress-bar-container">
           <div class="progress-bar"
-            :style="{ width: `${calculateProgressPercentage(pool.currentAmount, pool.totalAmount)}` }"></div>
+            :style="{ width: `${calculateProgressPercentage(pool.Current_amount, pool.Budget)}` }"></div>
         </div>
       </div>
       <div class="flex justify-center mb-4">
@@ -98,8 +98,7 @@
       </div>
 
     </div>
-  </div>
-  <div v-if="showModal" class="modal">
+    <div v-if="showModal" class="modal">
     <div class="modal-content">
       <span class="close" @click="toggleModal">&times;</span>
       <h2 class="text-center"><strong>Participants</strong></h2>
@@ -120,12 +119,15 @@
       </table>
     </div>
   </div>
+  </div>
+  
 
 </template>
 
 <script>
 export default {
   name: 'IndividualPoolPage',
+  props: ['poolID'],
   data() {
     return {
       isFlipped: false,
@@ -151,26 +153,29 @@ export default {
     };
   },
   created() {
+    const poolID = this.$route.params.poolID;
     this.fetchPoolDetails();
     this.fetchTransactionHistory();
+    console.log('PoolID:', this.poolID);
   },
   methods: {
     toggleModal() {
       this.showModal = !this.showModal;
     },
-    async fetchPoolDetails() {
-      try {
-        const response = await fetch('http://localhost:5005/Pool/1'); // Replace '1' with the actual pool ID
-        const data = await response.json();
-        if (response.ok) {
-          this.pool = data.data;
-        } else {
-          console.error('Failed to fetch pool details:', data.message);
-        }
-      } catch (error) {
-        console.error('Error fetching pool details:', error);
-      }
-    },
+    async fetchPoolDetails(poolID) {
+  try {
+    const response = await fetch(`http://127.0.0.1:5001/Pool/${this.poolID}`);
+    const data = await response.json();
+    if (response.ok) {
+      this.pool = data.data;
+    } else {
+      console.error('Failed to fetch pool details:', data.message);
+    }
+  } catch (error) {
+    console.error('Error fetching pool details:', error);
+  }
+},
+
     async fetchTransactionHistory() {
       try {
         const response = await fetch('http://localhost:5005/TransactionHistory/1'); // Replace '1' with the actual pool ID

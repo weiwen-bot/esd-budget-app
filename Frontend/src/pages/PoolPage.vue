@@ -32,7 +32,7 @@
           </div>
           
           <div class="flex justify-center mb-4">
-            <button @click="viewPool(poolName)" class="view-pool-btn">
+            <button @click="viewPool(pool)" class="view-pool-btn">
               View Pool
             </button>
           </div>
@@ -92,10 +92,17 @@ export default {
     //
   },
   methods: {
-    viewPool(poolName) {
-      this.$router.push({ name: 'IndividualPoolPage', params: { poolName } });
-      console.log(`Viewing pool: ${poolName}`);
-    },
+    viewPool(pool) {
+  this.$router.push({ 
+    name: 'IndividualPoolPage', 
+    params: { 
+      poolName: pool.pool_name,
+      poolID: pool.PoolID // Pass the poolID as a parameter
+    } 
+  });
+  console.log(`Viewing pool: ${pool.pool_name}`);
+},
+
     async fetchPoolDetails() {
   try {
     const response = await fetch('http://127.0.0.1:5001/Pool');

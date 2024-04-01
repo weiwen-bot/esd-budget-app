@@ -50,7 +50,7 @@
         <h2 class="text-lg font-semibold flex flex-col items-center justify-center">
           {{ pool.pool_name }}
         </h2>
-        <h2 class="text-sm font-semibold italic black mt-2 mb-2">Created by {{ pool.UserID }}</h2>
+        <h2 class="text-sm font-semibold italic black mt-2 mb-2">Created by {{ pool.userName }}</h2>
         <div class="flex justify-center mt-2 mb-2">
           <button @click="toggleModal" style="margin: 0px; padding: 1px; border: 1px solid black; border-radius: 3px; background-color: #f8f8f8; box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);" class="flex flex-col items-center">
           <span class="text-sm" style="margin:3px;">View Users</span>
@@ -61,7 +61,7 @@
   
         <p class="mb-4" style="color:black"><strong>Description:</strong><br> {{ pool.pool_desc}}</p>
         <p class="mb-4 text-black" style="color:black"><strong>Category:</strong><br>{{ pool.Pool_Type }}</p>
-        <p class="mb-4 text-black" style="color:black"><strong>Created by:</strong><br>{{ pool.UserID }}</p>
+        <p class="mb-4 text-black" style="color:black"><strong>Created by:</strong><br>{{ pool.userName }}</p>
       </div>
       <div class="mb-4">
         <p><strong>Progress:</strong></p>
@@ -80,7 +80,7 @@
           <thead>
             <tr>
               <th class="border px-4 py-2">Date</th>
-              <th class="border px-4 py-2">UserID</th>
+              <th class="border px-4 py-2">User</th>
               <th class="border px-4 py-2">Amount</th>
               <th class="border px-4 py-2">Description</th>
             </tr>
@@ -88,10 +88,10 @@
           <tbody>
             <tr v-for="(transaction, index) in transactions" :key="transaction.id"
               :class="{ 'bg-gray-300': index % 2 === 0 }">
-              <td class="border px-4 py-2">{{ transaction.date }}</td>
-              <td class="border px-4 py-2">{{ transaction.userID }}</td>
+              <td class="border px-4 py-2">{{ transaction.transactionDate }}</td>
+              <td class="border px-4 py-2">{{ transaction.username }}</td>
               <td class="border px-4 py-2">${{ transaction.amount }}</td>
-              <td class="border px-4 py-2">{{ transaction.description }}</td>
+              <td class="border px-4 py-2">{{ transaction.status }}</td>
             </tr>
           </tbody>
         </table>
@@ -127,7 +127,7 @@
 <script>
 export default {
   name: 'IndividualPoolPage',
-  props: ['poolID'],
+  props: ['poolID', 'pool_name'],
   data() {
     return {
       isFlipped: false,
@@ -152,22 +152,39 @@ export default {
 
     };
   },
-  created() {
+  created() { 
     const poolID = this.$route.params.poolID;
     this.fetchPoolDetails();
     this.fetchTransactionHistory();
     console.log('PoolID:', this.poolID);
   },
   methods: {
+    getUsername(userID) {
+    return this.usersDict[userID] || 'Unknown User';
+  },
     toggleModal() {
       this.showModal = !this.showModal;
     },
-    async fetchPoolDetails(poolID) {
+    async fetchPoolDetails() {
   try {
     const response = await fetch(`http://127.0.0.1:5001/Pool/${this.poolID}`);
     const data = await response.json();
     if (response.ok) {
       this.pool = data.data;
+      // Fetch all users to create a dictionary of user IDs to usernames
+      const usersResponse = await fetch(`http://127.0.0.1:5004/user`);
+      const usersData = await usersResponse.json();
+      if (usersResponse.ok) {
+        // Create a dictionary of user IDs to usernames
+        const usersDict = {};
+        usersData.data.users.forEach(user => {
+          usersDict[user.UserID] = user.UserName;
+        });
+        // Set the username for the pool creator
+        this.pool.userName = usersDict[this.pool.UserID];
+      } else {
+        console.error('Failed to fetch users:', usersData.message);
+      }
     } else {
       console.error('Failed to fetch pool details:', data.message);
     }
@@ -176,19 +193,38 @@ export default {
   }
 },
 
-    async fetchTransactionHistory() {
-      try {
-        const response = await fetch('http://localhost:5005/TransactionHistory/1'); // Replace '1' with the actual pool ID
-        const data = await response.json();
-        if (response.ok) {
-          this.transactions = data.data.transactions;
-        } else {
-          console.error('Failed to fetch transaction history:', data.message);
-        }
-      } catch (error) {
-        console.error('Error fetching transaction history:', error);
+
+async fetchTransactionHistory() {
+  try {
+    const response = await fetch(`http://127.0.0.1:5003/transactions/pool/${this.poolID}`);
+    const data = await response.json();
+    if (response.ok) {
+      this.transactions = data.data.transactions;
+
+      // Fetch all users to create a dictionary of user IDs to usernames
+      const usersResponse = await fetch(`http://127.0.0.1:5004/user`);
+      const usersData = await usersResponse.json();
+      if (usersResponse.ok) {
+        // Create a dictionary of user IDs to usernames
+        const usersDict = {};
+        usersData.data.users.forEach(user => {
+          usersDict[user.UserID] = user.UserName;
+        });
+        // Replace user IDs with usernames in transaction history
+        this.transactions.forEach(transaction => {
+          transaction.username = usersDict[transaction.userID];
+        });
+      } else {
+        console.error('Failed to fetch users:', usersData.message);
       }
-    },
+    } else {
+      console.error('Failed to fetch transaction history:', data.message);
+    }
+  } catch (error) {
+    console.error('Error fetching transaction history:', error);
+  }
+},
+
     async makePayment() {
       try {
         const response = await fetch('http://localhost:5100/pool_management', {

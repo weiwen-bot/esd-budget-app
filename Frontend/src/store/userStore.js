@@ -40,6 +40,12 @@ export const useUsersStore = defineStore({
               return info
   
           },
-
-    }
+        
+        async accept_pool_request(payload){
+            const info = await axios
+            .put(`http://127.0.0.1:5100/accept_pool_request/`,{headers:{ "Content-Type":"application/json"}}, payload)
+            console.log(info)
+            return info
+    },  
+}
 });

@@ -119,7 +119,7 @@ export default {
     const authStore = useAuthStore();
     const userStore = useUsersStore();
     this.userid = authStore.userID;
-
+    
     this.pools = await userStore.getUserPools(this.userid);
     this.pools = this.pools.data.pools
     console.log(this.pools,"POOLS HERE")

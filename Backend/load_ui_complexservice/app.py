@@ -129,13 +129,17 @@ def get_notification(userid):
         all_notification = invoke_http(f"http://notification:5005/notifications/{userid}", method='GET')
         all_request = invoke_http(f"http://pool_request:5002/pool_request/user/{userid}",method='GET')
 
+        pool = invoke_http(f"http://pool:5001/Pool", method='GET')['data']['pools']
+        pool_map = {x["PoolID"]:x["pool_name"] for x in pool}
+        user = invoke_http(f"http://user:5004/user", method='GET')['data']['users']
+        user_map = {x["UserID"]:x["UserName"] for x in user}
+
         all_req = {"notif":[],"request":[]}
 
         if all_request["code"] != 404:
             for req in all_request['data']:
-                pool = invoke_http(f"http://pool:5001/Pool/{req['PoolID']}", method='GET')['data']
-                req['PoolName'] = pool['PoolName']
-                user = invoke_http(f"pool['UserID']")['data']
+                req['PoolName'] = pool_map[req['PoolID']]
+                req['PoolOwner'] = user_map[req['UserID']]
                 all_req['request'].append(req)
             all_req['request'] = all_request['data']
 

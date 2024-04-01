@@ -133,12 +133,17 @@ export default {
         Status: 'active' // You may want to set default status or handle it dynamically
       };
       var payload = {"pool_info" : requestData, "pool_invites" : this.selectedUsers}
+      // const url = 'http://127.0.0.1:5100/create_pool'
+      const url = 'http://localhost:8000/pm/create_pool'
       try {
         // Make POST request to Flask server
-        const response = await fetch('http://127.0.0.1:5100/create_pool', {
+        const response = await fetch(url, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            "Access-Control-Allow-Origin": '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token'
           },
           body: JSON.stringify(payload)
         });

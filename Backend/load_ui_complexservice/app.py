@@ -150,7 +150,7 @@ def get_notification(userid):
     except Exception as e:
         return jsonify({
             "code": 500,
-            "message": "pool_management internal error: " + str(e)
+            "message": "An unexpected error occurred while getting the notification: " + str(e)
         }), 500
     
 @app.route("/get_newusers/<int:userid>/<int:poolid>", methods=['GET'])

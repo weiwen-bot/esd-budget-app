@@ -5,17 +5,17 @@
     </div>
     <h1 class="text-2xl font-bold mb-4">Notifications</h1>
     <div v-if="notification.length + request.length === 0" class="mb-2">You have no notifications</div>
-    <div v-else class="mb-2">You have <strong>{{ notifications.length }}</strong> notification(s)</div>
+    <div v-else class="mb-2">You have <strong>{{ notification.length }}</strong> notification(s)</div>
     <div class="grid gap-4">
 
-      <div v-for="(notification, index) in request" :key="index" class="bg-white shadow-md rounded-md p-4">
-        <p class="text-xs text-gray-500 mb-2">{{ daysAgo(notification.notificationDate) }}</p>
+      <div v-for="(req, index) in request" :key="index" class="bg-white shadow-md rounded-md p-4">
+        <p class="text-xs text-gray-500 mb-2">{{ daysAgo(req.created) }}</p>
 
 
-          <p>You have been invited to join {{ notification.pool.name }} by {{ notification.pool.userName }}</p>
+          <p>You have been invited to join {{ req.PoolName }} by {{ req.PoolOwner }}</p>
           <div class="flex justify-between mt-2">
-            <button @click="acceptInvite(notification)" class="btn btn-accept">Accept</button>
-            <button @click="declineInvite(notification)" class="btn btn-decline">Decline</button>
+            <button @click="accept_request(req.PoolID,'Accepted')" class="btn btn-accept">Accept</button>
+            <button @click="accept_request(req.PoolID,'Rejected')" class="btn btn-decline">Decline</button>
           </div>
 
 
@@ -23,21 +23,11 @@
 
       </div>
 
-      <div v-for="(notification, index) in notifications" :key="index" class="bg-white shadow-md rounded-md p-4">
-        <p class="text-xs text-gray-500 mb-2">{{ daysAgo(notification.date) }}</p>
+      <div v-for="(noti, index) in notification" :key="index" class="bg-white shadow-md rounded-md p-4">
+        <p class="text-xs text-gray-500 mb-2">{{ daysAgo(noti.notificationDate) }}</p>
 
-        <div v-if="notification.type === 'invite'">
-          <p>You have been invited to join {{ notification.pool.name }} by {{ notification.pool.userName }}</p>
-          <div class="flex justify-between mt-2">
-            <button @click="acceptInvite(notification)" class="btn btn-accept">Accept</button>
-            <button @click="declineInvite(notification)" class="btn btn-decline">Decline</button>
-          </div>
-        </div>
-
-        <div v-else>
-          <p>{{ notification.message }}</p>
-        </div>
-
+          <p>{{ noti.message }}</p>
+     
       </div>
 
 
@@ -78,12 +68,6 @@ export default {
     ...mapStores(useUsersStore),
   },
   methods: {
-    acceptInvite(invite) {
-      console.log('Accepted invite:', invite);
-    },
-    declineInvite(invite) {
-      console.log('Declined invite:', invite);
-    },
     daysAgo(dateString) {
       const today = new Date();
       const inviteDate = new Date(dateString);
@@ -98,15 +82,39 @@ export default {
         return `${diffDays} days ago`;
       }
     },
+
+    async accept_request(poolid,Status){
+      const authStore = useAuthStore();
+      const userStore = useUsersStore();
+      this.userid = authStore.userID;
+      // userid, poolid, Status
+      var payload = {
+        "UserID": this.userid,
+        "PoolID": poolid,
+        "status": Status
+      }
+      console.log(payload)
+      var res = await userStore.accept_pool_request(payload)
+      await this.update_data();
+      return res
+    },
+
+    async update_data(){
+      const authStore = useAuthStore();
+      const userStore = useUsersStore();
+      this.userid = authStore.userID;
+
+      this.data = await userStore.getUserNoti(this.userid);
+      this.notification = this.data.data.data.notif.reverse()
+      this.request = this.data.data.data.request.reverse()
+    }
+
+
+
   },
   async created(){
-    const authStore = useAuthStore();
-    const userStore = useUsersStore();
-    this.userid = authStore.userID;
+    await this.update_data();
 
-    this.data = await userStore.getUserNoti(this.userid);
-    this.notification = this.pools.data.data.data.notif
-    this.request = this.pools.data.data.data.request
 
   }
 };

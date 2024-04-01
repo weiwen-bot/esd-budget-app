@@ -57,9 +57,10 @@ const routes =[
       component: Login,
     },
     {
-      path: "/ipp",
+      path: "/ipp/:poolID",
       name: "IndividualPoolPage",
       component: IndividualPoolPage,
+      props:true
     },
     {
       path: "/opp",

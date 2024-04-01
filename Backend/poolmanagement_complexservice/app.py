@@ -84,8 +84,9 @@ def accept_pool_request():
         }), 500
 
 def processpool_request(friend):
-    friend_res = invoke_http("http://pool_request:5002/pool_request", method='PUT', json=friend)
-    res_status = friend_res['data']['status']
+    # friend_res = invoke_http("http://pool_request:5002/pool_request", method='PUT', json=friend)
+    # res_status = friend_res['data']['status']
+    res_status = friend['status']
 
     pool_info = invoke_http("http://pool:5001/Pool/"+str(friend['PoolID']), method='GET')
     user_info = invoke_http("http://user:5004/user/"+str(friend['UserID']), method='GET')

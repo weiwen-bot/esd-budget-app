@@ -18,7 +18,7 @@
         <div class="bg-white shadow-md rounded-md p-4">
           <div class="border-b-2 border-gray-400 mb-4 pb-2">
             <h2 class="text-lg font-semibold">{{ pool.pool_name }}</h2>
-            <h2 class="text-sm font-semibold italic">Created by {{ pool.PoolOwner }}</h2>
+            <h2 class="text-sm font-semibold italic">Created by {{ pool.userName }}</h2>
           </div>
           <div class="mb-4">
             <p class="mb-4"><strong>Current Amount:</strong> ${{ pool.Current_amount }}</p> 
@@ -26,13 +26,13 @@
           </div>
           <div class="mb-4">
             <div class="progress-bar-container">
-              <div class="progress-bar" :style="{ width:  `${pool.progressPercentage}`}"></div>
+              <div class="progress-bar" :style="{ width:  `${calculateProgressPercentage(pool.Current_amount, pool.Budget)}`}"></div>
             </div>
-            <p><strong>Progress: {{ pool.progressPercentage }}</strong></p>
+            <p><strong>Progress: {{calculateProgressPercentage(pool.Current_amount, pool.Budget)}}</strong></p>
           </div>
           
           <div class="flex justify-center mb-4">
-            <button @click="viewPool(poolName)" class="view-pool-btn">
+            <button @click="viewPool(pool)" class="view-pool-btn">
               View Pool
             </button>
           </div>
@@ -62,36 +62,15 @@ import axios from 'axios';
 import { mapStores } from 'pinia';
 import { useAuthStore } from '../store/authStore';
 import { useUsersStore } from '../store/userStore';
-
 export default {
   name: 'PoolPage',
   data() {
     return {
       stripe: null,
-      pools: [],
-      userid: '',
-//       pools: [
-//   {
-//     id: 1,
-//     name: 'Japan Trip',
-//     userName: "John44",
-//     category: 'Fund',
-//     description: 'Japan Trip after Finals',
-//     currentAmount: 1200,
-//     totalAmount: 5000,
-//   },
-//   {
-//     id: 2,
-//     name: 'Dinner at Mcdonald',
-//     userName: "Sarah4",
-//     category: 'Payment',
-//     description: 'Last night dinner',
-//     currentAmount: 6000,
-//     totalAmount: 8000,
-//     expiryDate:'2024-01-05',
-    
-//   },
-// ],
+      pools: [
+
+],
+userid:''
     }
   },
   computed: {
@@ -100,33 +79,73 @@ export default {
     ...mapStores(useUsersStore),
   },
   methods: {
-    viewPool(poolName) {
-      this.$router.push({ name: 'IndividualPoolPage', params: { poolName } });
-      console.log(`Viewing pool: ${poolName}`);
-    },
+    viewPool(pool) {
+  this.$router.push({ 
+    name: 'IndividualPoolPage', 
+    params: { 
+      poolName: pool.pool_name,
+      poolID: pool.PoolID // Pass the poolID as a parameter
+    } 
+  });
+  console.log(`Viewing pool: ${pool.pool_name}`);
+},
+
     async fetchPoolDetails() {
-      // API call to fetch pool details
-      // http://127.0.0.1:5200/get_userpools/3
-    },
+      const authStore = useAuthStore();
+      this.userid = authStore.userID;
+  try {
+    const response = await fetch(`http://127.0.0.1:5200/get_userpools/${this.userid}`);
     
+    if (response.ok) {
+      const data = await response.json();
+      console.log(data)
+      this.pools = data.pools;
+
+      // Fetch usernames for each pool
+      // Inside the fetchPoolDetails method
+await Promise.all(this.pools.map(async (pool) => {
+  try {
+    const userResponse = await fetch(`http://127.0.0.1:5004/user/${pool.UserID}`);
+    if (userResponse.ok) {
+      const userData = await userResponse.json();
+      if (userData.code === 200) {
+        pool.userName = userData.data.UserName;
+      } else {
+        console.error('Failed to fetch pool username:', userData.message);
+        // If username is unknown, set it to "Unknown (UserID)"
+        pool.userName = `Unknown (${pool.UserID})`;
+      }
+    } else {
+      console.error('Failed to fetch pool username:', userResponse.statusText);
+      // If username is unknown, set it to "Unknown (UserID)"
+      pool.userName = `Unknown (${pool.UserID})`;
+    }
+  } catch (error) {
+    console.error('Error fetching pool username:', error);
+    // If username is unknown, set it to "Unknown (UserID)"
+    pool.userName = `Unknown (${pool.UserID})`;
+  }
+}));
+
+    } else {
+      console.error('Failed to fetch pool details:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error fetching pool details:', error);
+  }
+},
+
     calculateProgressPercentage(currentAmount, totalAmount) {
       return Math.round((currentAmount / totalAmount) * 100) + '%';
     },
   },
   components: {},
-  async created() {
+  created() {
     // Calculate progress percentage and fetch data on component creation
-    const authStore = useAuthStore();
-    const userStore = useUsersStore();
-    this.userid = authStore.userID;
-
-    this.pools = await userStore.getUserPools(this.userid);
-    this.pools = this.pools.data.pools
-    console.log(this.pools,"POOLS HERE")
-
     this.pools.forEach((pool) => {
-      pool.progressPercentage = this.calculateProgressPercentage(pool.Current_amount, pool.Budget);
+      pool.progressPercentage = this.calculateProgressPercentage(pool.currentAmount, pool.totalAmount);
     });
+    this.fetchPoolDetails();
   },
 };
 </script>

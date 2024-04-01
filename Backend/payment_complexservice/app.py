@@ -104,19 +104,24 @@ def refund(poolid):
     
     print(transactions_lst)
     print(temp, "RATIOS", transactions_lst)
+
+    ref_lst = []
+
     for transaction in transactions_lst:
         userid =transaction['userID']
         percentage_ref = temp[userid]
         ref_amt = transaction['amount'] * percentage_ref
         print(userid , poolid ,"THIS IS THE REFUND META VALUE")
         # Store as list send over bunch of refund
-        refund_obj = stripe.Refund.create(
-            payment_intent=transaction['paymentIntent'],
-            metadata={"UserID": userid, "PoolID": poolid},
-            amount=int(ref_amt * 100),
+        ref_lst.append({"payment_intent":transaction['paymentIntent'],"metadata":{"UserID": userid, "PoolID": poolid},"amt":int(ref_amt * 100)})
+        # refund_obj = stripe.Refund.create(
+        #     payment_intent=transaction['paymentIntent'],
+        #     metadata={"UserID": userid, "PoolID": poolid},
+        #     amount=int(ref_amt * 100),
             
-        )
-        print(refund_obj, "REFUND")
+        # )
+        # print(refund_obj, "REFUND")
+    ref_status = invoke_http("http://payment:4242/refund_mul", method='POST', json={"refunds":ref_lst})
     time.sleep(2)
     #Pull from payment refund db and create refund
     all_refunds = invoke_http(f"http://payment:4242/refund/{poolid}", method='GET')['data']['refunds']
@@ -124,7 +129,7 @@ def refund(poolid):
     user_info = invoke_http("http://user:5004/user", method='GET')['data']['users']
 
     user_map = {}
-    print(all_refunds)
+    print(all_refunds,"ALL REFUNDS")
     for user in user_info:
         user_map[user['UserID']] = user['UserName']
 
@@ -135,28 +140,29 @@ def refund(poolid):
             agg_refund[refund['UserID']] += ref_amt
         else:
             agg_refund[refund['UserID']] = ref_amt
+    print(agg_refund,"agg_refund")
     batch_msg = {"batchmessage":[],"owner_msg":[],"notif_type":"refund"}
     total_amt = 0
-    for user in all_refunds:
+    for userID,amt in agg_refund.items():
         msg = {}
-        msg['UserID'] = user['UserID']
+        msg['UserID'] = userID
         msg['PoolID'] = poolid
-        msg['amount'] = float(user['amount'])
+        msg['amount'] = float(amt)
         msg['PoolName'] = pool_info['pool_name']
         msg['notif_type'] = 'refund'
         msg['payment_intent'] = 'empty'
         msg['payment_status'] = 'refund'
-        msg['amount_total'] = user['amount']
-        total_amt += float(user['amount'])
-        if user['UserID'] in user_map:
-            msg['UserName'] = user_map[user['UserID']]
+        msg['amount_total'] = amt
+        total_amt += float(amt)
+        if userID in user_map:
+            msg['UserName'] = user_map[userID]
         else:
             msg['UserName'] = 'no name'
         batch_msg['batchmessage'].append(msg)
     msg['total_amt'] = total_amt
     msg['PoolOwner'] = ownerID
     batch_msg['owner_msg'].append(msg)
-
+    print(batch_msg,"batch_msg")
 
     message = json.dumps(batch_msg)
     channel.basic_publish(exchange=exchangename, routing_key="refund.success", 

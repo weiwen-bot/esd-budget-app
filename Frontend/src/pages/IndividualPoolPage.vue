@@ -48,7 +48,7 @@
           </div>
         </div>
         <h2 class="text-lg font-semibold flex flex-col items-center justify-center">
-          {{ pool.name }}
+          {{ pool.pool_name }}
         </h2>
         <h2 class="text-sm font-semibold italic black mt-2 mb-2">Created by {{ pool.userName }}</h2>
         <div class="flex justify-center mt-2 mb-2">
@@ -56,31 +56,37 @@
           <span class="text-sm" style="margin:3px;">View Users</span>
           </button>
         </div>
+        <div class="flex justify-center mt-2 mb-2">
+          <button @click="toggleModalAddUsers" style="color:black; margin: 0px; padding: 1px; border: 1px solid black; border-radius: 3px; background-color: #f8f8f8; box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);" class="invite-users-btn">Invite Users</button>
+          </div>
       </div>
       <div class="mb-4">
   
-        <p class="mb-4" style="color:black"><strong>Description:</strong><br> {{ pool.description }}</p>
-        <p class="mb-4 text-black" style="color:black"><strong>Category:</strong><br>{{ pool.category }}</p>
+        <p class="mb-4" style="color:black"><strong>Description:</strong><br> {{ pool.pool_desc}}</p>
+        <p class="mb-4 text-black" style="color:black"><strong>Category:</strong><br>{{ pool.Pool_Type }}</p>
         <p class="mb-4 text-black" style="color:black"><strong>Created by:</strong><br>{{ pool.userName }}</p>
       </div>
       <div class="mb-4">
         <p><strong>Progress:</strong></p>
-        <p style="color:black">${{ pool.currentAmount }} / ${{ pool.totalAmount }}</p>
+        <p style="color:black">${{ pool.Current_amount }} / ${{ pool.Budget }}</p>
         <div class="progress-bar-container">
           <div class="progress-bar"
-            :style="{ width: `${calculateProgressPercentage(pool.currentAmount, pool.totalAmount)}` }"></div>
+            :style="{ width: `${calculateProgressPercentage(pool.Current_amount, pool.Budget)}` }"></div>
         </div>
       </div>
       <div class="flex justify-center mb-4">
-        <button @click="makePayment" class="make-payment-btn">Contribute</button>
+        <button @click="make_payment" class="make-payment-btn ">Contribute</button>
       </div>
+
+      <button @click="make_refund" class="make-payment-btn2">Refund</button>
+
       <p class="mb-4"><strong>Transaction History:</strong><br></p>
       <div class="overflow-x-auto">
         <table class="table-auto w-full">
           <thead>
             <tr>
               <th class="border px-4 py-2">Date</th>
-              <th class="border px-4 py-2">UserID</th>
+              <th class="border px-4 py-2">User</th>
               <th class="border px-4 py-2">Amount</th>
               <th class="border px-4 py-2">Description</th>
             </tr>
@@ -88,128 +94,344 @@
           <tbody>
             <tr v-for="(transaction, index) in transactions" :key="transaction.id"
               :class="{ 'bg-gray-300': index % 2 === 0 }">
-              <td class="border px-4 py-2">{{ transaction.date }}</td>
-              <td class="border px-4 py-2">{{ transaction.userID }}</td>
+              <td class="border px-4 py-2">{{ transaction.transactionDate }}</td>
+              <td class="border px-4 py-2">{{ transaction.username }}</td>
               <td class="border px-4 py-2">${{ transaction.amount }}</td>
-              <td class="border px-4 py-2">{{ transaction.description }}</td>
+              <td class="border px-4 py-2">{{ transaction.status }}</td>
             </tr>
           </tbody>
         </table>
       </div>
 
     </div>
-  </div>
-  <div v-if="showModal" class="modal">
-    <div class="modal-content">
-      <span class="close" @click="toggleModal">&times;</span>
-      <h2 class="text-center"><strong>Participants</strong></h2>
-      <p>There are {{ users.length }} participants</p>
-      <table class="border-collapse border border-gray-400">
-        <thead>
-          <tr>
-            <th class="border border-gray-400 px-4 py-2">S/N</th>
-            <th class="border border-gray-400 px-4 py-2">Username</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(user, index) in users" :key="index" class="border border-gray-400">
-            <td class="border border-gray-400 px-4 py-2">{{ index + 1 }}</td>
-            <td class="border border-gray-400 px-4 py-2">{{ user }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <div v-if="showModal" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="toggleModal">&times;</span>
+        <h2 class="text-center"><strong>Participants</strong></h2>
+        <p>There are {{ poolMembers.length }} participants</p>
+        <table class="border-collapse border border-gray-400">
+          <thead>
+            <tr>
+              <th class="border border-gray-400 px-4 py-2">S/N</th>
+              <th class="border border-gray-400 px-4 py-2">User ID</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(userID, index) in poolMembers" :key="index" class="border border-gray-400">
+              <td class="border border-gray-400 px-4 py-2">{{ index + 1 }}</td>
+              <td class="border border-gray-400 px-4 py-2">{{ userID }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Modal for adding users -->
+    <div v-if="showModalAddUsers" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="toggleModalAddUsers">&times;</span>
+        <h2 class="text-center"><strong>Available Users</strong></h2>
+        <div v-for="(user, index) in availableUsers" :key="index">
+          <input type="checkbox" :id="`user_${index}`" v-model="selectedUsersToAdd" :value="user.UserID">
+          <label :for="`user_${index}`">{{ user.UserName }}</label>
+        </div>
+        <button @click="sendPoolRequestsToSelectedUsers" style="color:black; margin: 0px; padding: 1px; border: 1px solid black; border-radius: 3px; background-color: #f8f8f8; box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);" class="add-selected-users-btn">Add Selected Users</button>
+
+      </div>
     </div>
   </div>
+  
 
 </template>
 
 <script>
+import axios from 'axios';
+import { mapStores } from 'pinia';
+import { useAuthStore } from '../store/authStore';
+import { useUsersStore } from '../store/userStore';
 export default {
   name: 'IndividualPoolPage',
+  props: ['poolID', 'pool_name'],
   data() {
     return {
       isFlipped: false,
       pool: {
-        id: 1,
-        userName: "John44",
-        name: 'Japan Trip',
-        category: 'Fund',
-        description: 'Japan Trip after Finals',
-        currentAmount: 1200,
-        totalAmount: 5000,
-        expiryDate: '2025-01-03',
+        // id: 1,
+        // userName: "John44",
+        // name: 'Japan Trip',
+        // category: 'Fund',
+        // description: 'Japan Trip after Finals',
+        // currentAmount: 1200,
+        // totalAmount: 5000,
+        // expiryDate: '2025-01-03',
 
       },
-      users: ['232323', '2323232', '2323'],
+      users: [],
+      userid :'',
       showModal: false,
-      transactions: [
-        { id: 1, date: '2022-01-01', amount: 800, description: 'Transaction 1', userID: 3 },
-        { id: 2, date: '2022-01-05', amount: 200, description: 'Transaction 2', userID: 1 },
-        { id: 3, date: '2022-01-06', amount: 200, description: 'Transaction 3', userID: 1 }
-      ],
+      transactions: [],
+      poolMembers: [],
+
+      showModalAddUsers: false,
+        availableUsers: [],
+        selectedUsersToAdd: [],
+      poolID:'',
 
     };
   },
-  created() {
+  created() { 
+     this.poolID = this.$route.params.poolID;
     this.fetchPoolDetails();
     this.fetchTransactionHistory();
+    this.fetchPoolMembers();
+    this.fetchPoolRequestsAndAvailableUsers();
+    console.log('PoolID:', this.poolID);
+  },
+  computed: {
+    // computed
+    ...mapStores(useAuthStore),
+    ...mapStores(useUsersStore),
   },
   methods: {
+    async sendPoolRequestsToSelectedUsers() {
+  try {
+    if (this.selectedUsersToAdd.length === 0) {
+      console.log('No users selected to add.');
+      return;
+    }
+
+    // Create an array of user IDs to send pool requests to
+    const userIDs = this.selectedUsersToAdd.map(user => user.UserID);
+
+    // Prepare data for sending pool requests
+    const requestData = this.selectedUsersToAdd.map(user => ({
+      poolid: this.poolID,
+      userid: user
+    }));
+    console.log(requestData)
+
+    // Send pool requests to selected users
+    const response = await fetch('http://127.0.0.1:5002/pool_request/multiple', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestData)
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      console.log('Pool requests sent successfully.');
+      // Clear the selectedUsersToAdd array
+      this.selectedUsersToAdd = [];
+      // Close the modal
+      this.toggleModalAddUsers();
+    } else {
+      console.error('Failed to send pool requests:', data.message);
+    }
+  } catch (error) {
+    console.error('Error sending pool requests:', error);
+  }
+},
+
+    toggleModalAddUsers() {
+    this.showModalAddUsers = !this.showModalAddUsers;
+  },
+    async fetchPoolRequestsAndAvailableUsers() {
+  try {
+    // Fetch all users
+    const usersResponse = await fetch('http://127.0.0.1:5004/user');
+    const usersData = await usersResponse.json();
+    let allUsers = [];
+    if (usersResponse.ok) {
+      allUsers = usersData.data.users;
+    } else {
+      console.error('Failed to fetch users:', usersData.message);
+      return;
+    }
+
+    // Fetch pool requests
+    const poolRequestsResponse = await fetch(`http://127.0.0.1:5002/pool_request/pool/${this.poolID}`);
+    const poolRequestsData = await poolRequestsResponse.json();
+    let poolRequestUserIDs = [];
+    if (poolRequestsResponse.ok) {
+      poolRequestUserIDs = poolRequestsData.data.map(poolRequest => poolRequest.UserID);
+    } else {
+      console.error('Failed to fetch pool requests:', poolRequestsData.message);
+      return;
+    }
+
+    // Fetch pool members
+    const poolMembersResponse = await fetch(`http://127.0.0.1:5001/pool_mapping/${this.poolID}`);
+    const poolMembersData = await poolMembersResponse.json();
+    let poolMembers = [];
+    if (poolMembersResponse.ok) {
+      poolMembers = poolMembersData.data.map(poolMapping => poolMapping.UserID);
+    } else {
+      console.error('Failed to fetch pool members:', poolMembersData.message);
+      return;
+    }
+
+    // Filter out users who are already in the pool or have requested to join the pool
+    const usersNotInPool = allUsers.filter(user => !poolMembers.includes(user.UserID) && !poolRequestUserIDs.includes(user.UserID));
+
+    // Display the modal with available users
+    this.availableUsers = usersNotInPool;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+},
+
+
     toggleModal() {
       this.showModal = !this.showModal;
     },
-    async fetchPoolDetails() {
-      try {
-        const response = await fetch('http://localhost:5005/Pool/1'); // Replace '1' with the actual pool ID
-        const data = await response.json();
-        if (response.ok) {
-          this.pool = data.data;
-        } else {
-          console.error('Failed to fetch pool details:', data.message);
-        }
-      } catch (error) {
-        console.error('Error fetching pool details:', error);
-      }
-    },
-    async fetchTransactionHistory() {
-      try {
-        const response = await fetch('http://localhost:5005/TransactionHistory/1'); // Replace '1' with the actual pool ID
-        const data = await response.json();
-        if (response.ok) {
-          this.transactions = data.data.transactions;
-        } else {
-          console.error('Failed to fetch transaction history:', data.message);
-        }
-      } catch (error) {
-        console.error('Error fetching transaction history:', error);
-      }
-    },
-    async makePayment() {
-      try {
-        const response = await fetch('http://localhost:5100/pool_management', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            poolID: 1, // Replace '1' with the actual pool ID
-            userID: 1, // User ID = 1 
-            amount: 100 // Replace '100' with the actual payment amount
-          })
+    async fetchPoolMembers() {
+  try {
+    const response = await fetch(`http://127.0.0.1:5001/pool_mapping/${this.poolID}`);
+    const data = await response.json();
+    if (response.ok) {
+      // Set the poolMembers array with the fetched pool members
+      this.poolMembers = data.data.map(poolMapping => poolMapping.UserID);
+
+      // Fetch all users to create a dictionary of user IDs to usernames
+      const usersResponse = await fetch(`http://127.0.0.1:5004/user`);
+      const usersData = await usersResponse.json();
+      if (usersResponse.ok) {
+        // Create a dictionary of user IDs to usernames
+        const usersDict = {};
+        usersData.data.users.forEach(user => {
+          usersDict[user.UserID] = user.UserName;
         });
-        const data = await response.json();
-        if (response.ok) {
-          alert('Payment successful');
-          // Optionally, you can update the pool details or transaction history after payment
-          // this.fetchPoolDetails();
-          // this.fetchTransactionHistory();
-        } else {
-          console.error('Failed to make payment:', data.message);
-        }
-      } catch (error) {
-        console.error('Error making payment:', error);
+        // Set the username for each pool member
+        this.poolMembers = this.poolMembers.map(userID => usersDict[userID]);
+        console.log(this.poolMembers);
+      } else {
+        console.error('Failed to fetch users:', usersData.message);
       }
-    },
+    } else {
+      console.error('Failed to fetch pool members:', data.message);
+    }
+  } catch (error) {
+    console.error('Error fetching pool members:', error);
+  }
+},
+  async make_payment(){
+    const authStore = useAuthStore();
+      const userStore = useUsersStore();
+      this.userid = authStore.userID;
+      // userid, poolid, Status
+      var payload = {
+        "pool_name": this.pool.pool_name,
+            "UserID": this.userid,
+            "PoolID": this.pool.PoolID,
+            "remaining": (this.pool.Budget - this.pool.Current_amount)
+      }
+      console.log(payload)
+      var res = await userStore.payment(payload)
+      window.location.href = res.data.redirect
+      return res
+  },
+
+  async make_refund(){
+    const authStore = useAuthStore();
+      const userStore = useUsersStore();
+      this.userid = authStore.userID;
+      // userid, poolid, Status
+      var res = await userStore.refund(this.$route.params.poolID)
+      await this.fetchPoolDetails();
+      await this.fetchTransactionHistory();
+      await this.fetchPoolMembers();
+      return res
+  },
+
+  async fetchPoolDetails() {
+  try {
+    const response = await fetch(`http://127.0.0.1:5001/Pool/${this.poolID}`);
+    const data = await response.json();
+    if (response.ok) {
+      this.pool = data.data;
+      // Fetch all users to create a dictionary of user IDs to usernames
+      const usersResponse = await fetch(`http://127.0.0.1:5004/user`);
+      const usersData = await usersResponse.json();
+      if (usersResponse.ok) {
+        // Create a dictionary of user IDs to usernames
+        const usersDict = {};
+        usersData.data.users.forEach(user => {
+          usersDict[user.UserID] = user.UserName;
+        });
+        // Set the username for the pool creator
+        this.pool.userName = usersDict[this.pool.UserID];
+      } else {
+        console.error('Failed to fetch users:', usersData.message);
+      }
+    } else {
+      console.error('Failed to fetch pool details:', data.message);
+    }
+  } catch (error) {
+    console.error('Error fetching pool details:', error);
+  }
+},
+
+
+async fetchTransactionHistory() {
+  try {
+    const response = await fetch(`http://127.0.0.1:5003/transactions/pool/${this.poolID}`);
+    const data = await response.json();
+    if (response.ok) {
+      this.transactions = data.data.transactions;
+
+      // Fetch all users to create a dictionary of user IDs to usernames
+      const usersResponse = await fetch(`http://127.0.0.1:5004/user`);
+      const usersData = await usersResponse.json();
+      if (usersResponse.ok) {
+        // Create a dictionary of user IDs to usernames
+        const usersDict = {};
+        usersData.data.users.forEach(user => {
+          usersDict[user.UserID] = user.UserName;
+        });
+        // Replace user IDs with usernames in transaction history
+        this.transactions.forEach(transaction => {
+          transaction.username = usersDict[transaction.userID];
+        });
+      } else {
+        console.error('Failed to fetch users:', usersData.message);
+      }
+    } else {
+      console.error('Failed to fetch transaction history:', data.message);
+    }
+  } catch (error) {
+    console.error('Error fetching transaction history:', error);
+  }
+},
+
+    // async makePayment() {
+    //   try {
+    //     const response = await fetch('http://localhost:5100/pool_management', {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json'
+    //       },
+    //       body: JSON.stringify({
+    //         poolID: 1, // Replace '1' with the actual pool ID
+    //         userID: 1, // User ID = 1 
+    //         amount: 100 // Replace '100' with the actual payment amount
+    //       })
+    //     });
+    //     const data = await response.json();
+    //     if (response.ok) {
+    //       alert('Payment successful');
+    //       // Optionally, you can update the pool details or transaction history after payment
+    //       // this.fetchPoolDetails();
+    //       // this.fetchTransactionHistory();
+    //     } else {
+    //       console.error('Failed to make payment:', data.message);
+    //     }
+    //   } catch (error) {
+    //     console.error('Error making payment:', error);
+    //   }
+    // },
+
+
     calculateProgressPercentage(currentAmount, totalAmount) {
       return (currentAmount / totalAmount) * 100 + '%';
     },
@@ -298,6 +520,18 @@ export default {
 
 .make-payment-btn:hover {
   background-color: #2563eb;
+}
+
+.make-payment-btn2 {
+  background-color: black;
+  color: #fff;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+}
+
+.make-payment-btn2:hover {
+  background-color: black;
 }
 
 .progress-bar-container {

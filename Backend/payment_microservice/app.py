@@ -106,23 +106,24 @@ def create_price(max_amt,prod_id):
 
 @app.route("/create-checkout-session", methods=['POST'])
 def create_checkout_session():
-    domain_url = "http://127.0.0.1:5173"
-    stripe.api_key = stripe_keys["secret_key"]
-
-    data = json.loads(request.data)
-
-   
-    # max_amt = 2 * 100
-    # pool_name = 'Pool Name'
-    # userid = 1
-    # poolid = 1
-     #Amt in cents
-    max_amt = data['remaining']
-    pool_name = data['pool_name']
-    userid = data['UserID']
-    poolid = data['PoolID']
-
     try:
+        domain_url = "http://127.0.0.1:5173"
+        stripe.api_key = stripe_keys["secret_key"]
+
+        data = json.loads(request.data)
+
+    
+        # max_amt = 2 * 100
+        # pool_name = 'Pool Name'
+        # userid = 1
+        # poolid = 1
+        #Amt in cents
+        max_amt = data['remaining']
+        pool_name = data['pool_name']
+        userid = data['UserID']
+        poolid = data['PoolID']
+
+    
         # For full details see https://stripe.com/docs/api/checkout/sessions/create
 
         # ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
@@ -146,7 +147,10 @@ def create_checkout_session():
         print(checkout_session)
         return jsonify({"sessionId": checkout_session["id"],"url":checkout_session["url"]})
     except Exception as e:
-        return jsonify(error=str(e)), 403
+        return jsonify({
+            "code": 500,
+            "message": "Unexpected error occurred: " + str(e)
+        }), 500
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -216,7 +220,7 @@ def delete_all_refund():
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred while deleting all Refunds."
+                "message": "An error occurred while deleting all refunds."
             }
         ), 500    
 

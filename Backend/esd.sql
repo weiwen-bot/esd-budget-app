@@ -18,12 +18,16 @@ CREATE TABLE IF NOT EXISTS `User` (
   PRIMARY KEY (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+
 --
 -- Dumping data for table `User`
 --
 
 -- No data is inserted initially for the 'User' table.
 -- You can insert data as needed using INSERT INTO statements.
+INSERT INTO User (UserName, PhoneNumber, Credits, Account_no, Email, Password)
+VALUES ("John Doe", "123-456-7890", 100.00000, "1234567890", "johndoe@example.com", "password123");
 
 -- Create database for Pool
 CREATE DATABASE IF NOT EXISTS `pool` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
@@ -43,6 +47,9 @@ CREATE TABLE IF NOT EXISTS `pool` (
   `UserID` int(11) NOT NULL,
   `Status` VARCHAR(36) NOT NULL
 )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+INSERT INTO pool (pool_name, pool_desc, Expiry_Date, Current_amount, Budget, Pool_Type, UserID, Status)
+VALUES ("Awesome Pool Party", "Pool party for friends and family", "2024-05-31", 100.00, 200.00, "Social", 1, "active");
 
 CREATE TABLE IF NOT EXISTS `poolmapping` (
   `PoolID` int(11) NOT NULL,
@@ -69,6 +76,10 @@ CREATE TABLE IF NOT EXISTS `transaction` (
   `refund_status` varchar(36) NULL,
   PRIMARY KEY (`transactionID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO transaction (amount, status, userID, poolID, paymentIntent)
+VALUES (78.25, 'success', 345, 12, 'pi_test_intent_123');
+
 
 -- Create database for Pool
 CREATE DATABASE IF NOT EXISTS `pool_request` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
@@ -119,5 +130,5 @@ CREATE TABLE IF NOT EXISTS `refund` (
   PRIMARY KEY (`refundID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+INSERT INTO refund (amount, status, userID, poolID) VALUES (100.50, 'pending', 123, 45);
 COMMIT;

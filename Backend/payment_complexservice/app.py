@@ -51,24 +51,27 @@ if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
 
 @app.route("/payment", methods=['POST'])
 def create_payment():
-    data = request.json
-    '''
-    {
-        "pool_name": "pool_name",
-        "UserID": 1,
-        "PoolID": 1,
-        "remaining": 100 * 100
-    }
-    '''
-    print(data)
-    # max_amt = data['remaining'] 
-    # pool_name = data['pool_name']
-    # userid = data['UserID']
-    # poolid = data['PoolID']
-    response = invoke_http("http://payment:4242/create-checkout-session", method='POST', json=data)
-    print(response)
-    return {"redirect":response['url']}
-
+    try:
+        data = request.json
+        '''
+        {
+            "pool_name": "pool_name",
+            "UserID": 1,
+            "PoolID": 1,
+            "remaining": 100 * 100
+        }
+        '''
+        print(data)
+        # max_amt = data['remaining'] 
+        # pool_name = data['pool_name']
+        # userid = data['UserID']
+        # poolid = data['PoolID']
+    
+        response = invoke_http("http://payment:4242/create-checkout-session", method='POST', json=data)
+        print(response)
+        return {"redirect":response['url']}
+    except Exception as e:
+        return jsonify({"code": 500, "data": data, "message": "An error occurred creating the payment.", "error":str(e)}), 500
 
 @app.route("/refund/<int:poolid>", methods=['POST'])
 def refund(poolid):
@@ -165,9 +168,6 @@ def refund(poolid):
 
     return jsonify({"Success": "Refund Made"}),200
         
-
-
-
 
 
 @app.route('/webhook', methods=['POST'])

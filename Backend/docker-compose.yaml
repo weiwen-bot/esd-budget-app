@@ -82,7 +82,7 @@ services:
   # #################################
 
   user:
-    container_name: user
+    container_name: "user"
     build:
       context: ./user_microservice
       dockerfile: Dockerfile
@@ -91,6 +91,8 @@ services:
     environment:
       dbURL: mysql+mysqlconnector://root@host.docker.internal:3306/user
       PYTHONUNBUFFERED: 1
+    ports:
+      - "5004:5004"
     
 
 

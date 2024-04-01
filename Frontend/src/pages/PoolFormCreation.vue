@@ -83,6 +83,9 @@ export default {
         Budget: parseFloat(this.targetBudget), // Make sure to parse as float
         Pool_Type: this.poolType,
         UserID: 1, // Assuming a default user ID or you need to handle this
+        // 
+        // GET USERID FROM LOGIN AND CHANGE THE 1
+        // 
         Status: 'active' // You may want to set default status or handle it dynamically
       };
 

@@ -58,46 +58,38 @@ Status = db.Column(db.String(36), nullable=False) -->
 
 
 <script>
-import axios from 'axios';
-import { mapStores } from 'pinia';
-import { useAuthStore } from '../store/authStore';
-import { useUsersStore } from '../store/userStore';
 
 export default {
   name: 'PoolPage',
   data() {
     return {
       stripe: null,
-      pools: [],
-      userid: '',
-//       pools: [
-//   {
-//     id: 1,
-//     name: 'Japan Trip',
-//     userName: "John44",
-//     category: 'Fund',
-//     description: 'Japan Trip after Finals',
-//     currentAmount: 1200,
-//     totalAmount: 5000,
-//   },
-//   {
-//     id: 2,
-//     name: 'Dinner at Mcdonald',
-//     userName: "Sarah4",
-//     category: 'Payment',
-//     description: 'Last night dinner',
-//     currentAmount: 6000,
-//     totalAmount: 8000,
-//     expiryDate:'2024-01-05',
+      pools: [
+  {
+    id: 1,
+    name: 'Japan Trip',
+    userName: "John44",
+    category: 'Fund',
+    description: 'Japan Trip after Finals',
+    currentAmount: 1200,
+    totalAmount: 5000,
+  },
+  {
+    id: 2,
+    name: 'Dinner at Mcdonald',
+    userName: "Sarah4",
+    category: 'Payment',
+    description: 'Last night dinner',
+    currentAmount: 6000,
+    totalAmount: 8000,
+    expiryDate:'2024-01-05',
     
-//   },
-// ],
+  },
+],
     }
   },
   computed: {
-    // computed
-    ...mapStores(useAuthStore),
-    ...mapStores(useUsersStore),
+    //
   },
   methods: {
     viewPool(pool) {
@@ -112,66 +104,58 @@ export default {
 },
 
     async fetchPoolDetails() {
-      // API call to fetch pool details
-    },
-    async fetchTransactionHistory() {
-      try {
-        const response = await fetch('http://localhost:5005/TransactionHistory/1'); // Replace '1' with the actual pool ID
-        const data = await response.json();
-        if (response.ok) {
-          this.transactions = data.data.transactions;
-        } else {
-          console.error('Failed to fetch transaction history:', data.message);
-        }
-      } catch (error) {
-        console.error('Error fetching transaction history:', error);
+  try {
+    const response = await fetch('http://127.0.0.1:5001/Pool');
+    if (response.ok) {
+      const data = await response.json();
+      this.pools = data.data.pools;
+
+      // Fetch usernames for each pool
+      // Inside the fetchPoolDetails method
+await Promise.all(this.pools.map(async (pool) => {
+  try {
+    const userResponse = await fetch(`http://127.0.0.1:5004/user/${pool.UserID}`);
+    if (userResponse.ok) {
+      const userData = await userResponse.json();
+      if (userData.code === 200) {
+        pool.userName = userData.data.UserName;
+      } else {
+        console.error('Failed to fetch pool username:', userData.message);
+        // If username is unknown, set it to "Unknown (UserID)"
+        pool.userName = `Unknown (${pool.UserID})`;
       }
-    },
-    getStripePublishableKey() {
-      fetch('http://localhost:4242/config')
-        .then((result) => result.json())
-        .then((data) => {
-          // Initialize Stripe.js
-          this.stripe = Stripe(data.publicKey);
-        });
-    },
-    handlePurchaseBook() {
-      // Get Checkout Session ID
-      fetch('http://127.0.0.1:4242/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ book_id: '2' }),
-      })
-        .then((result) => result.json())
-        .then((data) => {
-          console.log(data);
-          // Redirect to Stripe Checkout
-          return this.stripe.redirectToCheckout({ sessionId: data.sessionId });
-        })
-        .then((res) => {
-          console.log(res);
-        });
-    },
+    } else {
+      console.error('Failed to fetch pool username:', userResponse.statusText);
+      // If username is unknown, set it to "Unknown (UserID)"
+      pool.userName = `Unknown (${pool.UserID})`;
+    }
+  } catch (error) {
+    console.error('Error fetching pool username:', error);
+    // If username is unknown, set it to "Unknown (UserID)"
+    pool.userName = `Unknown (${pool.UserID})`;
+  }
+}));
+
+    } else {
+      console.error('Failed to fetch pool details:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error fetching pool details:', error);
+  }
+},
+
     calculateProgressPercentage(currentAmount, totalAmount) {
-      return Math.round((currentAmount / totalAmount) * 100) + '%';
+      return (currentAmount / totalAmount) * 100 + '%';
     },
   },
   components: {},
-  async created() {
+  created() {
     // Calculate progress percentage and fetch data on component creation
-    const authStore = useAuthStore();
-    const userStore = useUsersStore();
-    this.userid = authStore.userID;
-    
-    this.pools = await userStore.getUserPools(this.userid);
-    this.pools = this.pools.data.pools
-    console.log(this.pools,"POOLS HERE")
-
     this.pools.forEach((pool) => {
-      pool.progressPercentage = this.calculateProgressPercentage(pool.Current_amount, pool.Budget);
+      pool.progressPercentage = this.calculateProgressPercentage(pool.currentAmount, pool.totalAmount);
     });
+    this.fetchPoolDetails();
+    this.fetchTransactionHistory();
   },
 };
 </script>

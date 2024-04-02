@@ -32,15 +32,18 @@ def gethomepage(userid):
             #members
             poolmapping = invoke_http("http://pool:5001/pool_mapping", method='GET')
 
-            
+            if poolmapping['code'] != 404:
+                member_list = poolmapping['data']['pool_mapping']
+
+                member_poolid = set([x["PoolID"] for x in member_list if x['UserID'] == userid])
+            else:
+                member_poolid = []
             
             print(all_pool)
             print(poolmapping)
             all_pool = all_pool['data']['pools']
 
-            member_list = poolmapping['data']['pool_mapping']
-
-            member_poolid = set([x["PoolID"] for x in member_list if x['UserID'] == userid])
+            
 
             pool_dict = {"pools":[]}
 

@@ -66,8 +66,15 @@ import { useUsersStore } from '../store/userStore';
     async logout() {
       const authStore = useAuthStore();
       authStore.logout();
-      // this.$router.push('/login');
+      await this.fetchUsers();
+      // this.$router.push('/poolcreation');
+      this.redirectReload('/poolcreation')
     },
+    redirectReload(path_l) {
+        this.$router
+          .push({ path: path_l })
+          .then(() => { this.$router.go(0) })
+      }
   }
   }
   </script>

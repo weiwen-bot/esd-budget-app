@@ -150,9 +150,11 @@ export default {
 
         if (response.ok) {
           this.users = responseData.data.users;
-          const index = this.users.indexOf(username)
-          this.users = this.users.splice(index, 1);
+          
+          var result = this.findDictsByKeyValue(this.users, 'UserName', this.username);
+          const index = this.users.indexOf(result)
 
+          var test = this.users.splice(index, 1);
           this.showUserList = true;
         } else {
           console.error('Failed to fetch users:', responseData.message);
@@ -161,6 +163,16 @@ export default {
         console.error('Error fetching users:', error);
       }
     },
+    findDictsByKeyValue(list, key, value) {
+    var matchingDicts = [];
+    for (var i = 0; i < list.length; i++) {
+        var dict = list[i];
+        if (dict[key] === value) {
+            matchingDicts.push(dict);
+        }
+    }
+    return matchingDicts[0];
+},
     async createPool() {
   // Validate pool name
   if (!this.poolName.trim()) {

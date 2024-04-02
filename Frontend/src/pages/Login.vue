@@ -96,7 +96,7 @@ export default {
       console.log(resp, "te")
       if (resp) {
         console.log('hi')
-        this.$router.push({ path: '/canceled' })
+        this.$router.push({ path: '/' })
       } else {
         alert("Wrong Info")
       }

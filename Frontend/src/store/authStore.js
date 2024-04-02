@@ -36,8 +36,7 @@ export const useAuthStore = defineStore({
             this.userID = null;
             localStorage.removeItem('userid');
             localStorage.removeItem('username');
-            localStorage.clear()
-            this.$router.push('/PoolPage');
+            this.$router.push('/Login');
         }
     }
 });

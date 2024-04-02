@@ -18,6 +18,10 @@ CREATE TABLE IF NOT EXISTS `User` (
   PRIMARY KEY (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT INTO User ( `UserName`, `PhoneNumber`,`Credits`, `Account_no`,`Email`,`Password`)
+VALUES ('User1', '99998888', 200, '4242424242424242', 'user1@gmail.com','pwd1'),
+('User2', '99998888', 200, '4242424242424242', 'user2@gmail.com','pwd2'),
+('User3', '99998888', 200, '4242424242424242', 'user2@gmail.com','pwd2');
 --
 -- Dumping data for table `User`
 --
@@ -43,6 +47,9 @@ CREATE TABLE IF NOT EXISTS `pool` (
   `UserID` int(11) NOT NULL,
   `Status` VARCHAR(36) NOT NULL
 )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+INSERT INTO pool (`pool_name`, `pool_desc`, `Expiry_Date`, `Current_amount`, `Budget`, `Pool_Type`, `UserID`, `Status`) VALUES
+('Pool1', 'Pool1 Description', '2021-12-31', 0, 1000, 'Budget', 1, 'Active');
 
 CREATE TABLE IF NOT EXISTS `poolmapping` (
   `PoolID` int(11) NOT NULL,

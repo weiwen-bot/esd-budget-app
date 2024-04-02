@@ -1,11 +1,10 @@
 # Project Title
-Settle
+SettleUp A one-stop application for settling payments 
 
 # Problem Statement
 Financial management of funds between friends can be tedious, and it can be hard to keep track of expenses as a group
 
 # Project Description 📖
-A one-stop application for settling payments 
 - Create a shared pool for pooling of money between friends and family
 - Efficient management of funds for better activity planning
 
